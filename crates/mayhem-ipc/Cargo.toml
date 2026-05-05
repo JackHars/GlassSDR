@@ -1,0 +1,8 @@
+[package]
+name = "mayhem-ipc"
+version = "0.0.1"
+edition.workspace = true
+
+[dependencies]
+serde.workspace = true
+ts-rs.workspace = true

@@ -1,0 +1,11 @@
+[package]
+name = "mayhem-radio"
+version = "0.0.1"
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+thiserror.workspace = true
+futuresdr.workspace = true
+num-complex.workspace = true
+tracing.workspace = true
