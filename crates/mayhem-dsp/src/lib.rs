@@ -2,5 +2,8 @@
 
 pub mod decimation;
 pub mod demod_fm;
+pub mod magnitude;
+pub mod ppm;
+pub mod preamble;
 pub mod resample;
 pub mod spectrum;
