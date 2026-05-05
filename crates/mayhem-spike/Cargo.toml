@@ -8,10 +8,6 @@ publish = false
 name = "hackrf-source-spike"
 path = "src/bin/hackrf_source_spike.rs"
 
-[[bin]]
-name = "tauri-ipc-spike"
-path = "src/bin/tauri_ipc_spike.rs"
-
 [dependencies]
 anyhow.workspace = true
 tracing.workspace = true
