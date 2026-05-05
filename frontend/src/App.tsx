@@ -14,7 +14,8 @@ export default function App() {
       setApps(a);
       if (a.length > 0 && activeApp === null) setActiveApp(a[0].id);
     });
-  }, [setApps, setActiveApp, activeApp]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setApps, setActiveApp]);
 
   return (
     <div style={{ display: "flex", height: "100vh", color: "#eee", background: "#111" }}>

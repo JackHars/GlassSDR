@@ -8,3 +8,5 @@ crates/mayhem-spike/ipc-spike/src-tauri/target/
 *.swp
 src-tauri/target/
 frontend/dist/
+# Frontend: never commit compiled .js artifacts in src/
+frontend/src/**/*.js
