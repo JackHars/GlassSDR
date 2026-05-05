@@ -179,7 +179,7 @@ The roadmap groups apps by the building blocks they share so each phase has comp
 | 7 | Utilities, file tools, games | file manager, freqman, playlist, settings, calculator, snake, doom, etc. (~30) | UI-only; no DSP |
 | 8 | Long-tail / hard | BTLE comm/sniffing, NRF sniffing, encoders pile, niche apps (~20) | Heterogeneous |
 
-Total: ~118 apps across the roadmap. The 12 refused apps in §6 are excluded permanently.
+Per-phase counts are rough estimates and intentionally do not sum exactly to the total — Mayhem's app inventory is fluid (built-in vs external, overlapping or near-duplicate apps, ongoing upstream churn), and per-phase enumeration is deferred to per-phase planning. The total of ~118 is "all Mayhem apps minus the 12 refused in §6."
 
 ## 6. Refused apps
 
