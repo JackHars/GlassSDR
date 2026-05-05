@@ -1,0 +1,22 @@
+[package]
+name = "mayhem-pc"
+version = "0.0.1"
+edition.workspace = true
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+anyhow.workspace = true
+mayhem-apps = { path = "../crates/mayhem-apps" }
+mayhem-ipc = { path = "../crates/mayhem-ipc" }
+serde.workspace = true
+serde_json.workspace = true
+tauri = { version = "2", features = [] }
+tokio.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]
