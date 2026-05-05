@@ -48,12 +48,6 @@ impl NfmAudioApp {
     }
 }
 
-impl Default for NfmAudioApp {
-    fn default() -> Self {
-        Self::new().0
-    }
-}
-
 impl App for NfmAudioApp {
     fn metadata() -> AppMetadata
     where
@@ -217,10 +211,10 @@ async fn run_nfm(
     // Capture cfg for the thread (cfg is Clone).
     let cfg_thread = cfg;
 
-    // Run the FutureSDR flowgraph on its own OS thread using smol (the scheduler
-    // FutureSDR was designed for). We cannot drive it from within the tokio runtime
-    // because smol's block_on conflicts with tokio's executor.
-    let rt_thread = std::thread::spawn(move || -> Result<()> {
+    // Run the FutureSDR flowgraph in a tokio blocking thread so we can race its
+    // completion against an external stop signal. We use spawn_blocking (not
+    // std::thread::spawn) so the JoinHandle is awaitable from within tokio::select!.
+    let rt_join = tokio::task::spawn_blocking(move || -> Result<()> {
         let mut fg = Flowgraph::new();
 
         let src = futuresdr::blocks::seify::SourceBuilder::new()
@@ -244,7 +238,9 @@ async fn run_nfm(
         Ok(())
     });
 
-    // Wait for either the stop signal or the flowgraph thread to finish.
+    // Wait for either the stop signal or the flowgraph to finish naturally (e.g.
+    // HackRF disconnect). This prevents run_nfm from hanging forever if no stop
+    // signal ever arrives.
     tokio::select! {
         _ = stop_rx => {
             info!("nfm received stop signal; terminating flowgraph");
@@ -258,17 +254,20 @@ async fn run_nfm(
                     async_io::block_on(handle.terminate_and_wait())
                         .unwrap_or_else(|e| warn!("terminate_and_wait error: {e}"));
                 }
-                // v0.1 note: the rt_thread may outlive this task briefly while
+                // v0.1 note: the rt_join task may outlive this task briefly while
                 // the smol scheduler drains. The thread is detached on drop.
             })
             .await
             .unwrap_or_else(|e| warn!("spawn_blocking join error: {e}"));
         }
+        res = rt_join => {
+            match res {
+                Ok(Ok(())) => info!("nfm flowgraph terminated naturally"),
+                Ok(Err(e)) => warn!("nfm flowgraph error: {e}"),
+                Err(e) => warn!("nfm runtime task join error: {e}"),
+            }
+        }
     }
-
-    // We intentionally do not join rt_thread here; it will terminate once
-    // terminate_and_wait() completes above, or is detached on drop.
-    drop(rt_thread);
 
     Ok(())
 }
