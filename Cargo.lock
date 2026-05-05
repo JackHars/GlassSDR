@@ -1275,6 +1275,7 @@ name = "mayhem-ipc"
 version = "0.0.1"
 dependencies = [
  "serde",
+ "serde_json",
  "ts-rs",
 ]
 
