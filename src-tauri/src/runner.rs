@@ -48,6 +48,12 @@ impl AppRunner {
 
         let _ = handle.emit("app_status", AppStatus::Starting { app: id });
 
+        // TODO(v0.2): When Plan 2 adds ADS-B, generalize this match into a per-app
+        // start trampoline. The registry's `instantiate()` path can't return the
+        // app's channel receivers because `Box<dyn App>` erases concrete types;
+        // extend the App trait with a `start_with_channels` typed wrapper, or move
+        // channel ownership into the App trait itself.
+
         // For NFM specifically: instantiate, take its channels, spawn pumps that re-emit as Tauri events.
         match id {
             AppId::NfmAudio => {

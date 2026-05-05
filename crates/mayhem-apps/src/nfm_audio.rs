@@ -9,7 +9,7 @@ use anyhow::Result;
 use mayhem_dsp::{decimation::FirDecimator, demod_fm::QuadDemod, resample::AudioResampler};
 use std::sync::{Arc, Mutex};
 use mayhem_ipc::{AppId, AppMetadata, AudioFrame, Direction, NfmTuning, RegulatoryClass, SpectrumFrame};
-use mayhem_radio::HackRfSourceConfig;
+use mayhem_radio::{build_source, HackRfSourceConfig};
 use serde_json::Value;
 use tokio::sync::{mpsc, oneshot};
 use tracing::{info, warn};
@@ -125,6 +125,9 @@ async fn run_nfm(
     let mut demod_out: Vec<f32> = Vec::with_capacity(8);
     let mut pcm_scratch: Vec<i16> = Vec::with_capacity(2048);
 
+    // TODO(squelch): tuning.squelch_db is deserialized but not enforced. The audio path
+    // emits unconditionally. Implement an RMS-based gate after QuadDemod when squelch lands.
+
     // Audio Apply block: runs the full DSP chain per-sample and emits AudioFrames.
     // Returns the input sample unchanged so the stream continues to the spectrum sink.
     let audio_sink = futuresdr::blocks::Apply::new(move |x: &Complex32| -> Complex32 {
@@ -208,12 +211,10 @@ async fn run_nfm(
     let rt_join = tokio::task::spawn_blocking(move || -> Result<()> {
         let mut fg = Flowgraph::new();
 
-        let src = futuresdr::blocks::seify::SourceBuilder::new()
-            .args("driver=hackrf")?
-            .frequency(cfg_thread.center_hz)
-            .sample_rate(cfg_thread.sample_rate)
-            .gain(cfg_thread.lna_gain_db as f64 + cfg_thread.vga_gain_db as f64)
-            .build()?;
+        // TODO(amp): cfg.amp_enabled is currently ignored. Wire to Seify's amp control once
+        // the API is exposed. Users toggling the Amp checkbox will see no effect.
+        // Note: build_source itself also does not honour amp_enabled yet.
+        let src = build_source(&cfg_thread)?;
 
         connect!(fg, src > audio_sink > spec_sink > null);
 
