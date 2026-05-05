@@ -125,8 +125,10 @@ async fn run_nfm(
     let mut demod_out: Vec<f32> = Vec::with_capacity(8);
     let mut pcm_scratch: Vec<i16> = Vec::with_capacity(2048);
 
-    // TODO(squelch): tuning.squelch_db is deserialized but not enforced. The audio path
-    // emits unconditionally. Implement an RMS-based gate after QuadDemod when squelch lands.
+    // Capture the squelch threshold so it can be moved into the closure below.
+    // Convention: squelch_db = -80 means "open at very low levels = always open";
+    //             squelch_db =   0 means "only loud signals pass."
+    let squelch_threshold_db = tuning.squelch_db;
 
     // Audio Apply block: runs the full DSP chain per-sample and emits AudioFrames.
     // Returns the input sample unchanged so the stream continues to the spectrum sink.
@@ -137,6 +139,30 @@ async fn run_nfm(
 
         demod_out.clear();
         demod.process(&decimated, &mut demod_out);
+
+        // Squelch: gate audio when post-demod RMS falls below squelch_db threshold.
+        // Only run when the decimator actually produced output (DECIM=10, so ~9 out of
+        // 10 calls produce an empty demod_out — skip those to avoid wasted work).
+        //
+        // TODO(v0.2): Replace RMS squelch with FM noise-squelch: high-pass filter the
+        // demod output and measure noise above audio bandwidth. RMS-based squelch trips
+        // on loud noise the same as on loud signal, making it less discriminating than
+        // traditional FM noise-squelch.
+        if !demod_out.is_empty() {
+            let rms_sq: f32 = demod_out.iter().map(|s| s * s).sum::<f32>()
+                / demod_out.len() as f32;
+            // Guard against log10(0) = -inf gating everything when the signal is exactly 0.
+            if rms_sq > 0.0 {
+                // 20*log10(rms) == 10*log10(rms^2)
+                let level_db = 10.0 * rms_sq.log10();
+                if level_db < squelch_threshold_db {
+                    // Below threshold: zero out demod output so the resampler emits
+                    // silence. Zeroing (not skipping) keeps the 48 kHz audio stream in
+                    // sync so the AudioWorklet ring buffer does not underrun.
+                    demod_out.iter_mut().for_each(|s| *s = 0.0);
+                }
+            }
+        }
 
         pcm_scratch.clear();
         let _ = resamp.process(&demod_out, &mut pcm_scratch);
@@ -211,9 +237,7 @@ async fn run_nfm(
     let rt_join = tokio::task::spawn_blocking(move || -> Result<()> {
         let mut fg = Flowgraph::new();
 
-        // TODO(amp): cfg.amp_enabled is currently ignored. Wire to Seify's amp control once
-        // the API is exposed. Users toggling the Amp checkbox will see no effect.
-        // Note: build_source itself also does not honour amp_enabled yet.
+        // amp_enabled is now passed via the args string in build_source() as `amp={0,1}`.
         let src = build_source(&cfg_thread)?;
 
         connect!(fg, src > audio_sink > spec_sink > null);

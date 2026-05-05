@@ -33,14 +33,22 @@ impl HackRfSourceConfig {
 /// Build a FutureSDR HackRF source block from a config.
 ///
 /// Implementation note: the exact Seify API call was established by Task 1's spike.
+///
+/// Amp control: Seify's `DeviceTrait` and `Config` have no dedicated amp-enable method, so we
+/// pass `amp=1` (or `amp=0`) as part of the device-selection args string. SoapyHackRF (the
+/// underlying SoapySDR plugin) reads this key during device open and calls
+/// `hackrf_set_amp_enable()` accordingly. This mirrors the libhackrf convention and is the
+/// approach documented in the SoapyHackRF project. If a future Seify release exposes a
+/// first-class `amp_enable` API, migrate to that; for v0.1 the args-string approach is correct.
 pub fn build_source(cfg: &HackRfSourceConfig) -> Result<Block> {
     cfg.validate()?;
+    let amp_val = if cfg.amp_enabled { 1 } else { 0 };
+    let args = format!("driver=hackrf,amp={amp_val}");
     let block = futuresdr::blocks::seify::SourceBuilder::new()
-        .args("driver=hackrf")?
+        .args(args.as_str())?
         .frequency(cfg.center_hz)
         .sample_rate(cfg.sample_rate)
         // Seify abstracts gain as a single value; HackRF backend splits LNA/VGA internally. (See Task 1 spike.)
-        // TODO(amp): wire cfg.amp_enabled into Seify once amp control is exposed.
         .gain(cfg.lna_gain_db as f64 + cfg.vga_gain_db as f64)
         .build()?;
     Ok(block)
