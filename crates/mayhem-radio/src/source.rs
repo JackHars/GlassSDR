@@ -39,6 +39,8 @@ pub fn build_source(cfg: &HackRfSourceConfig) -> Result<Block> {
         .args("driver=hackrf")?
         .frequency(cfg.center_hz)
         .sample_rate(cfg.sample_rate)
+        // Seify abstracts gain as a single value; HackRF backend splits LNA/VGA internally. (See Task 1 spike.)
+        // TODO(amp): wire cfg.amp_enabled into Seify once amp control is exposed.
         .gain(cfg.lna_gain_db as f64 + cfg.vga_gain_db as f64)
         .build()?;
     Ok(block)
@@ -79,6 +81,18 @@ mod tests {
             sample_rate: 2_400_000.0,
             lna_gain_db: 7, // not a multiple of 8
             vga_gain_db: 30,
+            amp_enabled: false,
+        };
+        assert!(c.validate().is_err());
+    }
+
+    #[test]
+    fn validate_rejects_bad_vga_step() {
+        let c = HackRfSourceConfig {
+            center_hz: 100_000_000.0,
+            sample_rate: 2_400_000.0,
+            lna_gain_db: 24,
+            vga_gain_db: 3, // not a multiple of 2
             amp_enabled: false,
         };
         assert!(c.validate().is_err());
