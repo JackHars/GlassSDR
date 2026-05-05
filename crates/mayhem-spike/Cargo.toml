@@ -16,6 +16,5 @@ path = "src/bin/tauri_ipc_spike.rs"
 anyhow.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
-tokio.workspace = true
 futuresdr.workspace = true
 num-complex.workspace = true

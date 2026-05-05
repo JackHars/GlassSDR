@@ -36,7 +36,6 @@ use tracing::info;
 
 fn main() -> Result<()> {
     tracing_subscriber::fmt::init();
-    futuresdr::runtime::init();
 
     let target_rate: f64 = 2_400_000.0;
     let target_freq: f64 = 100_000_000.0;
