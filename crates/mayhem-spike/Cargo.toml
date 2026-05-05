@@ -1,0 +1,21 @@
+[package]
+name = "mayhem-spike"
+version = "0.0.0"
+edition.workspace = true
+publish = false
+
+[[bin]]
+name = "hackrf-source-spike"
+path = "src/bin/hackrf_source_spike.rs"
+
+[[bin]]
+name = "tauri-ipc-spike"
+path = "src/bin/tauri_ipc_spike.rs"
+
+[dependencies]
+anyhow.workspace = true
+tracing.workspace = true
+tracing-subscriber.workspace = true
+tokio.workspace = true
+futuresdr.workspace = true
+num-complex.workspace = true
