@@ -41,7 +41,7 @@ pub struct AppMetadata {
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../../../frontend/src/ipc/types/")]
 pub struct SpectrumFrame {
-    pub seq: u64,
+    pub seq: u32,
     /// log-magnitude, 0..255, length == fft_size
     pub bins: Vec<u8>,
     pub center_hz: f64,
@@ -51,7 +51,7 @@ pub struct SpectrumFrame {
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../../../frontend/src/ipc/types/")]
 pub struct AudioFrame {
-    pub seq: u64,
+    pub seq: u32,
     /// int16 PCM, 48 kHz, mono. 20 ms = 960 samples.
     pub samples: Vec<i16>,
 }
