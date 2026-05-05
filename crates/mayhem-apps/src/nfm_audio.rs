@@ -7,10 +7,10 @@
 
 use anyhow::Result;
 use mayhem_dsp::{decimation::FirDecimator, demod_fm::QuadDemod, resample::AudioResampler};
-use mayhem_ipc::{AppId, AppMetadata, AudioFrame, Direction, NfmTuning, RegulatoryClass, SpectrumFrame};
-use mayhem_radio::{build_source, HackRfSourceConfig};
-use serde_json::Value;
 use std::sync::{Arc, Mutex};
+use mayhem_ipc::{AppId, AppMetadata, AudioFrame, Direction, NfmTuning, RegulatoryClass, SpectrumFrame};
+use mayhem_radio::HackRfSourceConfig;
+use serde_json::Value;
 use tokio::sync::{mpsc, oneshot};
 use tracing::{info, warn};
 
@@ -100,57 +100,48 @@ async fn run_nfm(
     use futuresdr::runtime::Flowgraph;
     use num_complex::Complex32;
 
-    // Validate config (build_source performs validation; discard the result since the
-    // actual source is constructed inside the flowgraph thread below).
-    build_source(&cfg).map(drop)?;
-
-    // DSP stages — wrapped in Arc<Mutex<_>> so they can be moved into Apply closures.
-    let dec = Arc::new(Mutex::new(FirDecimator::new(
+    // DSP stages — plain owned values, moved directly into the Apply closure.
+    let mut dec = FirDecimator::new(
         100_000.0,
         HACKRF_RATE as f32,
         DECIM,
         NUM_TAPS,
-    )));
-    let demod = Arc::new(Mutex::new(QuadDemod::new(
+    );
+    let mut demod = QuadDemod::new(
         FM_MAX_DEVIATION_HZ,
         (HACKRF_RATE / DECIM as f64) as f32,
-    )));
-    let resamp = Arc::new(Mutex::new(AudioResampler::new(
+    );
+    let mut resamp = AudioResampler::new(
         (HACKRF_RATE as usize) / DECIM,
         AUDIO_OUT_RATE,
         1024,
-    )?));
+    )?;
 
-    // Clone for capture into audio Apply closure.
-    let dec_for_audio = Arc::clone(&dec);
-    let demod_for_audio = Arc::clone(&demod);
-    let resamp_for_audio = Arc::clone(&resamp);
     let audio_tx_inner = audio_tx;
     let mut audio_seq: u32 = 0;
+
+    // Pre-allocate intermediate buffers; reused each call via .clear().
+    let mut decimated: Vec<Complex32> = Vec::with_capacity(8);
+    let mut demod_out: Vec<f32> = Vec::with_capacity(8);
+    let mut pcm_scratch: Vec<i16> = Vec::with_capacity(2048);
 
     // Audio Apply block: runs the full DSP chain per-sample and emits AudioFrames.
     // Returns the input sample unchanged so the stream continues to the spectrum sink.
     let audio_sink = futuresdr::blocks::Apply::new(move |x: &Complex32| -> Complex32 {
         let buf = [*x];
-        let mut decimated = Vec::new();
-        dec_for_audio.lock().unwrap().process(&buf, &mut decimated);
+        decimated.clear();
+        dec.process(&buf, &mut decimated);
 
-        let mut demod_out = Vec::new();
-        demod_for_audio
-            .lock()
-            .unwrap()
-            .process(&decimated, &mut demod_out);
+        demod_out.clear();
+        demod.process(&decimated, &mut demod_out);
 
-        let mut pcm = Vec::new();
-        let _ = resamp_for_audio
-            .lock()
-            .unwrap()
-            .process(&demod_out, &mut pcm);
+        pcm_scratch.clear();
+        let _ = resamp.process(&demod_out, &mut pcm_scratch);
 
-        if !pcm.is_empty() {
+        if !pcm_scratch.is_empty() {
             let _ = audio_tx_inner.send(AudioFrame {
                 seq: audio_seq,
-                samples: pcm,
+                samples: pcm_scratch.clone(),
             });
             audio_seq = audio_seq.wrapping_add(1);
         }
