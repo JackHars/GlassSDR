@@ -53,6 +53,7 @@ pub mod rfm69_tx;
 pub mod flipper_tx;
 pub mod keyfob_tx;
 pub mod lge_tx;
+pub mod signal_meter;
 
 use anyhow::Result;
 use mayhem_ipc::AppMetadata;

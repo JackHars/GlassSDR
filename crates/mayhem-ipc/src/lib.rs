@@ -66,6 +66,12 @@ pub enum AppId {
     Settings,
     Calculator,
     Notepad,
+    Snake,
+    Doom,
+    MorseTrainer,
+    BandPlan,
+    AntennaCalc,
+    SignalMeter,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]

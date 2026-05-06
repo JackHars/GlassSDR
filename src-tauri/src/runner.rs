@@ -19,6 +19,7 @@ use mayhem_apps::{
     replay_tx::ReplayTxApp, ook_editor_tx::OokEditorTxApp, freq_hopper::FreqHopperApp,
     btle_tx::BtleTxApp, nrf24_tx::Nrf24TxApp, rfm69_tx::Rfm69TxApp,
     flipper_tx::FlipperTxApp, keyfob_tx::KeyfobTxApp, lge_tx::LgeTxApp,
+    signal_meter::SignalMeterApp,
     App, AppRegistry, RunningApp,
 };
 use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, DabServiceEvent, DscMessageEvent, EpirbBeaconEvent, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
@@ -253,6 +254,10 @@ impl AppRunner {
         });
         registry.register(LgeTxApp::metadata(), || {
             let (app, _) = LgeTxApp::new();
+            app
+        });
+        registry.register(SignalMeterApp::metadata(), || {
+            let (app, _) = SignalMeterApp::new();
             app
         });
         Self {
@@ -627,6 +632,28 @@ impl AppRunner {
                 let running = app.start(params)?;
                 spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
+            }
+            AppId::SignalMeter => {
+                let (app, spec_rx) = SignalMeterApp::new();
+                let running = app.start(params)?;
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::Snake
+            | AppId::Doom
+            | AppId::MorseTrainer
+            | AppId::BandPlan
+            | AppId::AntennaCalc
+            | AppId::FreqManager
+            | AppId::FileManager
+            | AppId::Playlist
+            | AppId::Settings
+            | AppId::Calculator
+            | AppId::Notepad => {
+                // Frontend-only apps — no HackRF hardware; start is a no-op.
+                let (stop_tx, _stop_rx) = tokio::sync::oneshot::channel::<()>();
+                let join = tokio::task::spawn_blocking(|| {});
+                state.current = Some((id, RunningApp { stop: stop_tx, join }));
             }
         }
 
