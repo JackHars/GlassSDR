@@ -4,6 +4,7 @@ pub mod adsb_rx;
 pub mod nfm_audio;
 pub mod pocsag_tx;
 pub mod registry;
+pub mod wfm_rx;
 
 use anyhow::Result;
 use mayhem_ipc::AppMetadata;
