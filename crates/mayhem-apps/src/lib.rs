@@ -1,9 +1,14 @@
 //! Apps live here. Each app implements the App trait and registers with AppRegistry.
 
+pub mod acars_rx;
 pub mod adsb_rx;
+pub mod afsk_rx;
+pub mod ais_rx;
 pub mod am_rx;
+pub mod aprs_rx;
 pub mod cw_rx;
 pub mod nfm_audio;
+pub mod pocsag_rx;
 pub mod pocsag_tx;
 pub mod rds_rx;
 pub mod registry;
