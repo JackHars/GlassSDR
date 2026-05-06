@@ -27,6 +27,14 @@ pub mod ssb_rx;
 pub mod twotone_rx;
 pub mod weather_rx;
 pub mod wfm_rx;
+pub mod apt_rx;
+pub mod dsc_rx;
+pub mod epirb_rx;
+pub mod sonde_rx_ext;
+pub mod dab_rx;
+pub mod hrpt_rx;
+pub mod lrpt_rx;
+pub mod adsb_rx_ext;
 
 use anyhow::Result;
 use mayhem_ipc::AppMetadata;

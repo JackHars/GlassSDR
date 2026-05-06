@@ -34,6 +34,14 @@ pub enum AppId {
     SigGen,
     OokDecoders,
     SubGhzCapture,
+    AptRx,
+    DscRx,
+    EpirbRx,
+    SondeRxExt,
+    DabRx,
+    HrptRx,
+    LrptRx,
+    AdsbRxExt,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -324,6 +332,35 @@ pub struct TpmsSensorEvent {
     pub sensor_id: u32,
     pub pressure_kpa: f32,
     pub temp_c: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct AptLineEvent {
+    pub line_number: u32,
+    pub channel: String,
+    pub pixels_len: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct DscMessageEvent {
+    pub mmsi: u32,
+    pub category: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct EpirbBeaconEvent {
+    pub hex_id: String,
+    pub country_code: u16,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct DabServiceEvent {
+    pub eid: u16,
+    pub ensemble_label: String,
 }
 
 #[cfg(test)]
