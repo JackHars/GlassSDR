@@ -1,5 +1,6 @@
 //! Reusable DSP blocks built on FutureSDR. Hardware- and protocol-agnostic.
 
+pub mod afsk_demod;
 pub mod audio_filter;
 pub mod decimation;
 pub mod demod_am;
