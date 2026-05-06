@@ -3,6 +3,11 @@ import { listApps } from "./ipc/commands";
 import { NfmAudioApp } from "./apps/nfm-audio/NfmAudioApp";
 import { AdsbRxApp } from "./apps/adsb-rx/AdsbRxApp";
 import { PocsagTxApp } from "./apps/pocsag-tx/PocsagTxApp";
+import { WfmRxApp } from "./apps/wfm-rx/WfmRxApp";
+import { AmRxApp } from "./apps/am-rx/AmRxApp";
+import { SsbRxApp } from "./apps/ssb-rx/SsbRxApp";
+import { CwRxApp } from "./apps/cw-rx/CwRxApp";
+import { RdsRxApp } from "./apps/rds-rx/RdsRxApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -45,6 +50,12 @@ export default function App() {
         {activeApp === "nfm_audio" && <NfmAudioApp />}
         {activeApp === "adsb_rx" && <AdsbRxApp />}
         {activeApp === "pocsag_tx" && <PocsagTxApp />}
+        {activeApp === "wfm_rx" && <WfmRxApp />}
+        {activeApp === "am_rx" && <AmRxApp />}
+        {activeApp === "usb_rx" && <SsbRxApp appId="usb_rx" label="USB Receiver" />}
+        {activeApp === "lsb_rx" && <SsbRxApp appId="lsb_rx" label="LSB Receiver" />}
+        {activeApp === "cw_rx" && <CwRxApp />}
+        {activeApp === "rds_rx" && <RdsRxApp />}
       </main>
     </div>
   );
