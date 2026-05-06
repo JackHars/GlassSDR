@@ -16,6 +16,11 @@ pub enum AppId {
     LsbRx,
     CwRx,
     RdsRx,
+    AprsRx,
+    AisRx,
+    AcarsRx,
+    PocsagRx,
+    AfskRx,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -187,6 +192,52 @@ pub struct RdsData {
     pub ps: String,
     pub rt: String,
     pub pty: u8,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct AprsPacketEvent {
+    pub src: String,
+    pub dst: String,
+    pub payload_type: String,
+    pub lat: Option<f64>,
+    pub lon: Option<f64>,
+    pub comment: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct AisShipEvent {
+    pub mmsi: u32,
+    pub name: Option<String>,
+    pub lat: f64,
+    pub lon: f64,
+    pub speed_kt: f64,
+    pub course: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct AcarsMessageEvent {
+    pub reg: String,
+    pub flight: String,
+    pub label: String,
+    pub text: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct PocsagPageEvent {
+    pub ric: u32,
+    pub function: u8,
+    pub message: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct AfskBitEvent {
+    pub hex_dump: String,
+    pub decoded_ascii: String,
 }
 
 #[cfg(test)]
