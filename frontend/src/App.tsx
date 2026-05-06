@@ -78,6 +78,12 @@ import { IqPlayerApp } from "./apps/iq-player/IqPlayerApp";
 import { SdrBenchApp } from "./apps/sdr-bench/SdrBenchApp";
 import { FreqCounterApp } from "./apps/freq-counter/FreqCounterApp";
 import { CtcssDcsApp } from "./apps/ctcss-dcs/CtcssDcsApp";
+import { DmrRxApp } from "./apps/dmr-rx/DmrRxApp";
+import { DpmrRxApp } from "./apps/dpmr-rx/DpmrRxApp";
+import { P25RxApp } from "./apps/p25-rx/P25RxApp";
+import { NxdnRxApp } from "./apps/nxdn-rx/NxdnRxApp";
+import { TetraRxApp } from "./apps/tetra-rx/TetraRxApp";
+import { PagerAggApp } from "./apps/pager-agg/PagerAggApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -265,6 +271,12 @@ export default function App() {
         {activeApp === "sdr_benchmark" && <SdrBenchApp />}
         {activeApp === "freq_counter" && <FreqCounterApp />}
         {activeApp === "ctcss_dcs" && <CtcssDcsApp />}
+        {activeApp === "dmr_rx" && <DmrRxApp />}
+        {activeApp === "dpmr_rx" && <DpmrRxApp />}
+        {activeApp === "p25_rx" && <P25RxApp />}
+        {activeApp === "nxdn_rx" && <NxdnRxApp />}
+        {activeApp === "tetra_rx" && <TetraRxApp />}
+        {activeApp === "pager_aggregator" && <PagerAggApp />}
       </main>
     </div>
   );
