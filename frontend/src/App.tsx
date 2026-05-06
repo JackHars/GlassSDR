@@ -52,6 +52,12 @@ import { Rfm69TxApp } from "./apps/rfm69-tx/Rfm69TxApp";
 import { FlipperTxApp } from "./apps/flipper-tx/FlipperTxApp";
 import { KeyfobTxApp } from "./apps/keyfob-tx/KeyfobTxApp";
 import { LgeTxApp } from "./apps/lge-tx/LgeTxApp";
+import { FreqManagerApp } from "./apps/freq-manager/FreqManagerApp";
+import { FileManagerApp } from "./apps/file-manager/FileManagerApp";
+import { PlaylistApp } from "./apps/playlist/PlaylistApp";
+import { SettingsApp } from "./apps/settings/SettingsApp";
+import { CalculatorApp } from "./apps/calculator/CalculatorApp";
+import { NotepadApp } from "./apps/notepad/NotepadApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -70,8 +76,8 @@ export default function App() {
 
   return (
     <div style={{ display: "flex", height: "100vh", color: "#eee", background: "#111" }}>
-      <nav style={{ width: 200, padding: 8, background: "#1c1c2c" }}>
-        <h3>Apps</h3>
+      <nav style={{ width: 200, padding: 8, background: "#1c1c2c", overflowY: "auto" }}>
+        <h3 style={{ margin: "0 0 8px" }}>Apps</h3>
         {apps.map((a) => (
           <button
             key={a.id}
@@ -87,6 +93,31 @@ export default function App() {
             }}
           >
             {a.name}
+          </button>
+        ))}
+        <h3 style={{ margin: "16px 0 8px", color: "#888", fontSize: 12, textTransform: "uppercase", letterSpacing: 1 }}>Utilities</h3>
+        {([
+          ["freq_manager", "Freq Manager"],
+          ["file_manager", "File Manager"],
+          ["playlist", "Playlist"],
+          ["settings", "Settings"],
+          ["calculator", "Calculator"],
+          ["notepad", "Notepad"],
+        ] as const).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setActiveApp(id as any)}
+            style={{
+              display: "block",
+              width: "100%",
+              padding: 6,
+              marginBottom: 4,
+              background: activeApp === id ? "#444" : "transparent",
+              color: "#eee",
+              border: "1px solid #333",
+            }}
+          >
+            {label}
           </button>
         ))}
       </nav>
@@ -144,6 +175,12 @@ export default function App() {
         {activeApp === "flipper_tx" && <FlipperTxApp />}
         {activeApp === "keyfob_tx" && <KeyfobTxApp />}
         {activeApp === "lge_tx" && <LgeTxApp />}
+        {activeApp === "freq_manager" && <FreqManagerApp />}
+        {activeApp === "file_manager" && <FileManagerApp />}
+        {activeApp === "playlist" && <PlaylistApp />}
+        {activeApp === "settings" && <SettingsApp />}
+        {activeApp === "calculator" && <CalculatorApp />}
+        {activeApp === "notepad" && <NotepadApp />}
       </main>
     </div>
   );
