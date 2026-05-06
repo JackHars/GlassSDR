@@ -3,3 +3,4 @@
 
 pub mod adsb;
 pub mod pocsag;
+pub mod rds;
