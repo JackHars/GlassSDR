@@ -2,8 +2,12 @@
 //! v0.1 supports one app at a time. Switching apps stops the current one cleanly.
 
 use anyhow::Result;
-use mayhem_apps::{adsb_rx::AdsbRxApp, nfm_audio::NfmAudioApp, pocsag_tx::PocsagTxApp, App, AppRegistry, RunningApp};
-use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, PocsagTxStatus, SpectrumFrame};
+use mayhem_apps::{
+    adsb_rx::AdsbRxApp, am_rx::AmRxApp, cw_rx::CwRxApp, nfm_audio::NfmAudioApp,
+    pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, ssb_rx::SsbRxApp, wfm_rx::WfmRxApp,
+    App, AppRegistry, RunningApp,
+};
+use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, PocsagTxStatus, RdsData, SpectrumFrame};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
@@ -35,6 +39,30 @@ impl AppRunner {
         });
         registry.register(PocsagTxApp::metadata(), || {
             let (app, _) = PocsagTxApp::new();
+            app
+        });
+        registry.register(WfmRxApp::metadata(), || {
+            let (app, _, _) = WfmRxApp::new();
+            app
+        });
+        registry.register(AmRxApp::metadata(), || {
+            let (app, _, _) = AmRxApp::new();
+            app
+        });
+        registry.register(SsbRxApp::metadata_usb(), || {
+            let (app, _, _) = SsbRxApp::new_usb();
+            app
+        });
+        registry.register(SsbRxApp::metadata_lsb(), || {
+            let (app, _, _) = SsbRxApp::new_lsb();
+            app
+        });
+        registry.register(CwRxApp::metadata(), || {
+            let (app, _, _) = CwRxApp::new();
+            app
+        });
+        registry.register(RdsRxApp::metadata(), || {
+            let (app, _, _, _) = RdsRxApp::new();
             app
         });
         Self {
@@ -85,6 +113,43 @@ impl AppRunner {
                 spawn_pocsag_status_pump(handle.clone(), status_rx);
                 state.current = Some((id, running));
             }
+            AppId::WfmRx => {
+                let (app, audio_rx, spec_rx) = WfmRxApp::new();
+                let running = app.start(params)?;
+                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::AmRx => {
+                let (app, audio_rx, spec_rx) = AmRxApp::new();
+                let running = app.start(params)?;
+                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::UsbRx => {
+                let (app, audio_rx, spec_rx) = SsbRxApp::new_usb();
+                let running = app.start(params)?;
+                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::LsbRx => {
+                let (app, audio_rx, spec_rx) = SsbRxApp::new_lsb();
+                let running = app.start(params)?;
+                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::CwRx => {
+                let (app, audio_rx, spec_rx) = CwRxApp::new();
+                let running = app.start(params)?;
+                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::RdsRx => {
+                let (app, audio_rx, spec_rx, rds_rx) = RdsRxApp::new();
+                let running = app.start(params)?;
+                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                spawn_rds_pump(handle.clone(), rds_rx);
+                state.current = Some((id, running));
+            }
         }
 
         let _ = handle.emit("app_status", AppStatus::Running { app: id });
@@ -102,6 +167,17 @@ impl AppRunner {
         let _ = handle.emit("app_status", AppStatus::Idle);
         Ok(())
     }
+}
+
+fn spawn_rds_pump(
+    handle: AppHandle,
+    mut rds_rx: mpsc::UnboundedReceiver<RdsData>,
+) {
+    tokio::spawn(async move {
+        while let Some(data) = rds_rx.recv().await {
+            let _ = handle.emit("rds_data", &data);
+        }
+    });
 }
 
 fn spawn_pocsag_status_pump(
