@@ -8,6 +8,11 @@ import { AmRxApp } from "./apps/am-rx/AmRxApp";
 import { SsbRxApp } from "./apps/ssb-rx/SsbRxApp";
 import { CwRxApp } from "./apps/cw-rx/CwRxApp";
 import { RdsRxApp } from "./apps/rds-rx/RdsRxApp";
+import { AprsRxApp } from "./apps/aprs-rx/AprsRxApp";
+import { AisRxApp } from "./apps/ais-rx/AisRxApp";
+import { AcarsRxApp } from "./apps/acars-rx/AcarsRxApp";
+import { PocsagRxApp } from "./apps/pocsag-rx/PocsagRxApp";
+import { AfskRxApp } from "./apps/afsk-rx/AfskRxApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -56,6 +61,11 @@ export default function App() {
         {activeApp === "lsb_rx" && <SsbRxApp appId="lsb_rx" label="LSB Receiver" />}
         {activeApp === "cw_rx" && <CwRxApp />}
         {activeApp === "rds_rx" && <RdsRxApp />}
+        {activeApp === "aprs_rx" && <AprsRxApp />}
+        {activeApp === "ais_rx" && <AisRxApp />}
+        {activeApp === "acars_rx" && <AcarsRxApp />}
+        {activeApp === "pocsag_rx" && <PocsagRxApp />}
+        {activeApp === "afsk_rx" && <AfskRxApp />}
       </main>
     </div>
   );
