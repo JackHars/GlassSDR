@@ -11,4 +11,5 @@ pub mod flex;
 pub mod pocsag;
 pub mod rds;
 pub mod sonde;
+pub mod ook;
 pub mod weather;
