@@ -9,6 +9,7 @@ use ts_rs::TS;
 pub enum AppId {
     NfmAudio,
     AdsbRx,
+    PocsagTx,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -108,6 +109,39 @@ pub struct AircraftState {
     pub last_seen_ms: f64,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct PocsagTxParams {
+    pub ric: u32,
+    pub function: u8,
+    pub message: String,
+    pub message_type: PocsagMessageType,
+    pub baud_rate: u16,
+    pub center_hz: f64,
+    pub vga_gain_db: u32,
+    pub amp_enabled: bool,
+}
+
+#[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+#[serde(rename_all = "snake_case")]
+pub enum PocsagMessageType {
+    Numeric,
+    Alphanumeric,
+    ToneOnly,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+#[serde(tag = "kind", rename_all = "snake_case")]
+pub enum PocsagTxStatus {
+    Idle,
+    Armed,
+    Transmitting { progress_pct: u8 },
+    Complete,
+    Error { message: String },
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -124,6 +158,32 @@ mod tests {
         let back: AppMetadata = serde_json::from_str(&s).unwrap();
         assert_eq!(back.name, "NFM Audio");
         assert!(matches!(back.id, AppId::NfmAudio));
+    }
+
+    #[test]
+    fn pocsag_tx_params_round_trip() {
+        let p = PocsagTxParams {
+            ric: 1234567,
+            function: 0,
+            message: "TEST".to_string(),
+            message_type: PocsagMessageType::Alphanumeric,
+            baud_rate: 1200,
+            center_hz: 439_987_500.0,
+            vga_gain_db: 30,
+            amp_enabled: false,
+        };
+        let s = serde_json::to_string(&p).unwrap();
+        let back: PocsagTxParams = serde_json::from_str(&s).unwrap();
+        assert_eq!(back.ric, 1234567);
+        assert_eq!(back.message_type, PocsagMessageType::Alphanumeric);
+    }
+
+    #[test]
+    fn pocsag_tx_status_tags() {
+        let s = serde_json::to_string(&PocsagTxStatus::Complete).unwrap();
+        assert_eq!(s, r#"{"kind":"complete"}"#);
+        let s = serde_json::to_string(&PocsagTxStatus::Transmitting { progress_pct: 50 }).unwrap();
+        assert!(s.contains("\"progress_pct\":50"));
     }
 
     #[test]
