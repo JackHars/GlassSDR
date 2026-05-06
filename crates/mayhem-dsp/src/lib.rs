@@ -21,3 +21,6 @@ pub mod scanner_engine;
 pub mod sig_gen;
 pub mod tone_detect;
 pub mod bpsk_demod;
+pub mod afsk_mod;
+pub mod cw_keyer;
+pub mod fm_mod;
