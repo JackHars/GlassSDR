@@ -60,6 +60,12 @@ pub enum AppId {
     FlipperTx,
     KeyfobTx,
     LgeTx,
+    FreqManager,
+    FileManager,
+    Playlist,
+    Settings,
+    Calculator,
+    Notepad,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]

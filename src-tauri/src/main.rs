@@ -23,6 +23,9 @@ fn main() {
             commands::accept_tx_legal,
             commands::arm_tx,
             commands::disarm_tx,
+            commands::list_directory,
+            commands::read_text_file,
+            commands::write_text_file,
         ])
         .setup(|app| {
             app.get_webview_window("main")

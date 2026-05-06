@@ -71,3 +71,42 @@ pub async fn disarm_tx(
     tx_state.armed.store(false, Ordering::Release);
     Ok(())
 }
+
+#[derive(Debug, Clone, serde::Serialize)]
+pub struct FileEntry {
+    pub name: String,
+    pub path: String,
+    pub is_dir: bool,
+    pub size_bytes: u64,
+}
+
+#[tauri::command]
+pub async fn list_directory(path: String) -> Result<Vec<FileEntry>, String> {
+    let dir = std::path::PathBuf::from(&path);
+    if !dir.is_dir() { return Err(format!("Not a directory: {path}")); }
+    let mut entries = Vec::new();
+    for entry in std::fs::read_dir(&dir).map_err(|e| e.to_string())?.flatten() {
+        let meta = entry.metadata().map_err(|e| e.to_string())?;
+        entries.push(FileEntry {
+            name: entry.file_name().to_string_lossy().to_string(),
+            path: entry.path().to_string_lossy().to_string(),
+            is_dir: meta.is_dir(),
+            size_bytes: meta.len(),
+        });
+    }
+    entries.sort_by(|a, b| a.name.cmp(&b.name));
+    Ok(entries)
+}
+
+#[tauri::command]
+pub async fn read_text_file(path: String) -> Result<String, String> {
+    std::fs::read_to_string(&path).map_err(|e| e.to_string())
+}
+
+#[tauri::command]
+pub async fn write_text_file(path: String, content: String) -> Result<(), String> {
+    if let Some(parent) = std::path::Path::new(&path).parent() {
+        std::fs::create_dir_all(parent).map_err(|e| e.to_string())?;
+    }
+    std::fs::write(&path, &content).map_err(|e| e.to_string())
+}
