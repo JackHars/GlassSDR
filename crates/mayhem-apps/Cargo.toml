@@ -6,9 +6,11 @@ edition.workspace = true
 [dependencies]
 anyhow.workspace = true
 async-io = "2"
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
 futuresdr.workspace = true
 mayhem-dsp = { path = "../mayhem-dsp" }
 mayhem-ipc = { path = "../mayhem-ipc" }
+mayhem-protocols = { path = "../mayhem-protocols" }
 mayhem-radio = { path = "../mayhem-radio" }
 num-complex.workspace = true
 rustfft = "6"

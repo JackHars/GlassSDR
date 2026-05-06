@@ -2402,9 +2402,11 @@ version = "0.0.1"
 dependencies = [
  "anyhow",
  "async-io 2.6.0",
+ "chrono",
  "futuresdr",
  "mayhem-dsp",
  "mayhem-ipc",
+ "mayhem-protocols",
  "mayhem-radio",
  "num-complex",
  "rustfft",
@@ -2450,6 +2452,14 @@ dependencies = [
  "tokio",
  "tracing",
  "tracing-subscriber",
+]
+
+[[package]]
+name = "mayhem-protocols"
+version = "0.0.1"
+dependencies = [
+ "hex",
+ "thiserror 1.0.69",
 ]
 
 [[package]]

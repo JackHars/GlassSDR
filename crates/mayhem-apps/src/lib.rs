@@ -1,5 +1,6 @@
 //! Apps live here. Each app implements the App trait and registers with AppRegistry.
 
+pub mod adsb_rx;
 pub mod nfm_audio;
 pub mod registry;
 
