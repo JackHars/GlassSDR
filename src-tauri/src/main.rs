@@ -30,7 +30,7 @@ fn main() {
         .setup(|app| {
             app.get_webview_window("main")
                 .expect("main window")
-                .set_title("Mayhem PC")
+                .set_title("GlassSDR")
                 .ok();
             Ok(())
         })

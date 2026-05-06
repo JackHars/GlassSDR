@@ -1,283 +1,206 @@
-import { useEffect } from "react";
+import { useState, useEffect, lazy, Suspense } from "react";
 import { listApps } from "./ipc/commands";
-import { NfmAudioApp } from "./apps/nfm-audio/NfmAudioApp";
-import { AdsbRxApp } from "./apps/adsb-rx/AdsbRxApp";
-import { PocsagTxApp } from "./apps/pocsag-tx/PocsagTxApp";
-import { WfmRxApp } from "./apps/wfm-rx/WfmRxApp";
-import { AmRxApp } from "./apps/am-rx/AmRxApp";
-import { SsbRxApp } from "./apps/ssb-rx/SsbRxApp";
-import { CwRxApp } from "./apps/cw-rx/CwRxApp";
-import { RdsRxApp } from "./apps/rds-rx/RdsRxApp";
-import { AprsRxApp } from "./apps/aprs-rx/AprsRxApp";
-import { AisRxApp } from "./apps/ais-rx/AisRxApp";
-import { AcarsRxApp } from "./apps/acars-rx/AcarsRxApp";
-import { PocsagRxApp } from "./apps/pocsag-rx/PocsagRxApp";
-import { AfskRxApp } from "./apps/afsk-rx/AfskRxApp";
-import { ErtRxApp } from "./apps/ert-rx/ErtRxApp";
-import { WeatherRxApp } from "./apps/weather-rx/WeatherRxApp";
-import { SondeRxApp } from "./apps/sonde-rx/SondeRxApp";
-import { TwoToneRxApp } from "./apps/twotone-rx/TwoToneRxApp";
-import { FlexRxApp } from "./apps/flex-rx/FlexRxApp";
-import { TpmsRxApp } from "./apps/tpms-rx/TpmsRxApp";
-import { OokAnalyzerApp } from "./apps/ook-analyzer/OokAnalyzerApp";
-import { ScannerApp } from "./apps/scanner/ScannerApp";
-import { ReconApp } from "./apps/recon/ReconApp";
-import { LookingGlassApp } from "./apps/looking-glass/LookingGlassApp";
-import { SigGenApp } from "./apps/sig-gen/SigGenApp";
-import { OokDecodersApp } from "./apps/ook-decoders/OokDecodersApp";
-import { SubGhzCaptureApp } from "./apps/subghz-capture/SubGhzCaptureApp";
-import { AptRxApp } from "./apps/apt-rx/AptRxApp";
-import { DscRxApp } from "./apps/dsc-rx/DscRxApp";
-import { EpirbRxApp } from "./apps/epirb-rx/EpirbRxApp";
-import { SondeRxExtApp } from "./apps/sonde-rx-ext/SondeRxExtApp";
-import { DabRxApp } from "./apps/dab-rx/DabRxApp";
-import { HrptRxApp } from "./apps/hrpt-rx/HrptRxApp";
-import { LrptRxApp } from "./apps/lrpt-rx/LrptRxApp";
-import { AdsbExtApp } from "./apps/adsb-ext/AdsbExtApp";
-import { RttyTxApp } from "./apps/rtty-tx/RttyTxApp";
-import { SstvTxApp } from "./apps/sstv-tx/SstvTxApp";
-import { AfskTxApp } from "./apps/afsk-tx/AfskTxApp";
-import { MorseTxApp } from "./apps/morse-tx/MorseTxApp";
-import { SoundboardTxApp } from "./apps/soundboard-tx/SoundboardTxApp";
-import { FlexTxApp } from "./apps/flex-tx/FlexTxApp";
-import { AdsbTxApp } from "./apps/adsb-tx/AdsbTxApp";
-import { GpsSimApp } from "./apps/gps-sim/GpsSimApp";
-import { Mdc1200TxApp } from "./apps/mdc1200-tx/Mdc1200TxApp";
-import { ReplayTxApp } from "./apps/replay-tx/ReplayTxApp";
-import { OokEditorTxApp } from "./apps/ook-editor-tx/OokEditorTxApp";
-import { FreqHopperApp } from "./apps/freq-hopper/FreqHopperApp";
-import { BtleTxApp } from "./apps/btle-tx/BtleTxApp";
-import { Nrf24TxApp } from "./apps/nrf24-tx/Nrf24TxApp";
-import { Rfm69TxApp } from "./apps/rfm69-tx/Rfm69TxApp";
-import { FlipperTxApp } from "./apps/flipper-tx/FlipperTxApp";
-import { KeyfobTxApp } from "./apps/keyfob-tx/KeyfobTxApp";
-import { LgeTxApp } from "./apps/lge-tx/LgeTxApp";
-import { FreqManagerApp } from "./apps/freq-manager/FreqManagerApp";
-import { FileManagerApp } from "./apps/file-manager/FileManagerApp";
-import { PlaylistApp } from "./apps/playlist/PlaylistApp";
-import { SettingsApp } from "./apps/settings/SettingsApp";
-import { CalculatorApp } from "./apps/calculator/CalculatorApp";
-import { NotepadApp } from "./apps/notepad/NotepadApp";
-import { SnakeApp } from "./apps/snake/SnakeApp";
-import { DoomApp } from "./apps/doom/DoomApp";
-import { MorseTrainerApp } from "./apps/morse-trainer/MorseTrainerApp";
-import { BandPlanApp } from "./apps/band-plan/BandPlanApp";
-import { AntennaCalcApp } from "./apps/antenna-calc/AntennaCalcApp";
-import { SignalMeterApp } from "./apps/signal-meter/SignalMeterApp";
-import { BtleRxApp } from "./apps/btle-rx/BtleRxApp";
-import { BtleCommApp } from "./apps/btle-comm/BtleCommApp";
-import { Nrf24RxApp } from "./apps/nrf24-rx/Nrf24RxApp";
-import { EncoderSuiteApp } from "./apps/encoder-suite/EncoderSuiteApp";
-import { DecoderSuiteApp } from "./apps/decoder-suite/DecoderSuiteApp";
-import { CaptureManagerApp } from "./apps/capture-manager/CaptureManagerApp";
-import { SpectrumPainterApp } from "./apps/spectrum-painter/SpectrumPainterApp";
-import { RfCharApp } from "./apps/rf-char/RfCharApp";
-import { ProtocolAnalyzerApp } from "./apps/protocol-analyzer/ProtocolAnalyzerApp";
-import { RemoteControlApp } from "./apps/remote-control/RemoteControlApp";
-import { IqPlayerApp } from "./apps/iq-player/IqPlayerApp";
-import { SdrBenchApp } from "./apps/sdr-bench/SdrBenchApp";
-import { FreqCounterApp } from "./apps/freq-counter/FreqCounterApp";
-import { CtcssDcsApp } from "./apps/ctcss-dcs/CtcssDcsApp";
-import { DmrRxApp } from "./apps/dmr-rx/DmrRxApp";
-import { DpmrRxApp } from "./apps/dpmr-rx/DpmrRxApp";
-import { P25RxApp } from "./apps/p25-rx/P25RxApp";
-import { NxdnRxApp } from "./apps/nxdn-rx/NxdnRxApp";
-import { TetraRxApp } from "./apps/tetra-rx/TetraRxApp";
-import { PagerAggApp } from "./apps/pager-agg/PagerAggApp";
 import { useStore } from "./store";
+import { AppGrid } from "./components/shell/AppGrid";
+import "./styles/glass.css";
+
+// Lazy-load all app components for fast initial render
+const NfmAudioApp = lazy(() => import("./apps/nfm-audio/NfmAudioApp").then(m => ({ default: m.NfmAudioApp })));
+const AdsbRxApp = lazy(() => import("./apps/adsb-rx/AdsbRxApp").then(m => ({ default: m.AdsbRxApp })));
+const PocsagTxApp = lazy(() => import("./apps/pocsag-tx/PocsagTxApp").then(m => ({ default: m.PocsagTxApp })));
+const WfmRxApp = lazy(() => import("./apps/wfm-rx/WfmRxApp").then(m => ({ default: m.WfmRxApp })));
+const AmRxApp = lazy(() => import("./apps/am-rx/AmRxApp").then(m => ({ default: m.AmRxApp })));
+const SsbRxApp = lazy(() => import("./apps/ssb-rx/SsbRxApp").then(m => ({ default: m.SsbRxApp })));
+const CwRxApp = lazy(() => import("./apps/cw-rx/CwRxApp").then(m => ({ default: m.CwRxApp })));
+const RdsRxApp = lazy(() => import("./apps/rds-rx/RdsRxApp").then(m => ({ default: m.RdsRxApp })));
+const AprsRxApp = lazy(() => import("./apps/aprs-rx/AprsRxApp").then(m => ({ default: m.AprsRxApp })));
+const AisRxApp = lazy(() => import("./apps/ais-rx/AisRxApp").then(m => ({ default: m.AisRxApp })));
+const AcarsRxApp = lazy(() => import("./apps/acars-rx/AcarsRxApp").then(m => ({ default: m.AcarsRxApp })));
+const PocsagRxApp = lazy(() => import("./apps/pocsag-rx/PocsagRxApp").then(m => ({ default: m.PocsagRxApp })));
+const AfskRxApp = lazy(() => import("./apps/afsk-rx/AfskRxApp").then(m => ({ default: m.AfskRxApp })));
+const ErtRxApp = lazy(() => import("./apps/ert-rx/ErtRxApp").then(m => ({ default: m.ErtRxApp })));
+const WeatherRxApp = lazy(() => import("./apps/weather-rx/WeatherRxApp").then(m => ({ default: m.WeatherRxApp })));
+const SondeRxApp = lazy(() => import("./apps/sonde-rx/SondeRxApp").then(m => ({ default: m.SondeRxApp })));
+const TwoToneRxApp = lazy(() => import("./apps/twotone-rx/TwoToneRxApp").then(m => ({ default: m.TwoToneRxApp })));
+const FlexRxApp = lazy(() => import("./apps/flex-rx/FlexRxApp").then(m => ({ default: m.FlexRxApp })));
+const TpmsRxApp = lazy(() => import("./apps/tpms-rx/TpmsRxApp").then(m => ({ default: m.TpmsRxApp })));
+const OokAnalyzerApp = lazy(() => import("./apps/ook-analyzer/OokAnalyzerApp").then(m => ({ default: m.OokAnalyzerApp })));
+const ScannerApp = lazy(() => import("./apps/scanner/ScannerApp").then(m => ({ default: m.ScannerApp })));
+const ReconApp = lazy(() => import("./apps/recon/ReconApp").then(m => ({ default: m.ReconApp })));
+const LookingGlassApp = lazy(() => import("./apps/looking-glass/LookingGlassApp").then(m => ({ default: m.LookingGlassApp })));
+const SigGenApp = lazy(() => import("./apps/sig-gen/SigGenApp").then(m => ({ default: m.SigGenApp })));
+const OokDecodersApp = lazy(() => import("./apps/ook-decoders/OokDecodersApp").then(m => ({ default: m.OokDecodersApp })));
+const SubGhzCaptureApp = lazy(() => import("./apps/subghz-capture/SubGhzCaptureApp").then(m => ({ default: m.SubGhzCaptureApp })));
+const AptRxApp = lazy(() => import("./apps/apt-rx/AptRxApp").then(m => ({ default: m.AptRxApp })));
+const DscRxApp = lazy(() => import("./apps/dsc-rx/DscRxApp").then(m => ({ default: m.DscRxApp })));
+const EpirbRxApp = lazy(() => import("./apps/epirb-rx/EpirbRxApp").then(m => ({ default: m.EpirbRxApp })));
+const SondeRxExtApp = lazy(() => import("./apps/sonde-rx-ext/SondeRxExtApp").then(m => ({ default: m.SondeRxExtApp })));
+const DabRxApp = lazy(() => import("./apps/dab-rx/DabRxApp").then(m => ({ default: m.DabRxApp })));
+const HrptRxApp = lazy(() => import("./apps/hrpt-rx/HrptRxApp").then(m => ({ default: m.HrptRxApp })));
+const LrptRxApp = lazy(() => import("./apps/lrpt-rx/LrptRxApp").then(m => ({ default: m.LrptRxApp })));
+const AdsbExtApp = lazy(() => import("./apps/adsb-ext/AdsbExtApp").then(m => ({ default: m.AdsbExtApp })));
+const RttyTxApp = lazy(() => import("./apps/rtty-tx/RttyTxApp").then(m => ({ default: m.RttyTxApp })));
+const SstvTxApp = lazy(() => import("./apps/sstv-tx/SstvTxApp").then(m => ({ default: m.SstvTxApp })));
+const AfskTxApp = lazy(() => import("./apps/afsk-tx/AfskTxApp").then(m => ({ default: m.AfskTxApp })));
+const MorseTxApp = lazy(() => import("./apps/morse-tx/MorseTxApp").then(m => ({ default: m.MorseTxApp })));
+const SoundboardTxApp = lazy(() => import("./apps/soundboard-tx/SoundboardTxApp").then(m => ({ default: m.SoundboardTxApp })));
+const FlexTxApp = lazy(() => import("./apps/flex-tx/FlexTxApp").then(m => ({ default: m.FlexTxApp })));
+const AdsbTxApp = lazy(() => import("./apps/adsb-tx/AdsbTxApp").then(m => ({ default: m.AdsbTxApp })));
+const GpsSimApp = lazy(() => import("./apps/gps-sim/GpsSimApp").then(m => ({ default: m.GpsSimApp })));
+const Mdc1200TxApp = lazy(() => import("./apps/mdc1200-tx/Mdc1200TxApp").then(m => ({ default: m.Mdc1200TxApp })));
+const ReplayTxApp = lazy(() => import("./apps/replay-tx/ReplayTxApp").then(m => ({ default: m.ReplayTxApp })));
+const OokEditorTxApp = lazy(() => import("./apps/ook-editor-tx/OokEditorTxApp").then(m => ({ default: m.OokEditorTxApp })));
+const FreqHopperApp = lazy(() => import("./apps/freq-hopper/FreqHopperApp").then(m => ({ default: m.FreqHopperApp })));
+const BtleTxApp = lazy(() => import("./apps/btle-tx/BtleTxApp").then(m => ({ default: m.BtleTxApp })));
+const Nrf24TxApp = lazy(() => import("./apps/nrf24-tx/Nrf24TxApp").then(m => ({ default: m.Nrf24TxApp })));
+const Rfm69TxApp = lazy(() => import("./apps/rfm69-tx/Rfm69TxApp").then(m => ({ default: m.Rfm69TxApp })));
+const FlipperTxApp = lazy(() => import("./apps/flipper-tx/FlipperTxApp").then(m => ({ default: m.FlipperTxApp })));
+const KeyfobTxApp = lazy(() => import("./apps/keyfob-tx/KeyfobTxApp").then(m => ({ default: m.KeyfobTxApp })));
+const LgeTxApp = lazy(() => import("./apps/lge-tx/LgeTxApp").then(m => ({ default: m.LgeTxApp })));
+const FreqManagerApp = lazy(() => import("./apps/freq-manager/FreqManagerApp").then(m => ({ default: m.FreqManagerApp })));
+const FileManagerApp = lazy(() => import("./apps/file-manager/FileManagerApp").then(m => ({ default: m.FileManagerApp })));
+const PlaylistApp = lazy(() => import("./apps/playlist/PlaylistApp").then(m => ({ default: m.PlaylistApp })));
+const SettingsApp = lazy(() => import("./apps/settings/SettingsApp").then(m => ({ default: m.SettingsApp })));
+const CalculatorApp = lazy(() => import("./apps/calculator/CalculatorApp").then(m => ({ default: m.CalculatorApp })));
+const NotepadApp = lazy(() => import("./apps/notepad/NotepadApp").then(m => ({ default: m.NotepadApp })));
+const SnakeApp = lazy(() => import("./apps/snake/SnakeApp").then(m => ({ default: m.SnakeApp })));
+const DoomApp = lazy(() => import("./apps/doom/DoomApp").then(m => ({ default: m.DoomApp })));
+const MorseTrainerApp = lazy(() => import("./apps/morse-trainer/MorseTrainerApp").then(m => ({ default: m.MorseTrainerApp })));
+const BandPlanApp = lazy(() => import("./apps/band-plan/BandPlanApp").then(m => ({ default: m.BandPlanApp })));
+const AntennaCalcApp = lazy(() => import("./apps/antenna-calc/AntennaCalcApp").then(m => ({ default: m.AntennaCalcApp })));
+const SignalMeterApp = lazy(() => import("./apps/signal-meter/SignalMeterApp").then(m => ({ default: m.SignalMeterApp })));
+const BtleRxApp = lazy(() => import("./apps/btle-rx/BtleRxApp").then(m => ({ default: m.BtleRxApp })));
+const BtleCommApp = lazy(() => import("./apps/btle-comm/BtleCommApp").then(m => ({ default: m.BtleCommApp })));
+const Nrf24RxApp = lazy(() => import("./apps/nrf24-rx/Nrf24RxApp").then(m => ({ default: m.Nrf24RxApp })));
+const EncoderSuiteApp = lazy(() => import("./apps/encoder-suite/EncoderSuiteApp").then(m => ({ default: m.EncoderSuiteApp })));
+const DecoderSuiteApp = lazy(() => import("./apps/decoder-suite/DecoderSuiteApp").then(m => ({ default: m.DecoderSuiteApp })));
+const CaptureManagerApp = lazy(() => import("./apps/capture-manager/CaptureManagerApp").then(m => ({ default: m.CaptureManagerApp })));
+const SpectrumPainterApp = lazy(() => import("./apps/spectrum-painter/SpectrumPainterApp").then(m => ({ default: m.SpectrumPainterApp })));
+const RfCharApp = lazy(() => import("./apps/rf-char/RfCharApp").then(m => ({ default: m.RfCharApp })));
+const ProtocolAnalyzerApp = lazy(() => import("./apps/protocol-analyzer/ProtocolAnalyzerApp").then(m => ({ default: m.ProtocolAnalyzerApp })));
+const RemoteControlApp = lazy(() => import("./apps/remote-control/RemoteControlApp").then(m => ({ default: m.RemoteControlApp })));
+const IqPlayerApp = lazy(() => import("./apps/iq-player/IqPlayerApp").then(m => ({ default: m.IqPlayerApp })));
+const SdrBenchApp = lazy(() => import("./apps/sdr-bench/SdrBenchApp").then(m => ({ default: m.SdrBenchApp })));
+const FreqCounterApp = lazy(() => import("./apps/freq-counter/FreqCounterApp").then(m => ({ default: m.FreqCounterApp })));
+const CtcssDcsApp = lazy(() => import("./apps/ctcss-dcs/CtcssDcsApp").then(m => ({ default: m.CtcssDcsApp })));
+const DmrRxApp = lazy(() => import("./apps/dmr-rx/DmrRxApp").then(m => ({ default: m.DmrRxApp })));
+const DpmrRxApp = lazy(() => import("./apps/dpmr-rx/DpmrRxApp").then(m => ({ default: m.DpmrRxApp })));
+const P25RxApp = lazy(() => import("./apps/p25-rx/P25RxApp").then(m => ({ default: m.P25RxApp })));
+const NxdnRxApp = lazy(() => import("./apps/nxdn-rx/NxdnRxApp").then(m => ({ default: m.NxdnRxApp })));
+const TetraRxApp = lazy(() => import("./apps/tetra-rx/TetraRxApp").then(m => ({ default: m.TetraRxApp })));
+const PagerAggApp = lazy(() => import("./apps/pager-agg/PagerAggApp").then(m => ({ default: m.PagerAggApp })));
+
+// Map of app ID → component
+const APP_MAP: Record<string, React.LazyExoticComponent<React.ComponentType<any>>> = {
+  nfm_audio: NfmAudioApp, adsb_rx: AdsbRxApp, pocsag_tx: PocsagTxApp,
+  wfm_rx: WfmRxApp, am_rx: AmRxApp, cw_rx: CwRxApp, rds_rx: RdsRxApp,
+  aprs_rx: AprsRxApp, ais_rx: AisRxApp, acars_rx: AcarsRxApp,
+  pocsag_rx: PocsagRxApp, afsk_rx: AfskRxApp, ert_rx: ErtRxApp,
+  weather_rx: WeatherRxApp, sonde_rx: SondeRxApp, two_tone_rx: TwoToneRxApp,
+  flex_rx: FlexRxApp, tpms_rx: TpmsRxApp, ook_analyzer: OokAnalyzerApp,
+  scanner: ScannerApp, recon: ReconApp, looking_glass: LookingGlassApp,
+  sig_gen: SigGenApp, ook_decoders: OokDecodersApp, sub_ghz_capture: SubGhzCaptureApp,
+  apt_rx: AptRxApp, dsc_rx: DscRxApp, epirb_rx: EpirbRxApp,
+  sonde_rx_ext: SondeRxExtApp, dab_rx: DabRxApp, hrpt_rx: HrptRxApp,
+  lrpt_rx: LrptRxApp, adsb_rx_ext: AdsbExtApp, rtty_tx: RttyTxApp,
+  sstv_tx: SstvTxApp, afsk_tx: AfskTxApp, morse_tx: MorseTxApp,
+  soundboard_tx: SoundboardTxApp, flex_tx: FlexTxApp, adsb_tx: AdsbTxApp,
+  gps_sim: GpsSimApp, mdc1200_tx: Mdc1200TxApp, replay_tx: ReplayTxApp,
+  ook_editor_tx: OokEditorTxApp, freq_hopper: FreqHopperApp, btle_tx: BtleTxApp,
+  nrf24_tx: Nrf24TxApp, rfm69_tx: Rfm69TxApp, flipper_tx: FlipperTxApp,
+  keyfob_tx: KeyfobTxApp, lge_tx: LgeTxApp, freq_manager: FreqManagerApp,
+  file_manager: FileManagerApp, playlist: PlaylistApp, settings: SettingsApp,
+  calculator: CalculatorApp, notepad: NotepadApp, snake: SnakeApp, doom: DoomApp,
+  morse_trainer: MorseTrainerApp, band_plan: BandPlanApp, antenna_calc: AntennaCalcApp,
+  signal_meter: SignalMeterApp, btle_rx: BtleRxApp, btle_comm: BtleCommApp,
+  nrf24_rx: Nrf24RxApp, encoder_suite: EncoderSuiteApp, decoder_suite: DecoderSuiteApp,
+  capture_manager: CaptureManagerApp, spectrum_painter: SpectrumPainterApp,
+  rf_characterize: RfCharApp, protocol_analyzer: ProtocolAnalyzerApp,
+  remote_control: RemoteControlApp, iq_player: IqPlayerApp, sdr_benchmark: SdrBenchApp,
+  freq_counter: FreqCounterApp, ctcss_dcs: CtcssDcsApp, dmr_rx: DmrRxApp,
+  dpmr_rx: DpmrRxApp, p25_rx: P25RxApp, nxdn_rx: NxdnRxApp, tetra_rx: TetraRxApp,
+  pager_aggregator: PagerAggApp,
+};
+
+// Special cases that need props
+const SPECIAL_APPS: Record<string, (props: any) => JSX.Element> = {
+  usb_rx: () => <SsbRxApp appId="usb_rx" label="USB Receiver" />,
+  lsb_rx: () => <SsbRxApp appId="lsb_rx" label="LSB Receiver" />,
+};
+
+function LoadingSpinner() {
+  return (
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-tertiary)" }}>
+      <div style={{ textAlign: "center" }}>
+        <div style={{ fontSize: 32, marginBottom: 8, animation: "spin 1s linear infinite" }}>⚡</div>
+        <div style={{ fontSize: 13 }}>Loading...</div>
+      </div>
+    </div>
+  );
+}
 
 export default function App() {
-  const apps = useStore((s) => s.apps);
   const setApps = useStore((s) => s.setApps);
-  const activeApp = useStore((s) => s.activeApp);
-  const setActiveApp = useStore((s) => s.setActiveApp);
+  const [activeApp, setActiveApp] = useState<string | null>(null);
 
   useEffect(() => {
-    listApps().then((a) => {
-      setApps(a);
-      if (a.length > 0 && activeApp === null) setActiveApp(a[0].id);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [setApps, setActiveApp]);
+    listApps().then(setApps);
+  }, [setApps]);
+
+  const handleBack = () => setActiveApp(null);
+
+  // Render active app or home grid
+  const renderApp = () => {
+    if (!activeApp) return null;
+
+    // Special cases with props
+    if (SPECIAL_APPS[activeApp]) {
+      return (
+        <Suspense fallback={<LoadingSpinner />}>
+          {SPECIAL_APPS[activeApp]({})}
+        </Suspense>
+      );
+    }
+
+    const Component = APP_MAP[activeApp];
+    if (!Component) return <div style={{ padding: 20, color: "var(--text-tertiary)" }}>App not found: {activeApp}</div>;
+
+    return (
+      <Suspense fallback={<LoadingSpinner />}>
+        <Component />
+      </Suspense>
+    );
+  };
 
   return (
-    <div style={{ display: "flex", height: "100vh", color: "#eee", background: "#111" }}>
-      <nav style={{ width: 200, padding: 8, background: "#1c1c2c", overflowY: "auto" }}>
-        <h3 style={{ margin: "0 0 8px" }}>Apps</h3>
-        {apps.map((a) => (
-          <button
-            key={a.id}
-            onClick={() => setActiveApp(a.id)}
-            style={{
-              display: "block",
-              width: "100%",
-              padding: 6,
-              marginBottom: 4,
-              background: a.id === activeApp ? "#444" : "transparent",
-              color: "#eee",
-              border: "1px solid #333",
-            }}
-          >
-            {a.name}
-          </button>
-        ))}
-        <h3 style={{ margin: "16px 0 8px", color: "#888", fontSize: 12, textTransform: "uppercase", letterSpacing: 1 }}>RF Tools</h3>
-        {([
-          ["signal_meter", "Signal Meter"],
-          ["band_plan", "Band Plan"],
-          ["antenna_calc", "Antenna Calc"],
-        ] as const).map(([id, label]) => (
-          <button
-            key={id}
-            onClick={() => setActiveApp(id as any)}
-            style={{
-              display: "block",
-              width: "100%",
-              padding: 6,
-              marginBottom: 4,
-              background: activeApp === id ? "#444" : "transparent",
-              color: "#eee",
-              border: "1px solid #333",
-            }}
-          >
-            {label}
-          </button>
-        ))}
-        <h3 style={{ margin: "16px 0 8px", color: "#888", fontSize: 12, textTransform: "uppercase", letterSpacing: 1 }}>Games</h3>
-        {([
-          ["snake", "Snake"],
-          ["doom", "Doom"],
-          ["morse_trainer", "Morse Trainer"],
-        ] as const).map(([id, label]) => (
-          <button
-            key={id}
-            onClick={() => setActiveApp(id as any)}
-            style={{
-              display: "block",
-              width: "100%",
-              padding: 6,
-              marginBottom: 4,
-              background: activeApp === id ? "#444" : "transparent",
-              color: "#eee",
-              border: "1px solid #333",
-            }}
-          >
-            {label}
-          </button>
-        ))}
-        <h3 style={{ margin: "16px 0 8px", color: "#888", fontSize: 12, textTransform: "uppercase", letterSpacing: 1 }}>Utilities</h3>
-        {([
-          ["freq_manager", "Freq Manager"],
-          ["file_manager", "File Manager"],
-          ["playlist", "Playlist"],
-          ["settings", "Settings"],
-          ["calculator", "Calculator"],
-          ["notepad", "Notepad"],
-        ] as const).map(([id, label]) => (
-          <button
-            key={id}
-            onClick={() => setActiveApp(id as any)}
-            style={{
-              display: "block",
-              width: "100%",
-              padding: 6,
-              marginBottom: 4,
-              background: activeApp === id ? "#444" : "transparent",
-              color: "#eee",
-              border: "1px solid #333",
-            }}
-          >
-            {label}
-          </button>
-        ))}
-      </nav>
-      <main style={{ flex: 1, padding: 8, overflow: "auto" }}>
-        {activeApp === "nfm_audio" && <NfmAudioApp />}
-        {activeApp === "adsb_rx" && <AdsbRxApp />}
-        {activeApp === "pocsag_tx" && <PocsagTxApp />}
-        {activeApp === "wfm_rx" && <WfmRxApp />}
-        {activeApp === "am_rx" && <AmRxApp />}
-        {activeApp === "usb_rx" && <SsbRxApp appId="usb_rx" label="USB Receiver" />}
-        {activeApp === "lsb_rx" && <SsbRxApp appId="lsb_rx" label="LSB Receiver" />}
-        {activeApp === "cw_rx" && <CwRxApp />}
-        {activeApp === "rds_rx" && <RdsRxApp />}
-        {activeApp === "aprs_rx" && <AprsRxApp />}
-        {activeApp === "ais_rx" && <AisRxApp />}
-        {activeApp === "acars_rx" && <AcarsRxApp />}
-        {activeApp === "pocsag_rx" && <PocsagRxApp />}
-        {activeApp === "afsk_rx" && <AfskRxApp />}
-        {activeApp === "ert_rx" && <ErtRxApp />}
-        {activeApp === "weather_rx" && <WeatherRxApp />}
-        {activeApp === "sonde_rx" && <SondeRxApp />}
-        {activeApp === "two_tone_rx" && <TwoToneRxApp />}
-        {activeApp === "flex_rx" && <FlexRxApp />}
-        {activeApp === "tpms_rx" && <TpmsRxApp />}
-        {activeApp === "ook_analyzer" && <OokAnalyzerApp />}
-        {activeApp === "scanner" && <ScannerApp />}
-        {activeApp === "recon" && <ReconApp />}
-        {activeApp === "looking_glass" && <LookingGlassApp />}
-        {activeApp === "sig_gen" && <SigGenApp />}
-        {activeApp === "ook_decoders" && <OokDecodersApp />}
-        {activeApp === "sub_ghz_capture" && <SubGhzCaptureApp />}
-        {activeApp === "apt_rx" && <AptRxApp />}
-        {activeApp === "dsc_rx" && <DscRxApp />}
-        {activeApp === "epirb_rx" && <EpirbRxApp />}
-        {activeApp === "sonde_rx_ext" && <SondeRxExtApp />}
-        {activeApp === "dab_rx" && <DabRxApp />}
-        {activeApp === "hrpt_rx" && <HrptRxApp />}
-        {activeApp === "lrpt_rx" && <LrptRxApp />}
-        {activeApp === "adsb_rx_ext" && <AdsbExtApp />}
-        {activeApp === "rtty_tx" && <RttyTxApp />}
-        {activeApp === "sstv_tx" && <SstvTxApp />}
-        {activeApp === "afsk_tx" && <AfskTxApp />}
-        {activeApp === "morse_tx" && <MorseTxApp />}
-        {activeApp === "soundboard_tx" && <SoundboardTxApp />}
-        {activeApp === "flex_tx" && <FlexTxApp />}
-        {activeApp === "adsb_tx" && <AdsbTxApp />}
-        {activeApp === "gps_sim" && <GpsSimApp />}
-        {activeApp === "mdc1200_tx" && <Mdc1200TxApp />}
-        {activeApp === "replay_tx" && <ReplayTxApp />}
-        {activeApp === "ook_editor_tx" && <OokEditorTxApp />}
-        {activeApp === "freq_hopper" && <FreqHopperApp />}
-        {activeApp === "btle_tx" && <BtleTxApp />}
-        {activeApp === "nrf24_tx" && <Nrf24TxApp />}
-        {activeApp === "rfm69_tx" && <Rfm69TxApp />}
-        {activeApp === "flipper_tx" && <FlipperTxApp />}
-        {activeApp === "keyfob_tx" && <KeyfobTxApp />}
-        {activeApp === "lge_tx" && <LgeTxApp />}
-        {activeApp === "freq_manager" && <FreqManagerApp />}
-        {activeApp === "file_manager" && <FileManagerApp />}
-        {activeApp === "playlist" && <PlaylistApp />}
-        {activeApp === "settings" && <SettingsApp />}
-        {activeApp === "calculator" && <CalculatorApp />}
-        {activeApp === "notepad" && <NotepadApp />}
-        {activeApp === "snake" && <SnakeApp />}
-        {activeApp === "doom" && <DoomApp />}
-        {activeApp === "morse_trainer" && <MorseTrainerApp />}
-        {activeApp === "band_plan" && <BandPlanApp />}
-        {activeApp === "antenna_calc" && <AntennaCalcApp />}
-        {activeApp === "signal_meter" && <SignalMeterApp />}
-        {activeApp === "btle_rx" && <BtleRxApp />}
-        {activeApp === "btle_comm" && <BtleCommApp />}
-        {activeApp === "nrf24_rx" && <Nrf24RxApp />}
-        {activeApp === "encoder_suite" && <EncoderSuiteApp />}
-        {activeApp === "decoder_suite" && <DecoderSuiteApp />}
-        {activeApp === "capture_manager" && <CaptureManagerApp />}
-        {activeApp === "spectrum_painter" && <SpectrumPainterApp />}
-        {activeApp === "rf_characterize" && <RfCharApp />}
-        {activeApp === "protocol_analyzer" && <ProtocolAnalyzerApp />}
-        {activeApp === "remote_control" && <RemoteControlApp />}
-        {activeApp === "iq_player" && <IqPlayerApp />}
-        {activeApp === "sdr_benchmark" && <SdrBenchApp />}
-        {activeApp === "freq_counter" && <FreqCounterApp />}
-        {activeApp === "ctcss_dcs" && <CtcssDcsApp />}
-        {activeApp === "dmr_rx" && <DmrRxApp />}
-        {activeApp === "dpmr_rx" && <DpmrRxApp />}
-        {activeApp === "p25_rx" && <P25RxApp />}
-        {activeApp === "nxdn_rx" && <NxdnRxApp />}
-        {activeApp === "tetra_rx" && <TetraRxApp />}
-        {activeApp === "pager_aggregator" && <PagerAggApp />}
-      </main>
-    </div>
+    <>
+      <div className="glass-bg" />
+      <div className="app-content">
+        {/* Top bar */}
+        <div className="top-bar">
+          {activeApp && (
+            <button className="back-btn" onClick={handleBack}>
+              ← Home
+            </button>
+          )}
+          <span className="logo">GlassSDR</span>
+          <div style={{ flex: 1 }} />
+          {activeApp && (
+            <span style={{ fontSize: 12, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
+              {activeApp}
+            </span>
+          )}
+        </div>
+
+        {/* Content */}
+        <div className="app-content-body">
+          {activeApp ? (
+            renderApp()
+          ) : (
+            <AppGrid onSelectApp={setActiveApp} />
+          )}
+        </div>
+      </div>
+    </>
   );
 }

@@ -1,18 +1,18 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Mayhem PC",
+  "productName": "GlassSDR",
   "version": "0.0.1",
   "identifier": "ai.harsf.mayhem-pc",
   "build": {
-    "beforeDevCommand": "npm run dev --prefix frontend",
-    "beforeBuildCommand": "npm run build --prefix frontend",
+    "beforeDevCommand": "cd ../frontend && npm run dev",
+    "beforeBuildCommand": "cd ../frontend && npm run build",
     "frontendDist": "../frontend/dist",
     "devUrl": "http://localhost:5173"
   },
   "app": {
     "windows": [
       {
-        "title": "Mayhem PC",
+        "title": "GlassSDR",
         "width": 1280,
         "height": 800,
         "resizable": true
