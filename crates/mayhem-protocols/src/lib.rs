@@ -29,3 +29,8 @@ pub mod keyfob;
 pub mod lge;
 pub mod nrf24;
 pub mod rfm69;
+pub mod dmr;
+pub mod dpmr;
+pub mod nxdn;
+pub mod p25;
+pub mod tetra;
