@@ -15,10 +15,14 @@ fn main() {
 
     tauri::Builder::default()
         .manage(runner)
+        .manage(commands::TxArmState::new())
         .invoke_handler(tauri::generate_handler![
             commands::list_apps,
             commands::start_app,
             commands::stop_app,
+            commands::accept_tx_legal,
+            commands::arm_tx,
+            commands::disarm_tx,
         ])
         .setup(|app| {
             app.get_webview_window("main")
