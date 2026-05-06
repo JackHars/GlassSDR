@@ -54,6 +54,13 @@ pub mod flipper_tx;
 pub mod keyfob_tx;
 pub mod lge_tx;
 pub mod signal_meter;
+pub mod btle_rx;
+pub mod btle_comm;
+pub mod nrf24_rx;
+pub mod encoder_suite;
+pub mod decoder_suite;
+pub mod capture_manager;
+pub mod spectrum_painter;
 
 use anyhow::Result;
 use mayhem_ipc::AppMetadata;

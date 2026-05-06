@@ -20,9 +20,12 @@ use mayhem_apps::{
     btle_tx::BtleTxApp, nrf24_tx::Nrf24TxApp, rfm69_tx::Rfm69TxApp,
     flipper_tx::FlipperTxApp, keyfob_tx::KeyfobTxApp, lge_tx::LgeTxApp,
     signal_meter::SignalMeterApp,
+    btle_rx::BtleRxApp, btle_comm::BtleCommApp, nrf24_rx::Nrf24RxApp,
+    encoder_suite::EncoderSuiteApp, decoder_suite::DecoderSuiteApp,
+    capture_manager::CaptureManagerApp, spectrum_painter::SpectrumPainterApp,
     App, AppRegistry, RunningApp,
 };
-use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, DabServiceEvent, DscMessageEvent, EpirbBeaconEvent, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
+use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, BleAdvEvent, DabServiceEvent, DscMessageEvent, EpirbBeaconEvent, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
@@ -258,6 +261,34 @@ impl AppRunner {
         });
         registry.register(SignalMeterApp::metadata(), || {
             let (app, _) = SignalMeterApp::new();
+            app
+        });
+        registry.register(BtleRxApp::metadata(), || {
+            let (app, _) = BtleRxApp::new();
+            app
+        });
+        registry.register(BtleCommApp::metadata(), || {
+            let (app, _) = BtleCommApp::new();
+            app
+        });
+        registry.register(Nrf24RxApp::metadata(), || {
+            let (app, _) = Nrf24RxApp::new();
+            app
+        });
+        registry.register(EncoderSuiteApp::metadata(), || {
+            let (app, _) = EncoderSuiteApp::new();
+            app
+        });
+        registry.register(DecoderSuiteApp::metadata(), || {
+            let (app, _) = DecoderSuiteApp::new();
+            app
+        });
+        registry.register(CaptureManagerApp::metadata(), || {
+            let (app, _) = CaptureManagerApp::new();
+            app
+        });
+        registry.register(SpectrumPainterApp::metadata(), || {
+            let (app, _) = SpectrumPainterApp::new();
             app
         });
         Self {
@@ -637,6 +668,48 @@ impl AppRunner {
                 let (app, spec_rx) = SignalMeterApp::new();
                 let running = app.start(params)?;
                 spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::BtleRx => {
+                let (app, event_rx) = BtleRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<BleAdvEvent>(handle.clone(), "ble_adv", event_rx);
+                state.current = Some((id, running));
+            }
+            AppId::BtleComm => {
+                let (app, event_rx) = BtleCommApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<BleAdvEvent>(handle.clone(), "ble_adv", event_rx);
+                state.current = Some((id, running));
+            }
+            AppId::Nrf24Rx => {
+                let (app, event_rx) = Nrf24RxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<OokDecodeEvent>(handle.clone(), "ook_decode", event_rx);
+                state.current = Some((id, running));
+            }
+            AppId::EncoderSuite => {
+                let (app, status_rx) = EncoderSuiteApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::DecoderSuite => {
+                let (app, event_rx) = DecoderSuiteApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<OokDecodeEvent>(handle.clone(), "ook_decode", event_rx);
+                state.current = Some((id, running));
+            }
+            AppId::CaptureManager => {
+                let (app, status_rx) = CaptureManagerApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::SpectrumPainter => {
+                let (app, status_rx) = SpectrumPainterApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::Snake

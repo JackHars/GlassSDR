@@ -72,6 +72,13 @@ pub enum AppId {
     BandPlan,
     AntennaCalc,
     SignalMeter,
+    BtleRx,
+    BtleComm,
+    Nrf24Rx,
+    EncoderSuite,
+    DecoderSuite,
+    CaptureManager,
+    SpectrumPainter,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -391,6 +398,15 @@ pub struct EpirbBeaconEvent {
 pub struct DabServiceEvent {
     pub eid: u16,
     pub ensemble_label: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct BleAdvEvent {
+    pub mac: String,
+    pub rssi_db: f32,
+    pub adv_type: String,
+    pub data_hex: String,
 }
 
 #[cfg(test)]
