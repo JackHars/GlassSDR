@@ -17,3 +17,6 @@ pub mod apt;
 pub mod dab;
 pub mod dsc;
 pub mod epirb;
+pub mod baudot;
+pub mod morse;
+pub mod sstv;
