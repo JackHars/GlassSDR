@@ -26,6 +26,14 @@ import { LookingGlassApp } from "./apps/looking-glass/LookingGlassApp";
 import { SigGenApp } from "./apps/sig-gen/SigGenApp";
 import { OokDecodersApp } from "./apps/ook-decoders/OokDecodersApp";
 import { SubGhzCaptureApp } from "./apps/subghz-capture/SubGhzCaptureApp";
+import { AptRxApp } from "./apps/apt-rx/AptRxApp";
+import { DscRxApp } from "./apps/dsc-rx/DscRxApp";
+import { EpirbRxApp } from "./apps/epirb-rx/EpirbRxApp";
+import { SondeRxExtApp } from "./apps/sonde-rx-ext/SondeRxExtApp";
+import { DabRxApp } from "./apps/dab-rx/DabRxApp";
+import { HrptRxApp } from "./apps/hrpt-rx/HrptRxApp";
+import { LrptRxApp } from "./apps/lrpt-rx/LrptRxApp";
+import { AdsbExtApp } from "./apps/adsb-ext/AdsbExtApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -92,6 +100,14 @@ export default function App() {
         {activeApp === "sig_gen" && <SigGenApp />}
         {activeApp === "ook_decoders" && <OokDecodersApp />}
         {activeApp === "sub_ghz_capture" && <SubGhzCaptureApp />}
+        {activeApp === "apt_rx" && <AptRxApp />}
+        {activeApp === "dsc_rx" && <DscRxApp />}
+        {activeApp === "epirb_rx" && <EpirbRxApp />}
+        {activeApp === "sonde_rx_ext" && <SondeRxExtApp />}
+        {activeApp === "dab_rx" && <DabRxApp />}
+        {activeApp === "hrpt_rx" && <HrptRxApp />}
+        {activeApp === "lrpt_rx" && <LrptRxApp />}
+        {activeApp === "adsb_rx_ext" && <AdsbExtApp />}
       </main>
     </div>
   );

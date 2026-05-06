@@ -3,16 +3,20 @@
 
 use anyhow::Result;
 use mayhem_apps::{
-    acars_rx::AcarsRxApp, adsb_rx::AdsbRxApp, afsk_rx::AfskRxApp, ais_rx::AisRxApp,
-    am_rx::AmRxApp, aprs_rx::AprsRxApp, cw_rx::CwRxApp, ert_rx::ErtRxApp,
-    flex_rx::FlexRxApp, looking_glass::LookingGlassApp, nfm_audio::NfmAudioApp,
+    acars_rx::AcarsRxApp, adsb_rx::AdsbRxApp, adsb_rx_ext::AdsbRxExtApp,
+    afsk_rx::AfskRxApp, ais_rx::AisRxApp,
+    am_rx::AmRxApp, aprs_rx::AprsRxApp, apt_rx::AptRxApp, cw_rx::CwRxApp,
+    dab_rx::DabRxApp, dsc_rx::DscRxApp, epirb_rx::EpirbRxApp, ert_rx::ErtRxApp,
+    flex_rx::FlexRxApp, hrpt_rx::HrptRxApp, looking_glass::LookingGlassApp,
+    lrpt_rx::LrptRxApp, nfm_audio::NfmAudioApp,
     ook_analyzer::OokAnalyzerApp, ook_decoders::OokDecodersApp, pocsag_rx::PocsagRxApp,
     pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, recon::ReconApp, scanner::ScannerApp,
-    sig_gen_app::SigGenApp, sonde_rx::SondeRxApp, ssb_rx::SsbRxApp,
-    subghz_capture::SubGhzCaptureApp, tpms_rx::TpmsRxApp, twotone_rx::TwoToneRxApp,
-    weather_rx::WeatherRxApp, wfm_rx::WfmRxApp, App, AppRegistry, RunningApp,
+    sig_gen_app::SigGenApp, sonde_rx::SondeRxApp, sonde_rx_ext::SondeRxExtApp,
+    ssb_rx::SsbRxApp, subghz_capture::SubGhzCaptureApp, tpms_rx::TpmsRxApp,
+    twotone_rx::TwoToneRxApp, weather_rx::WeatherRxApp, wfm_rx::WfmRxApp,
+    App, AppRegistry, RunningApp,
 };
-use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SpectrumFrame, TpmsSensorEvent};
+use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, DabServiceEvent, DscMessageEvent, EpirbBeaconEvent, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
@@ -140,6 +144,38 @@ impl AppRunner {
         });
         registry.register(SubGhzCaptureApp::metadata(), || {
             let (app, _, _) = SubGhzCaptureApp::new();
+            app
+        });
+        registry.register(AptRxApp::metadata(), || {
+            let (app, _, _) = AptRxApp::new();
+            app
+        });
+        registry.register(DscRxApp::metadata(), || {
+            let (app, _, _) = DscRxApp::new();
+            app
+        });
+        registry.register(EpirbRxApp::metadata(), || {
+            let (app, _, _) = EpirbRxApp::new();
+            app
+        });
+        registry.register(SondeRxExtApp::metadata(), || {
+            let (app, _, _) = SondeRxExtApp::new();
+            app
+        });
+        registry.register(DabRxApp::metadata(), || {
+            let (app, _, _) = DabRxApp::new();
+            app
+        });
+        registry.register(HrptRxApp::metadata(), || {
+            let (app, _, _) = HrptRxApp::new();
+            app
+        });
+        registry.register(LrptRxApp::metadata(), || {
+            let (app, _, _) = LrptRxApp::new();
+            app
+        });
+        registry.register(AdsbRxExtApp::metadata(), || {
+            let (app, _) = AdsbRxExtApp::new();
             app
         });
         Self {
@@ -350,6 +386,61 @@ impl AppRunner {
                 let running = app.start(params)?;
                 spawn_typed_pump::<PulseEventIpc>(handle.clone(), "pulse_event", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::AptRx => {
+                let (app, event_rx, spec_rx) = AptRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<AptLineEvent>(handle.clone(), "apt_line", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::DscRx => {
+                let (app, event_rx, spec_rx) = DscRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<DscMessageEvent>(handle.clone(), "dsc_message", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::EpirbRx => {
+                let (app, event_rx, spec_rx) = EpirbRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<EpirbBeaconEvent>(handle.clone(), "epirb_beacon", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::SondeRxExt => {
+                let (app, event_rx, spec_rx) = SondeRxExtApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<SondeEvent>(handle.clone(), "sonde_telemetry", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::DabRx => {
+                let (app, event_rx, spec_rx) = DabRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<DabServiceEvent>(handle.clone(), "dab_service", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::HrptRx => {
+                let (app, event_rx, spec_rx) = HrptRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<AptLineEvent>(handle.clone(), "apt_line", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::LrptRx => {
+                let (app, event_rx, spec_rx) = LrptRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<AptLineEvent>(handle.clone(), "apt_line", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::AdsbRxExt => {
+                let (app, state_rx) = AdsbRxExtApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<AircraftState>(handle.clone(), "aircraft_state", state_rx);
                 state.current = Some((id, running));
             }
         }
