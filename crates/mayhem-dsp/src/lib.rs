@@ -25,3 +25,5 @@ pub mod afsk_mod;
 pub mod cw_keyer;
 pub mod fm_mod;
 pub mod spectrum_paint;
+pub mod ctcss;
+pub mod eye_diagram;
