@@ -14,6 +14,7 @@ pub use registry::AppRegistry;
 /// Drop it to stop the app gracefully.
 pub struct RunningApp {
     pub stop: oneshot::Sender<()>,
+    pub join: tokio::task::JoinHandle<()>,
 }
 
 pub trait App: Send + Sync {

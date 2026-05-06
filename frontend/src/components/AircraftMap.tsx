@@ -74,11 +74,9 @@ export function AircraftMap({ aircraft, style }: Props) {
     };
   }, []);
 
+  const featuresRef = useRef<GeoJSON.Feature[]>([]);
+
   useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !map.isStyleLoaded()) return;
-    const src = map.getSource("aircraft") as GeoJSONSource | undefined;
-    if (!src) return;
     const features: GeoJSON.Feature[] = [];
     aircraft.forEach((a) => {
       if (a.position) {
@@ -89,7 +87,22 @@ export function AircraftMap({ aircraft, style }: Props) {
         });
       }
     });
-    src.setData({ type: "FeatureCollection", features });
+    featuresRef.current = features;
+
+    const map = mapRef.current;
+    if (!map) return;
+    const apply = () => {
+      const src = map.getSource("aircraft") as GeoJSONSource | undefined;
+      if (src) {
+        src.setData({ type: "FeatureCollection", features: featuresRef.current });
+      }
+    };
+    if (map.isStyleLoaded()) {
+      apply();
+    } else {
+      // Style still loading; apply when ready
+      map.once("load", apply);
+    }
   }, [aircraft]);
 
   return <div ref={containerRef} style={{ width: "100%", height: 500, ...style }} />;

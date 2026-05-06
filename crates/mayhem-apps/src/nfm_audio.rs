@@ -77,7 +77,7 @@ impl App for NfmAudioApp {
 
         let (stop_tx, stop_rx) = oneshot::channel::<()>();
 
-        tokio::spawn(async move {
+        let join = tokio::spawn(async move {
             if let Err(e) = run_nfm(cfg, tuning, audio_tx, spectrum_tx, stop_rx).await {
                 warn!("nfm flowgraph terminated with error: {e}");
             } else {
@@ -85,7 +85,7 @@ impl App for NfmAudioApp {
             }
         });
 
-        Ok(RunningApp { stop: stop_tx })
+        Ok(RunningApp { stop: stop_tx, join })
     }
 }
 

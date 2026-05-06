@@ -76,7 +76,7 @@ impl App for AdsbRxApp {
         let state_tx = self.state_tx.clone();
         let (stop_tx, stop_rx) = oneshot::channel::<()>();
 
-        tokio::spawn(async move {
+        let join = tokio::spawn(async move {
             if let Err(e) = run_adsb(cfg, p, state_tx, stop_rx).await {
                 warn!("adsb flowgraph terminated with error: {e}");
             } else {
@@ -84,7 +84,7 @@ impl App for AdsbRxApp {
             }
         });
 
-        Ok(RunningApp { stop: stop_tx })
+        Ok(RunningApp { stop: stop_tx, join })
     }
 }
 

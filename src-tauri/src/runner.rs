@@ -48,6 +48,9 @@ impl AppRunner {
         if let Some((cur_id, app)) = state.current.take() {
             tracing::info!(?cur_id, "stopping current app before switching");
             let _ = app.stop.send(());
+            // Await full termination so the HackRF device handle is released before
+            // the new app tries to claim it.
+            let _ = app.join.await;
         }
 
         let _ = handle.emit("app_status", AppStatus::Starting { app: id });
@@ -83,7 +86,8 @@ impl AppRunner {
         if let Some((id, app)) = state.current.take() {
             let _ = handle.emit("app_status", AppStatus::Stopping);
             let _ = app.stop.send(());
-            tracing::info!(?id, "stop signal sent");
+            let _ = app.join.await;
+            tracing::info!(?id, "stop signal sent, app joined");
         }
         let _ = handle.emit("app_status", AppStatus::Idle);
         Ok(())
