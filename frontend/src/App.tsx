@@ -64,6 +64,13 @@ import { MorseTrainerApp } from "./apps/morse-trainer/MorseTrainerApp";
 import { BandPlanApp } from "./apps/band-plan/BandPlanApp";
 import { AntennaCalcApp } from "./apps/antenna-calc/AntennaCalcApp";
 import { SignalMeterApp } from "./apps/signal-meter/SignalMeterApp";
+import { BtleRxApp } from "./apps/btle-rx/BtleRxApp";
+import { BtleCommApp } from "./apps/btle-comm/BtleCommApp";
+import { Nrf24RxApp } from "./apps/nrf24-rx/Nrf24RxApp";
+import { EncoderSuiteApp } from "./apps/encoder-suite/EncoderSuiteApp";
+import { DecoderSuiteApp } from "./apps/decoder-suite/DecoderSuiteApp";
+import { CaptureManagerApp } from "./apps/capture-manager/CaptureManagerApp";
+import { SpectrumPainterApp } from "./apps/spectrum-painter/SpectrumPainterApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -237,6 +244,13 @@ export default function App() {
         {activeApp === "band_plan" && <BandPlanApp />}
         {activeApp === "antenna_calc" && <AntennaCalcApp />}
         {activeApp === "signal_meter" && <SignalMeterApp />}
+        {activeApp === "btle_rx" && <BtleRxApp />}
+        {activeApp === "btle_comm" && <BtleCommApp />}
+        {activeApp === "nrf24_rx" && <Nrf24RxApp />}
+        {activeApp === "encoder_suite" && <EncoderSuiteApp />}
+        {activeApp === "decoder_suite" && <DecoderSuiteApp />}
+        {activeApp === "capture_manager" && <CaptureManagerApp />}
+        {activeApp === "spectrum_painter" && <SpectrumPainterApp />}
       </main>
     </div>
   );
