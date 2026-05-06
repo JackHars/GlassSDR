@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { listApps } from "./ipc/commands";
 import { NfmAudioApp } from "./apps/nfm-audio/NfmAudioApp";
 import { AdsbRxApp } from "./apps/adsb-rx/AdsbRxApp";
+import { PocsagTxApp } from "./apps/pocsag-tx/PocsagTxApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -43,6 +44,7 @@ export default function App() {
       <main style={{ flex: 1, padding: 8, overflow: "auto" }}>
         {activeApp === "nfm_audio" && <NfmAudioApp />}
         {activeApp === "adsb_rx" && <AdsbRxApp />}
+        {activeApp === "pocsag_tx" && <PocsagTxApp />}
       </main>
     </div>
   );

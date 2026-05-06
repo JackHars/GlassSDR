@@ -29,3 +29,15 @@ export interface AdsbParams {
 export function startAdsb(params: AdsbParams = {}): Promise<void> {
   return startApp("adsb_rx" as AppId, params);
 }
+
+export function acceptTxLegal(): Promise<void> {
+  return invoke<void>("accept_tx_legal");
+}
+
+export function armTx(): Promise<void> {
+  return invoke<void>("arm_tx");
+}
+
+export function disarmTx(): Promise<void> {
+  return invoke<void>("disarm_tx");
+}

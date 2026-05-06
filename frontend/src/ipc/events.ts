@@ -19,3 +19,13 @@ export function onAppStatus(handler: (s: AppStatus) => void): Promise<UnlistenFn
 export function onAircraftState(handler: (s: AircraftState) => void): Promise<UnlistenFn> {
   return listen<AircraftState>("aircraft_state", (e) => handler(e.payload));
 }
+
+export interface PocsagTxStatus {
+  kind: "idle" | "armed" | "transmitting" | "complete" | "error";
+  progress_pct?: number;
+  message?: string;
+}
+
+export function onPocsagTxStatus(handler: (s: PocsagTxStatus) => void): Promise<UnlistenFn> {
+  return listen<PocsagTxStatus>("pocsag_tx_status", (e) => handler(e.payload));
+}
