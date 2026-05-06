@@ -72,6 +72,82 @@ mod charset {
     }
 }
 
+mod encoder {
+    use mayhem_protocols::pocsag::encoder::{encode_pocsag, MessageType, PocsagMessage};
+
+    #[test]
+    fn preamble_is_576_alternating() {
+        let msg = PocsagMessage { ric: 0, function: 0, content: MessageType::ToneOnly, baud_rate: 512 };
+        let bits = encode_pocsag(&msg);
+        assert!(bits.len() >= 576);
+        for i in 0..576 {
+            assert_eq!(bits[i], i % 2 == 0, "preamble bit {i}");
+        }
+    }
+
+    #[test]
+    fn sync_after_preamble() {
+        let msg = PocsagMessage { ric: 0, function: 0, content: MessageType::ToneOnly, baud_rate: 512 };
+        let bits = encode_pocsag(&msg);
+        let sync = bits_to_u32(&bits[576..608]);
+        assert_eq!(sync, 0x7CD215D8);
+    }
+
+    #[test]
+    fn tone_only_one_batch() {
+        let msg = PocsagMessage { ric: 0, function: 0, content: MessageType::ToneOnly, baud_rate: 512 };
+        let bits = encode_pocsag(&msg);
+        // 576 preamble + 32 sync + 16*32 codewords = 1120
+        assert_eq!(bits.len(), 1120);
+    }
+
+    #[test]
+    fn address_at_correct_frame_position() {
+        // RIC=4 → frame position = 4%8 = 4, slot = 4*2 = 8
+        let msg = PocsagMessage { ric: 4, function: 0, content: MessageType::ToneOnly, baud_rate: 512 };
+        let bits = encode_pocsag(&msg);
+        // Slots 0-7 should be idle, slot 8 should be the address
+        let slot8_start = 576 + 32 + 8 * 32; // preamble + sync + 8 codewords
+        let slot8 = bits_to_u32(&bits[slot8_start..slot8_start + 32]);
+        // Address codeword has flag=0 (bit 31)
+        assert_eq!(slot8 >> 31, 0);
+        // Slots 0-7 should be idle
+        for s in 0..8 {
+            let start = 576 + 32 + s * 32;
+            let cw = bits_to_u32(&bits[start..start + 32]);
+            assert_eq!(cw, 0x7A89C197, "slot {s} should be idle");
+        }
+    }
+
+    #[test]
+    fn multi_batch_long_message() {
+        // 50 alpha chars = 350 bits = 18 message codewords. RIC frame pos 7 → starts at slot 14.
+        // Batch 1: slots 14,15 = 2 codewords (1 addr + 1 msg). Remaining: 17 msg cws.
+        // Batch 2: 16 msg cws. Remaining: 1.
+        // Batch 3: 1 msg cw + 15 idle.
+        let msg = PocsagMessage {
+            ric: 7, function: 0,
+            content: MessageType::Alphanumeric("A".repeat(50)),
+            baud_rate: 512,
+        };
+        let bits = encode_pocsag(&msg);
+        let payload = bits.len() - 576;
+        // Each batch = 32 sync + 512 codewords = 544
+        assert_eq!(payload % 544, 0);
+        let num_batches = payload / 544;
+        assert!(num_batches >= 2, "expected at least 2 batches, got {num_batches}");
+    }
+
+    fn bits_to_u32(bits: &[bool]) -> u32 {
+        assert!(bits.len() >= 32);
+        let mut val = 0u32;
+        for i in 0..32 {
+            if bits[i] { val |= 1 << (31 - i); }
+        }
+        val
+    }
+}
+
 mod codeword {
     use mayhem_protocols::pocsag::codeword::{
         address_codeword, idle_codeword, message_codeword, sync_codeword,
