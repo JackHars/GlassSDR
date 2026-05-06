@@ -10,6 +10,12 @@ pub enum AppId {
     NfmAudio,
     AdsbRx,
     PocsagTx,
+    WfmRx,
+    AmRx,
+    UsbRx,
+    LsbRx,
+    CwRx,
+    RdsRx,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -140,6 +146,47 @@ pub enum PocsagTxStatus {
     Transmitting { progress_pct: u8 },
     Complete,
     Error { message: String },
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct WfmTuning {
+    pub center_hz: f64,
+    pub lna_gain_db: u32,
+    pub vga_gain_db: u32,
+    pub amp_enabled: bool,
+    pub stereo: bool,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct AmTuning {
+    pub center_hz: f64,
+    pub lna_gain_db: u32,
+    pub vga_gain_db: u32,
+    pub amp_enabled: bool,
+    pub bandwidth_hz: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct SsbTuning {
+    pub center_hz: f64,
+    pub lna_gain_db: u32,
+    pub vga_gain_db: u32,
+    pub amp_enabled: bool,
+    pub bfo_hz: f32,
+    pub bandwidth_hz: f32,
+    pub sideband: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct RdsData {
+    pub pi: u16,
+    pub ps: String,
+    pub rt: String,
+    pub pty: u8,
 }
 
 #[cfg(test)]
