@@ -54,6 +54,12 @@ pub enum AppId {
     ReplayTx,
     OokEditorTx,
     FreqHopper,
+    BtleTx,
+    Nrf24Tx,
+    Rfm69Tx,
+    FlipperTx,
+    KeyfobTx,
+    LgeTx,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]

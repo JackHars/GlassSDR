@@ -47,6 +47,12 @@ pub mod mdc1200_tx;
 pub mod replay_tx;
 pub mod ook_editor_tx;
 pub mod freq_hopper;
+pub mod btle_tx;
+pub mod nrf24_tx;
+pub mod rfm69_tx;
+pub mod flipper_tx;
+pub mod keyfob_tx;
+pub mod lge_tx;
 
 use anyhow::Result;
 use mayhem_ipc::AppMetadata;

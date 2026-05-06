@@ -17,6 +17,8 @@ use mayhem_apps::{
     twotone_rx::TwoToneRxApp, weather_rx::WeatherRxApp, wfm_rx::WfmRxApp,
     adsb_tx::AdsbTxApp, gps_sim::GpsSimApp, mdc1200_tx::Mdc1200TxApp,
     replay_tx::ReplayTxApp, ook_editor_tx::OokEditorTxApp, freq_hopper::FreqHopperApp,
+    btle_tx::BtleTxApp, nrf24_tx::Nrf24TxApp, rfm69_tx::Rfm69TxApp,
+    flipper_tx::FlipperTxApp, keyfob_tx::KeyfobTxApp, lge_tx::LgeTxApp,
     App, AppRegistry, RunningApp,
 };
 use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, DabServiceEvent, DscMessageEvent, EpirbBeaconEvent, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
@@ -227,6 +229,30 @@ impl AppRunner {
         });
         registry.register(FreqHopperApp::metadata(), || {
             let (app, _) = FreqHopperApp::new();
+            app
+        });
+        registry.register(BtleTxApp::metadata(), || {
+            let (app, _) = BtleTxApp::new();
+            app
+        });
+        registry.register(Nrf24TxApp::metadata(), || {
+            let (app, _) = Nrf24TxApp::new();
+            app
+        });
+        registry.register(Rfm69TxApp::metadata(), || {
+            let (app, _) = Rfm69TxApp::new();
+            app
+        });
+        registry.register(FlipperTxApp::metadata(), || {
+            let (app, _) = FlipperTxApp::new();
+            app
+        });
+        registry.register(KeyfobTxApp::metadata(), || {
+            let (app, _) = KeyfobTxApp::new();
+            app
+        });
+        registry.register(LgeTxApp::metadata(), || {
+            let (app, _) = LgeTxApp::new();
             app
         });
         Self {
@@ -562,6 +588,42 @@ impl AppRunner {
             }
             AppId::FreqHopper => {
                 let (app, status_rx) = FreqHopperApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::BtleTx => {
+                let (app, status_rx) = BtleTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::Nrf24Tx => {
+                let (app, status_rx) = Nrf24TxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::Rfm69Tx => {
+                let (app, status_rx) = Rfm69TxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::FlipperTx => {
+                let (app, status_rx) = FlipperTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::KeyfobTx => {
+                let (app, status_rx) = KeyfobTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::LgeTx => {
+                let (app, status_rx) = LgeTxApp::new();
                 let running = app.start(params)?;
                 spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
