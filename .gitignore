@@ -10,3 +10,4 @@ src-tauri/target/
 frontend/dist/
 # Frontend: never commit compiled .js artifacts in src/
 frontend/src/**/*.js
+frontend/tsconfig.tsbuildinfo
