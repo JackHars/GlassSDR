@@ -27,9 +27,15 @@ use mayhem_apps::{
     remote_control::RemoteControlApp, iq_player::IqPlayerApp,
     sdr_benchmark::SdrBenchmarkApp, freq_counter::FreqCounterApp,
     ctcss_dcs::CtcssDcsApp,
+    dmr_rx::DmrRxApp,
+    dpmr_rx::DpmrRxApp,
+    p25_rx::P25RxApp,
+    nxdn_rx::NxdnRxApp,
+    tetra_rx::TetraRxApp,
+    pager_aggregator::PagerAggregatorApp,
     App, AppRegistry, RunningApp,
 };
-use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, BleAdvEvent, CtcssDetectEvent, DabServiceEvent, DscMessageEvent, EpirbBeaconEvent, FreqMeasureEvent, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
+use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, BleAdvEvent, CtcssDetectEvent, DabServiceEvent, DigitalVoiceEvent, DscMessageEvent, EpirbBeaconEvent, FreqMeasureEvent, OokDecodeEvent, PocsagPageEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
@@ -321,6 +327,30 @@ impl AppRunner {
         });
         registry.register(CtcssDcsApp::metadata(), || {
             let (app, _) = CtcssDcsApp::new();
+            app
+        });
+        registry.register(DmrRxApp::metadata(), || {
+            let (app, _, _) = DmrRxApp::new();
+            app
+        });
+        registry.register(DpmrRxApp::metadata(), || {
+            let (app, _, _) = DpmrRxApp::new();
+            app
+        });
+        registry.register(P25RxApp::metadata(), || {
+            let (app, _, _) = P25RxApp::new();
+            app
+        });
+        registry.register(NxdnRxApp::metadata(), || {
+            let (app, _, _) = NxdnRxApp::new();
+            app
+        });
+        registry.register(TetraRxApp::metadata(), || {
+            let (app, _, _) = TetraRxApp::new();
+            app
+        });
+        registry.register(PagerAggregatorApp::metadata(), || {
+            let (app, _, _) = PagerAggregatorApp::new();
             app
         });
         Self {
@@ -784,6 +814,48 @@ impl AppRunner {
                 let (app, event_rx) = CtcssDcsApp::new();
                 let running = app.start(params)?;
                 spawn_typed_pump::<CtcssDetectEvent>(handle.clone(), "ctcss_detect", event_rx);
+                state.current = Some((id, running));
+            }
+            AppId::DmrRx => {
+                let (app, event_rx, spec_rx) = DmrRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::DpmrRx => {
+                let (app, event_rx, spec_rx) = DpmrRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::P25Rx => {
+                let (app, event_rx, spec_rx) = P25RxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::NxdnRx => {
+                let (app, event_rx, spec_rx) = NxdnRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::TetraRx => {
+                let (app, event_rx, spec_rx) = TetraRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::PagerAggregator => {
+                let (app, event_rx, spec_rx) = PagerAggregatorApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagPageEvent>(handle.clone(), "pocsag_page", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::Snake

@@ -68,6 +68,12 @@ pub mod iq_player;
 pub mod sdr_benchmark;
 pub mod freq_counter;
 pub mod ctcss_dcs;
+pub mod dmr_rx;
+pub mod dpmr_rx;
+pub mod p25_rx;
+pub mod nxdn_rx;
+pub mod tetra_rx;
+pub mod pager_aggregator;
 
 use anyhow::Result;
 use mayhem_ipc::AppMetadata;

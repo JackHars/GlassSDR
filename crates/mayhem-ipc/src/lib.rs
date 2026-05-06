@@ -86,6 +86,12 @@ pub enum AppId {
     SdrBenchmark,
     FreqCounter,
     CtcssDcs,
+    DmrRx,
+    DpmrRx,
+    P25Rx,
+    NxdnRx,
+    TetraRx,
+    PagerAggregator,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -423,6 +429,15 @@ pub struct CtcssDetectEvent { pub tone_hz: f32, pub power_db: f32 }
 #[derive(Debug, Clone, Serialize, Deserialize, TS)]
 #[ts(export, export_to = "../../../frontend/src/ipc/types/")]
 pub struct FreqMeasureEvent { pub frequency_hz: f64, pub precision_hz: f32 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct DigitalVoiceEvent {
+    pub protocol: String,
+    pub talkgroup: u32,
+    pub source_id: u32,
+    pub call_type: String,
+}
 
 #[cfg(test)]
 mod tests {
