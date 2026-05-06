@@ -2,6 +2,7 @@
 
 pub mod adsb_rx;
 pub mod nfm_audio;
+pub mod pocsag_tx;
 pub mod registry;
 
 use anyhow::Result;
