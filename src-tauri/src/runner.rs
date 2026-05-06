@@ -62,6 +62,10 @@ impl AppRunner {
                 spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
                 state.current = Some((id, running));
             }
+            AppId::AdsbRx => {
+                // Task 12 implements this. For now, error out cleanly.
+                anyhow::bail!("AdsbRx app not yet wired in runner — Task 12 implements this");
+            }
         }
 
         let _ = handle.emit("app_status", AppStatus::Running { app: id });

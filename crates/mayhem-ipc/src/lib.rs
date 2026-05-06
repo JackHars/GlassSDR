@@ -8,6 +8,7 @@ use ts_rs::TS;
 #[serde(rename_all = "snake_case")]
 pub enum AppId {
     NfmAudio,
+    AdsbRx,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -75,6 +76,36 @@ pub struct NfmTuning {
     pub vga_gain_db: u32,
     pub amp_enabled: bool,
     pub squelch_db: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct AdsbPosition {
+    pub lat: f64,
+    pub lon: f64,
+    pub altitude_ft: Option<i32>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct AdsbVelocity {
+    pub ground_speed_kt: f64,
+    pub heading_deg: f64,
+    pub vert_rate_fpm: i32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct AircraftState {
+    /// 6-char hex ICAO24 address (e.g. "4840D6")
+    pub icao24: String,
+    pub callsign: Option<String>,
+    pub position: Option<AdsbPosition>,
+    pub velocity: Option<AdsbVelocity>,
+    /// Unix milliseconds since epoch. f64 (not u64) so ts-rs maps to `number`
+    /// and not `bigint` — same fix as Plan 1's u32 seq fields. f64 has 53 bits
+    /// of integer precision; sufficient until year ~287000.
+    pub last_seen_ms: f64,
 }
 
 #[cfg(test)]
