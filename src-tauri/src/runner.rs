@@ -4,14 +4,15 @@
 use anyhow::Result;
 use mayhem_apps::{
     acars_rx::AcarsRxApp, adsb_rx::AdsbRxApp, adsb_rx_ext::AdsbRxExtApp,
-    afsk_rx::AfskRxApp, ais_rx::AisRxApp,
+    afsk_rx::AfskRxApp, afsk_tx::AfskTxApp, ais_rx::AisRxApp,
     am_rx::AmRxApp, aprs_rx::AprsRxApp, apt_rx::AptRxApp, cw_rx::CwRxApp,
     dab_rx::DabRxApp, dsc_rx::DscRxApp, epirb_rx::EpirbRxApp, ert_rx::ErtRxApp,
-    flex_rx::FlexRxApp, hrpt_rx::HrptRxApp, looking_glass::LookingGlassApp,
-    lrpt_rx::LrptRxApp, nfm_audio::NfmAudioApp,
+    flex_rx::FlexRxApp, flex_tx::FlexTxApp, hrpt_rx::HrptRxApp, looking_glass::LookingGlassApp,
+    lrpt_rx::LrptRxApp, morse_tx::MorseTxApp, nfm_audio::NfmAudioApp,
     ook_analyzer::OokAnalyzerApp, ook_decoders::OokDecodersApp, pocsag_rx::PocsagRxApp,
-    pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, recon::ReconApp, scanner::ScannerApp,
-    sig_gen_app::SigGenApp, sonde_rx::SondeRxApp, sonde_rx_ext::SondeRxExtApp,
+    pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, recon::ReconApp, rtty_tx::RttyTxApp,
+    scanner::ScannerApp, sig_gen_app::SigGenApp, sonde_rx::SondeRxApp,
+    sonde_rx_ext::SondeRxExtApp, soundboard_tx::SoundboardTxApp, sstv_tx::SstvTxApp,
     ssb_rx::SsbRxApp, subghz_capture::SubGhzCaptureApp, tpms_rx::TpmsRxApp,
     twotone_rx::TwoToneRxApp, weather_rx::WeatherRxApp, wfm_rx::WfmRxApp,
     App, AppRegistry, RunningApp,
@@ -176,6 +177,30 @@ impl AppRunner {
         });
         registry.register(AdsbRxExtApp::metadata(), || {
             let (app, _) = AdsbRxExtApp::new();
+            app
+        });
+        registry.register(RttyTxApp::metadata(), || {
+            let (app, _) = RttyTxApp::new();
+            app
+        });
+        registry.register(SstvTxApp::metadata(), || {
+            let (app, _) = SstvTxApp::new();
+            app
+        });
+        registry.register(AfskTxApp::metadata(), || {
+            let (app, _) = AfskTxApp::new();
+            app
+        });
+        registry.register(MorseTxApp::metadata(), || {
+            let (app, _) = MorseTxApp::new();
+            app
+        });
+        registry.register(SoundboardTxApp::metadata(), || {
+            let (app, _) = SoundboardTxApp::new();
+            app
+        });
+        registry.register(FlexTxApp::metadata(), || {
+            let (app, _) = FlexTxApp::new();
             app
         });
         Self {
@@ -441,6 +466,42 @@ impl AppRunner {
                 let (app, state_rx) = AdsbRxExtApp::new();
                 let running = app.start(params)?;
                 spawn_typed_pump::<AircraftState>(handle.clone(), "aircraft_state", state_rx);
+                state.current = Some((id, running));
+            }
+            AppId::RttyTx => {
+                let (app, status_rx) = RttyTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::SstvTx => {
+                let (app, status_rx) = SstvTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::AfskTx => {
+                let (app, status_rx) = AfskTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::MorseTx => {
+                let (app, status_rx) = MorseTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::SoundboardTx => {
+                let (app, status_rx) = SoundboardTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::FlexTx => {
+                let (app, status_rx) = FlexTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
         }

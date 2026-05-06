@@ -42,6 +42,12 @@ pub enum AppId {
     HrptRx,
     LrptRx,
     AdsbRxExt,
+    RttyTx,
+    SstvTx,
+    AfskTx,
+    MorseTx,
+    SoundboardTx,
+    FlexTx,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]

@@ -35,6 +35,12 @@ pub mod dab_rx;
 pub mod hrpt_rx;
 pub mod lrpt_rx;
 pub mod adsb_rx_ext;
+pub mod rtty_tx;
+pub mod sstv_tx;
+pub mod afsk_tx;
+pub mod morse_tx;
+pub mod soundboard_tx;
+pub mod flex_tx;
 
 use anyhow::Result;
 use mayhem_ipc::AppMetadata;
