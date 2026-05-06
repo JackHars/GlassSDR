@@ -11,3 +11,4 @@ pub mod ppm;
 pub mod preamble;
 pub mod resample;
 pub mod spectrum;
+pub mod stereo_decode;
