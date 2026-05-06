@@ -46,6 +46,12 @@ import { Mdc1200TxApp } from "./apps/mdc1200-tx/Mdc1200TxApp";
 import { ReplayTxApp } from "./apps/replay-tx/ReplayTxApp";
 import { OokEditorTxApp } from "./apps/ook-editor-tx/OokEditorTxApp";
 import { FreqHopperApp } from "./apps/freq-hopper/FreqHopperApp";
+import { BtleTxApp } from "./apps/btle-tx/BtleTxApp";
+import { Nrf24TxApp } from "./apps/nrf24-tx/Nrf24TxApp";
+import { Rfm69TxApp } from "./apps/rfm69-tx/Rfm69TxApp";
+import { FlipperTxApp } from "./apps/flipper-tx/FlipperTxApp";
+import { KeyfobTxApp } from "./apps/keyfob-tx/KeyfobTxApp";
+import { LgeTxApp } from "./apps/lge-tx/LgeTxApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -132,6 +138,12 @@ export default function App() {
         {activeApp === "replay_tx" && <ReplayTxApp />}
         {activeApp === "ook_editor_tx" && <OokEditorTxApp />}
         {activeApp === "freq_hopper" && <FreqHopperApp />}
+        {activeApp === "btle_tx" && <BtleTxApp />}
+        {activeApp === "nrf24_tx" && <Nrf24TxApp />}
+        {activeApp === "rfm69_tx" && <Rfm69TxApp />}
+        {activeApp === "flipper_tx" && <FlipperTxApp />}
+        {activeApp === "keyfob_tx" && <KeyfobTxApp />}
+        {activeApp === "lge_tx" && <LgeTxApp />}
       </main>
     </div>
   );
