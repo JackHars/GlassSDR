@@ -34,6 +34,12 @@ import { DabRxApp } from "./apps/dab-rx/DabRxApp";
 import { HrptRxApp } from "./apps/hrpt-rx/HrptRxApp";
 import { LrptRxApp } from "./apps/lrpt-rx/LrptRxApp";
 import { AdsbExtApp } from "./apps/adsb-ext/AdsbExtApp";
+import { RttyTxApp } from "./apps/rtty-tx/RttyTxApp";
+import { SstvTxApp } from "./apps/sstv-tx/SstvTxApp";
+import { AfskTxApp } from "./apps/afsk-tx/AfskTxApp";
+import { MorseTxApp } from "./apps/morse-tx/MorseTxApp";
+import { SoundboardTxApp } from "./apps/soundboard-tx/SoundboardTxApp";
+import { FlexTxApp } from "./apps/flex-tx/FlexTxApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -108,6 +114,12 @@ export default function App() {
         {activeApp === "hrpt_rx" && <HrptRxApp />}
         {activeApp === "lrpt_rx" && <LrptRxApp />}
         {activeApp === "adsb_rx_ext" && <AdsbExtApp />}
+        {activeApp === "rtty_tx" && <RttyTxApp />}
+        {activeApp === "sstv_tx" && <SstvTxApp />}
+        {activeApp === "afsk_tx" && <AfskTxApp />}
+        {activeApp === "morse_tx" && <MorseTxApp />}
+        {activeApp === "soundboard_tx" && <SoundboardTxApp />}
+        {activeApp === "flex_tx" && <FlexTxApp />}
       </main>
     </div>
   );

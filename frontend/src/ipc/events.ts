@@ -29,3 +29,7 @@ export interface PocsagTxStatus {
 export function onPocsagTxStatus(handler: (s: PocsagTxStatus) => void): Promise<UnlistenFn> {
   return listen<PocsagTxStatus>("pocsag_tx_status", (e) => handler(e.payload));
 }
+
+export function onTxStatus(handler: (s: PocsagTxStatus) => void): Promise<UnlistenFn> {
+  return listen<PocsagTxStatus>("tx_status", (e) => handler(e.payload));
+}
