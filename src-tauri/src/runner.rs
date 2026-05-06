@@ -23,9 +23,13 @@ use mayhem_apps::{
     btle_rx::BtleRxApp, btle_comm::BtleCommApp, nrf24_rx::Nrf24RxApp,
     encoder_suite::EncoderSuiteApp, decoder_suite::DecoderSuiteApp,
     capture_manager::CaptureManagerApp, spectrum_painter::SpectrumPainterApp,
+    rf_characterize::RfCharacterizeApp, protocol_analyzer::ProtocolAnalyzerApp,
+    remote_control::RemoteControlApp, iq_player::IqPlayerApp,
+    sdr_benchmark::SdrBenchmarkApp, freq_counter::FreqCounterApp,
+    ctcss_dcs::CtcssDcsApp,
     App, AppRegistry, RunningApp,
 };
-use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, BleAdvEvent, DabServiceEvent, DscMessageEvent, EpirbBeaconEvent, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
+use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, BleAdvEvent, CtcssDetectEvent, DabServiceEvent, DscMessageEvent, EpirbBeaconEvent, FreqMeasureEvent, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
@@ -289,6 +293,34 @@ impl AppRunner {
         });
         registry.register(SpectrumPainterApp::metadata(), || {
             let (app, _) = SpectrumPainterApp::new();
+            app
+        });
+        registry.register(RfCharacterizeApp::metadata(), || {
+            let (app, _) = RfCharacterizeApp::new();
+            app
+        });
+        registry.register(ProtocolAnalyzerApp::metadata(), || {
+            let (app, _) = ProtocolAnalyzerApp::new();
+            app
+        });
+        registry.register(RemoteControlApp::metadata(), || {
+            let (app, _) = RemoteControlApp::new();
+            app
+        });
+        registry.register(IqPlayerApp::metadata(), || {
+            let (app, _) = IqPlayerApp::new();
+            app
+        });
+        registry.register(SdrBenchmarkApp::metadata(), || {
+            let (app, _) = SdrBenchmarkApp::new();
+            app
+        });
+        registry.register(FreqCounterApp::metadata(), || {
+            let (app, _) = FreqCounterApp::new();
+            app
+        });
+        registry.register(CtcssDcsApp::metadata(), || {
+            let (app, _) = CtcssDcsApp::new();
             app
         });
         Self {
@@ -710,6 +742,48 @@ impl AppRunner {
                 let (app, status_rx) = SpectrumPainterApp::new();
                 let running = app.start(params)?;
                 spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::RfCharacterize => {
+                let (app, status_rx) = RfCharacterizeApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::ProtocolAnalyzer => {
+                let (app, spec_rx) = ProtocolAnalyzerApp::new();
+                let running = app.start(params)?;
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::RemoteControl => {
+                let (app, spec_rx) = RemoteControlApp::new();
+                let running = app.start(params)?;
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::IqPlayer => {
+                let (app, spec_rx) = IqPlayerApp::new();
+                let running = app.start(params)?;
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::SdrBenchmark => {
+                let (app, spec_rx) = SdrBenchmarkApp::new();
+                let running = app.start(params)?;
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::FreqCounter => {
+                let (app, event_rx) = FreqCounterApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<FreqMeasureEvent>(handle.clone(), "freq_measure", event_rx);
+                state.current = Some((id, running));
+            }
+            AppId::CtcssDcs => {
+                let (app, event_rx) = CtcssDcsApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<CtcssDetectEvent>(handle.clone(), "ctcss_detect", event_rx);
                 state.current = Some((id, running));
             }
             AppId::Snake

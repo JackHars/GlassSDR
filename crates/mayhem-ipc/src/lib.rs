@@ -79,6 +79,13 @@ pub enum AppId {
     DecoderSuite,
     CaptureManager,
     SpectrumPainter,
+    RfCharacterize,
+    ProtocolAnalyzer,
+    RemoteControl,
+    IqPlayer,
+    SdrBenchmark,
+    FreqCounter,
+    CtcssDcs,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -408,6 +415,14 @@ pub struct BleAdvEvent {
     pub adv_type: String,
     pub data_hex: String,
 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct CtcssDetectEvent { pub tone_hz: f32, pub power_db: f32 }
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct FreqMeasureEvent { pub frequency_hz: f64, pub precision_hz: f32 }
 
 #[cfg(test)]
 mod tests {

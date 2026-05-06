@@ -61,6 +61,13 @@ pub mod encoder_suite;
 pub mod decoder_suite;
 pub mod capture_manager;
 pub mod spectrum_painter;
+pub mod rf_characterize;
+pub mod protocol_analyzer;
+pub mod remote_control;
+pub mod iq_player;
+pub mod sdr_benchmark;
+pub mod freq_counter;
+pub mod ctcss_dcs;
 
 use anyhow::Result;
 use mayhem_ipc::AppMetadata;
