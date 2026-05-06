@@ -41,6 +41,12 @@ pub mod afsk_tx;
 pub mod morse_tx;
 pub mod soundboard_tx;
 pub mod flex_tx;
+pub mod adsb_tx;
+pub mod gps_sim;
+pub mod mdc1200_tx;
+pub mod replay_tx;
+pub mod ook_editor_tx;
+pub mod freq_hopper;
 
 use anyhow::Result;
 use mayhem_ipc::AppMetadata;

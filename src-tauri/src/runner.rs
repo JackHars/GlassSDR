@@ -15,6 +15,8 @@ use mayhem_apps::{
     sonde_rx_ext::SondeRxExtApp, soundboard_tx::SoundboardTxApp, sstv_tx::SstvTxApp,
     ssb_rx::SsbRxApp, subghz_capture::SubGhzCaptureApp, tpms_rx::TpmsRxApp,
     twotone_rx::TwoToneRxApp, weather_rx::WeatherRxApp, wfm_rx::WfmRxApp,
+    adsb_tx::AdsbTxApp, gps_sim::GpsSimApp, mdc1200_tx::Mdc1200TxApp,
+    replay_tx::ReplayTxApp, ook_editor_tx::OokEditorTxApp, freq_hopper::FreqHopperApp,
     App, AppRegistry, RunningApp,
 };
 use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, DabServiceEvent, DscMessageEvent, EpirbBeaconEvent, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
@@ -201,6 +203,30 @@ impl AppRunner {
         });
         registry.register(FlexTxApp::metadata(), || {
             let (app, _) = FlexTxApp::new();
+            app
+        });
+        registry.register(AdsbTxApp::metadata(), || {
+            let (app, _) = AdsbTxApp::new();
+            app
+        });
+        registry.register(GpsSimApp::metadata(), || {
+            let (app, _) = GpsSimApp::new();
+            app
+        });
+        registry.register(Mdc1200TxApp::metadata(), || {
+            let (app, _) = Mdc1200TxApp::new();
+            app
+        });
+        registry.register(ReplayTxApp::metadata(), || {
+            let (app, _) = ReplayTxApp::new();
+            app
+        });
+        registry.register(OokEditorTxApp::metadata(), || {
+            let (app, _) = OokEditorTxApp::new();
+            app
+        });
+        registry.register(FreqHopperApp::metadata(), || {
+            let (app, _) = FreqHopperApp::new();
             app
         });
         Self {
@@ -500,6 +526,42 @@ impl AppRunner {
             }
             AppId::FlexTx => {
                 let (app, status_rx) = FlexTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::AdsbTx => {
+                let (app, status_rx) = AdsbTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::GpsSim => {
+                let (app, status_rx) = GpsSimApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::Mdc1200Tx => {
+                let (app, status_rx) = Mdc1200TxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::ReplayTx => {
+                let (app, status_rx) = ReplayTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::OokEditorTx => {
+                let (app, status_rx) = OokEditorTxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::FreqHopper => {
+                let (app, status_rx) = FreqHopperApp::new();
                 let running = app.start(params)?;
                 spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));

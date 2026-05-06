@@ -48,6 +48,12 @@ pub enum AppId {
     MorseTx,
     SoundboardTx,
     FlexTx,
+    AdsbTx,
+    GpsSim,
+    Mdc1200Tx,
+    ReplayTx,
+    OokEditorTx,
+    FreqHopper,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
