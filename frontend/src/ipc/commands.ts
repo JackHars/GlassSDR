@@ -18,3 +18,14 @@ export function stopApp(): Promise<void> {
 export function startNfm(tuning: NfmTuning): Promise<void> {
   return startApp("nfm_audio" as AppId, tuning);
 }
+
+export interface AdsbParams {
+  ref_lat?: number;
+  ref_lon?: number;
+  lna_gain_db?: number;
+  vga_gain_db?: number;
+}
+
+export function startAdsb(params: AdsbParams = {}): Promise<void> {
+  return startApp("adsb_rx" as AppId, params);
+}
