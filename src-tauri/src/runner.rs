@@ -2,8 +2,8 @@
 //! v0.1 supports one app at a time. Switching apps stops the current one cleanly.
 
 use anyhow::Result;
-use mayhem_apps::{adsb_rx::AdsbRxApp, nfm_audio::NfmAudioApp, App, AppRegistry, RunningApp};
-use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, SpectrumFrame};
+use mayhem_apps::{adsb_rx::AdsbRxApp, nfm_audio::NfmAudioApp, pocsag_tx::PocsagTxApp, App, AppRegistry, RunningApp};
+use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, PocsagTxStatus, SpectrumFrame};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
@@ -31,6 +31,10 @@ impl AppRunner {
         });
         registry.register(AdsbRxApp::metadata(), || {
             let (app, _) = AdsbRxApp::new();
+            app
+        });
+        registry.register(PocsagTxApp::metadata(), || {
+            let (app, _) = PocsagTxApp::new();
             app
         });
         Self {
@@ -75,6 +79,12 @@ impl AppRunner {
                 spawn_aircraft_pump(handle.clone(), state_rx);
                 state.current = Some((id, running));
             }
+            AppId::PocsagTx => {
+                let (app, status_rx) = PocsagTxApp::new();
+                let running = app.start(params)?;
+                spawn_pocsag_status_pump(handle.clone(), status_rx);
+                state.current = Some((id, running));
+            }
         }
 
         let _ = handle.emit("app_status", AppStatus::Running { app: id });
@@ -92,6 +102,17 @@ impl AppRunner {
         let _ = handle.emit("app_status", AppStatus::Idle);
         Ok(())
     }
+}
+
+fn spawn_pocsag_status_pump(
+    handle: AppHandle,
+    mut status_rx: mpsc::UnboundedReceiver<PocsagTxStatus>,
+) {
+    tokio::spawn(async move {
+        while let Some(status) = status_rx.recv().await {
+            let _ = handle.emit("pocsag_tx_status", &status);
+        }
+    });
 }
 
 fn spawn_aircraft_pump(
