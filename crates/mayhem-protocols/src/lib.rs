@@ -2,3 +2,4 @@
 //! No DSP, no I/O, no flowgraph — fully testable with byte fixtures.
 
 pub mod adsb;
+pub mod pocsag;
