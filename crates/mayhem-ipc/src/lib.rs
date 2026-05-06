@@ -21,6 +21,11 @@ pub enum AppId {
     AcarsRx,
     PocsagRx,
     AfskRx,
+    ErtRx,
+    WeatherRx,
+    SondeRx,
+    TwoToneRx,
+    FlexRx,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -238,6 +243,50 @@ pub struct PocsagPageEvent {
 pub struct AfskBitEvent {
     pub hex_dump: String,
     pub decoded_ascii: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct ErtMeterEvent {
+    pub meter_id: u32,
+    pub meter_type: String,
+    pub consumption: u32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct WeatherEvent {
+    pub sensor_id: u16,
+    pub channel: u8,
+    pub temp_c: Option<f32>,
+    pub humidity: Option<u8>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct SondeEvent {
+    pub serial: String,
+    pub lat: f64,
+    pub lon: f64,
+    pub alt_m: f64,
+    pub sonde_type: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct TwoToneEvent {
+    pub tone_a_hz: f32,
+    pub tone_b_hz: f32,
+    pub timestamp_ms: f64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct FlexPageEvent {
+    pub capcode: u32,
+    pub message: String,
+    pub cycle: u8,
+    pub frame: u8,
 }
 
 #[cfg(test)]
