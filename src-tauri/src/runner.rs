@@ -5,12 +5,14 @@ use anyhow::Result;
 use mayhem_apps::{
     acars_rx::AcarsRxApp, adsb_rx::AdsbRxApp, afsk_rx::AfskRxApp, ais_rx::AisRxApp,
     am_rx::AmRxApp, aprs_rx::AprsRxApp, cw_rx::CwRxApp, ert_rx::ErtRxApp,
-    flex_rx::FlexRxApp, nfm_audio::NfmAudioApp, pocsag_rx::PocsagRxApp,
-    pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, sonde_rx::SondeRxApp, ssb_rx::SsbRxApp,
-    twotone_rx::TwoToneRxApp, weather_rx::WeatherRxApp, wfm_rx::WfmRxApp, App, AppRegistry,
-    RunningApp,
+    flex_rx::FlexRxApp, looking_glass::LookingGlassApp, nfm_audio::NfmAudioApp,
+    ook_analyzer::OokAnalyzerApp, ook_decoders::OokDecodersApp, pocsag_rx::PocsagRxApp,
+    pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, recon::ReconApp, scanner::ScannerApp,
+    sig_gen_app::SigGenApp, sonde_rx::SondeRxApp, ssb_rx::SsbRxApp,
+    subghz_capture::SubGhzCaptureApp, tpms_rx::TpmsRxApp, twotone_rx::TwoToneRxApp,
+    weather_rx::WeatherRxApp, wfm_rx::WfmRxApp, App, AppRegistry, RunningApp,
 };
-use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, PocsagTxStatus, RdsData, SpectrumFrame};
+use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, OokDecodeEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SpectrumFrame, TpmsSensorEvent};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
@@ -106,6 +108,38 @@ impl AppRunner {
         });
         registry.register(FlexRxApp::metadata(), || {
             let (app, _, _) = FlexRxApp::new();
+            app
+        });
+        registry.register(TpmsRxApp::metadata(), || {
+            let (app, _, _) = TpmsRxApp::new();
+            app
+        });
+        registry.register(OokAnalyzerApp::metadata(), || {
+            let (app, _, _) = OokAnalyzerApp::new();
+            app
+        });
+        registry.register(ScannerApp::metadata(), || {
+            let (app, _, _) = ScannerApp::new();
+            app
+        });
+        registry.register(ReconApp::metadata(), || {
+            let (app, _, _) = ReconApp::new();
+            app
+        });
+        registry.register(LookingGlassApp::metadata(), || {
+            let (app, _, _) = LookingGlassApp::new();
+            app
+        });
+        registry.register(SigGenApp::metadata(), || {
+            let (app, _) = SigGenApp::new();
+            app
+        });
+        registry.register(OokDecodersApp::metadata(), || {
+            let (app, _, _) = OokDecodersApp::new();
+            app
+        });
+        registry.register(SubGhzCaptureApp::metadata(), || {
+            let (app, _, _) = SubGhzCaptureApp::new();
             app
         });
         Self {
@@ -260,6 +294,61 @@ impl AppRunner {
                 let (app, event_rx, spec_rx) = FlexRxApp::new();
                 let running = app.start(params)?;
                 spawn_typed_pump(handle.clone(), "flex_page", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::TpmsRx => {
+                let (app, event_rx, spec_rx) = TpmsRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<TpmsSensorEvent>(handle.clone(), "tpms_sensor", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::OokAnalyzer => {
+                let (app, event_rx, spec_rx) = OokAnalyzerApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PulseEventIpc>(handle.clone(), "pulse_event", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::Scanner => {
+                let (app, event_rx, spec_rx) = ScannerApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<ScanResultEvent>(handle.clone(), "scan_result", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::Recon => {
+                let (app, event_rx, spec_rx) = ReconApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<ScanResultEvent>(handle.clone(), "scan_result", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::LookingGlass => {
+                let (app, event_rx, spec_rx) = LookingGlassApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<ScanResultEvent>(handle.clone(), "scan_result", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::SigGen => {
+                let (app, status_rx) = SigGenApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "pocsag_tx_status", status_rx);
+                state.current = Some((id, running));
+            }
+            AppId::OokDecoders => {
+                let (app, event_rx, spec_rx) = OokDecodersApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<OokDecodeEvent>(handle.clone(), "ook_decode", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::SubGhzCapture => {
+                let (app, event_rx, spec_rx) = SubGhzCaptureApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump::<PulseEventIpc>(handle.clone(), "pulse_event", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }

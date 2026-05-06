@@ -18,6 +18,14 @@ import { WeatherRxApp } from "./apps/weather-rx/WeatherRxApp";
 import { SondeRxApp } from "./apps/sonde-rx/SondeRxApp";
 import { TwoToneRxApp } from "./apps/twotone-rx/TwoToneRxApp";
 import { FlexRxApp } from "./apps/flex-rx/FlexRxApp";
+import { TpmsRxApp } from "./apps/tpms-rx/TpmsRxApp";
+import { OokAnalyzerApp } from "./apps/ook-analyzer/OokAnalyzerApp";
+import { ScannerApp } from "./apps/scanner/ScannerApp";
+import { ReconApp } from "./apps/recon/ReconApp";
+import { LookingGlassApp } from "./apps/looking-glass/LookingGlassApp";
+import { SigGenApp } from "./apps/sig-gen/SigGenApp";
+import { OokDecodersApp } from "./apps/ook-decoders/OokDecodersApp";
+import { SubGhzCaptureApp } from "./apps/subghz-capture/SubGhzCaptureApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -76,6 +84,14 @@ export default function App() {
         {activeApp === "sonde_rx" && <SondeRxApp />}
         {activeApp === "two_tone_rx" && <TwoToneRxApp />}
         {activeApp === "flex_rx" && <FlexRxApp />}
+        {activeApp === "tpms_rx" && <TpmsRxApp />}
+        {activeApp === "ook_analyzer" && <OokAnalyzerApp />}
+        {activeApp === "scanner" && <ScannerApp />}
+        {activeApp === "recon" && <ReconApp />}
+        {activeApp === "looking_glass" && <LookingGlassApp />}
+        {activeApp === "sig_gen" && <SigGenApp />}
+        {activeApp === "ook_decoders" && <OokDecodersApp />}
+        {activeApp === "sub_ghz_capture" && <SubGhzCaptureApp />}
       </main>
     </div>
   );
