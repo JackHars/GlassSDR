@@ -15,3 +15,4 @@ pub mod resample;
 pub mod spectrum;
 pub mod stereo_decode;
 pub mod manchester;
+pub mod tone_detect;
