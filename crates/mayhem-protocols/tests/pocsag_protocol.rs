@@ -28,6 +28,50 @@ fn idle_codeword_even_parity() {
     );
 }
 
+mod charset {
+    use mayhem_protocols::pocsag::charset::{encode_alphanumeric, encode_numeric};
+
+    #[test]
+    fn numeric_length() {
+        let bits = encode_numeric("12345");
+        assert_eq!(bits.len(), 20); // 5 chars × 4 bits
+    }
+
+    #[test]
+    fn numeric_digit_one() {
+        let bits = encode_numeric("1");
+        // '1' = 0x1 = 0001, MSB first → [false, false, false, true]
+        assert_eq!(bits, vec![false, false, false, true]);
+    }
+
+    #[test]
+    fn numeric_special_chars() {
+        let bits = encode_numeric("*");
+        // '*' = 0xA = 1010, MSB first → [true, false, true, false]
+        assert_eq!(bits, vec![true, false, true, false]);
+    }
+
+    #[test]
+    fn alpha_length() {
+        let bits = encode_alphanumeric("Hello");
+        assert_eq!(bits.len(), 35); // 5 × 7
+    }
+
+    #[test]
+    fn alpha_char_a() {
+        let bits = encode_alphanumeric("A");
+        // 'A' = 65 = 0b1000001, LSB first → [true, false, false, false, false, false, true]
+        assert_eq!(bits, vec![true, false, false, false, false, false, true]);
+    }
+
+    #[test]
+    fn alpha_space() {
+        let bits = encode_alphanumeric(" ");
+        // ' ' = 32 = 0b0100000, LSB first → [false, false, false, false, false, true, false]
+        assert_eq!(bits, vec![false, false, false, false, false, true, false]);
+    }
+}
+
 mod codeword {
     use mayhem_protocols::pocsag::codeword::{
         address_codeword, idle_codeword, message_codeword, sync_codeword,
