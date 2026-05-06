@@ -3,6 +3,7 @@
 pub mod decimation;
 pub mod demod_am;
 pub mod demod_fm;
+pub mod demod_ssb;
 pub mod gauss_fsk;
 pub mod magnitude;
 pub mod ppm;
