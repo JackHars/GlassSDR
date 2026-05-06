@@ -275,11 +275,16 @@ impl AdsbAggregator {
                 };
 
                 if let Some((lat, lon)) = pos {
-                    entry.position = Some(AdsbPosition {
+                    let new_pos = AdsbPosition {
                         lat,
                         lon,
                         altitude_ft: cpr.altitude_ft,
-                    });
+                    };
+                    if position_eq_approx(&entry.position, &new_pos) {
+                        changed = false;
+                    } else {
+                        entry.position = Some(new_pos);
+                    }
                 } else {
                     changed = false;
                 }
@@ -287,11 +292,16 @@ impl AdsbAggregator {
             // TC 19: Airborne Velocity
             19 => {
                 if let Some(v) = decode_velocity(frame.me) {
-                    entry.velocity = Some(AdsbVelocity {
+                    let new_vel = AdsbVelocity {
                         ground_speed_kt: v.ground_speed_kt,
                         heading_deg: v.heading_deg,
                         vert_rate_fpm: v.vert_rate_fpm,
-                    });
+                    };
+                    if velocity_eq_approx(&entry.velocity, &new_vel) {
+                        changed = false;
+                    } else {
+                        entry.velocity = Some(new_vel);
+                    }
                 } else {
                     changed = false;
                 }
@@ -305,5 +315,27 @@ impl AdsbAggregator {
         } else {
             None
         }
+    }
+}
+
+fn position_eq_approx(prior: &Option<AdsbPosition>, new: &AdsbPosition) -> bool {
+    match prior {
+        Some(p) => {
+            (p.lat - new.lat).abs() < 1e-7
+                && (p.lon - new.lon).abs() < 1e-7
+                && p.altitude_ft == new.altitude_ft
+        }
+        None => false,
+    }
+}
+
+fn velocity_eq_approx(prior: &Option<AdsbVelocity>, new: &AdsbVelocity) -> bool {
+    match prior {
+        Some(v) => {
+            (v.ground_speed_kt - new.ground_speed_kt).abs() < 0.5
+                && (v.heading_deg - new.heading_deg).abs() < 0.5
+                && v.vert_rate_fpm == new.vert_rate_fpm
+        }
+        None => false,
     }
 }
