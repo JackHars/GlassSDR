@@ -365,3 +365,417 @@ body {
 .glass-btn.danger:hover {
   background: rgba(248, 113, 113, 0.2);
 }
+
+/* ============================================================
+   GLOBAL APP VIEW OVERRIDES
+   Forces glassmorphism onto all inline-styled app components.
+   Uses !important to override inline style={{}} attributes.
+   ============================================================ */
+
+/* All direct children divs inside app views — remove opaque backgrounds */
+.app-content-body > div {
+  background: transparent !important;
+  color: var(--text-primary) !important;
+}
+
+/* Any div used as a panel/container with a dark bg */
+.app-content-body div[style*="background"] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--glass-radius-sm) !important;
+}
+
+/* Except the top-level wrapper — keep it transparent */
+.app-content-body > div[style*="background"] {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Headings */
+.app-content-body h2 {
+  font-size: 22px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.3px !important;
+  color: var(--text-primary) !important;
+  margin-bottom: 16px !important;
+  background: linear-gradient(135deg, var(--text-primary), var(--accent)) !important;
+  -webkit-background-clip: text !important;
+  -webkit-text-fill-color: transparent !important;
+  background-clip: text !important;
+}
+
+.app-content-body h3 {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  color: var(--text-secondary) !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+}
+
+/* All text inputs */
+.app-content-body input[type="text"],
+.app-content-body input[type="number"],
+.app-content-body input[type="search"],
+.app-content-body input:not([type]),
+.app-content-body textarea {
+  padding: 10px 14px !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+  font-size: 14px !important;
+  font-family: var(--font-sans) !important;
+  outline: none !important;
+  transition: border-color 150ms ease, box-shadow 150ms ease !important;
+  width: auto !important;
+  min-width: 0 !important;
+}
+
+.app-content-body input[type="text"]:focus,
+.app-content-body input[type="number"]:focus,
+.app-content-body input:not([type]):focus,
+.app-content-body textarea:focus {
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-dim) !important;
+}
+
+.app-content-body textarea {
+  min-height: 80px !important;
+  resize: vertical !important;
+  font-family: var(--font-mono) !important;
+}
+
+/* Select dropdowns */
+.app-content-body select {
+  padding: 10px 14px !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
+  color: var(--text-primary) !important;
+  font-size: 14px !important;
+  font-family: var(--font-sans) !important;
+  outline: none !important;
+  cursor: pointer !important;
+  appearance: none !important;
+  -webkit-appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M2 4l4 4 4-4' stroke='%23888' stroke-width='1.5' fill='none'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  padding-right: 32px !important;
+}
+
+.app-content-body select option {
+  background: #1a1a2e !important;
+  color: var(--text-primary) !important;
+}
+
+/* Range sliders */
+.app-content-body input[type="range"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  height: 6px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 3px !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 4px 0 !important;
+}
+
+.app-content-body input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none !important;
+  width: 18px !important;
+  height: 18px !important;
+  border-radius: 50% !important;
+  background: var(--accent) !important;
+  border: 2px solid rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 0 8px var(--accent-glow), 0 2px 4px rgba(0,0,0,0.3) !important;
+  cursor: pointer !important;
+  transition: transform 150ms ease !important;
+}
+
+.app-content-body input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15) !important;
+}
+
+.app-content-body input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(0.95) !important;
+}
+
+/* Checkboxes */
+.app-content-body input[type="checkbox"] {
+  -webkit-appearance: none !important;
+  appearance: none !important;
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 6px !important;
+  border: 1.5px solid var(--glass-border-strong) !important;
+  background: rgba(0, 0, 0, 0.3) !important;
+  cursor: pointer !important;
+  position: relative !important;
+  transition: all 150ms ease !important;
+  vertical-align: middle !important;
+}
+
+.app-content-body input[type="checkbox"]:checked {
+  background: var(--accent) !important;
+  border-color: var(--accent) !important;
+}
+
+.app-content-body input[type="checkbox"]:checked::after {
+  content: "✓" !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+  font-size: 13px !important;
+  font-weight: 700 !important;
+  color: #0a0a0f !important;
+}
+
+/* All buttons */
+.app-content-body button {
+  padding: 10px 18px !important;
+  border-radius: 10px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  font-family: var(--font-sans) !important;
+  cursor: pointer !important;
+  border: 1px solid var(--glass-border) !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  color: var(--text-primary) !important;
+  transition: all 150ms ease !important;
+  letter-spacing: 0.2px !important;
+}
+
+.app-content-body button:hover {
+  background: var(--glass-bg-hover) !important;
+  border-color: var(--glass-border-strong) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.app-content-body button:active {
+  transform: translateY(0) scale(0.98) !important;
+}
+
+.app-content-body button:disabled {
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+}
+
+/* Buttons with green/start-like colors → accent style */
+.app-content-body button[style*="background: #2a2"],
+.app-content-body button[style*="background: rgb(34"],
+.app-content-body button[style*="#2a2"] {
+  background: linear-gradient(135deg, rgba(110, 231, 183, 0.2), rgba(110, 231, 183, 0.08)) !important;
+  border-color: rgba(110, 231, 183, 0.3) !important;
+  color: var(--accent) !important;
+}
+
+.app-content-body button[style*="background: #2a2"]:hover,
+.app-content-body button[style*="#2a2"]:hover {
+  background: linear-gradient(135deg, rgba(110, 231, 183, 0.3), rgba(110, 231, 183, 0.12)) !important;
+  box-shadow: var(--shadow-glow) !important;
+}
+
+/* Buttons with red/danger colors */
+.app-content-body button[style*="background: #f44"],
+.app-content-body button[style*="#c50"],
+.app-content-body button[style*="background: #c50"] {
+  background: linear-gradient(135deg, rgba(248, 113, 113, 0.2), rgba(248, 113, 113, 0.08)) !important;
+  border-color: rgba(248, 113, 113, 0.3) !important;
+  color: var(--danger) !important;
+}
+
+/* Labels */
+.app-content-body label {
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: var(--text-secondary) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+/* Pre/code blocks */
+.app-content-body pre {
+  background: rgba(0, 0, 0, 0.3) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  font-family: var(--font-mono) !important;
+  font-size: 12px !important;
+  color: var(--text-secondary) !important;
+  overflow-x: auto !important;
+}
+
+/* Tables */
+.app-content-body table {
+  width: 100% !important;
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--glass-radius-sm) !important;
+  overflow: hidden !important;
+}
+
+.app-content-body table th {
+  padding: 10px 14px !important;
+  text-align: left !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.5px !important;
+  color: var(--text-tertiary) !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border-bottom: 1px solid var(--glass-border) !important;
+}
+
+.app-content-body table td {
+  padding: 10px 14px !important;
+  font-size: 13px !important;
+  color: var(--text-primary) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
+}
+
+.app-content-body table tr:last-child td {
+  border-bottom: none !important;
+}
+
+.app-content-body table tr:hover td {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+/* Grid/flex layouts used by apps for form fields */
+.app-content-body div[style*="grid"] {
+  gap: 12px !important;
+}
+
+.app-content-body div[style*="display: grid"] {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Span text used for values (e.g., "24 dB") */
+.app-content-body span {
+  color: var(--text-secondary) !important;
+  font-size: 13px !important;
+}
+
+/* The "form-grid" style panels used by POCSAG TX and others */
+.app-content-body div[style*="maxWidth"] {
+  background: transparent !important;
+  border: none !important;
+  backdrop-filter: none !important;
+}
+
+/* Status display boxes */
+.app-content-body div[style*="background: #1a1a2e"],
+.app-content-body div[style*="background: #222"],
+.app-content-body div[style*="background: rgb(26"] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid var(--glass-border) !important;
+  border-radius: var(--glass-radius-sm) !important;
+  padding: 12px 16px !important;
+}
+
+/* Legal banner overlay */
+.app-content-body div[style*="position: fixed"] {
+  background: rgba(0, 0, 0, 0.7) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.app-content-body div[style*="position: fixed"] > div {
+  background: rgba(20, 20, 35, 0.95) !important;
+  backdrop-filter: blur(30px) !important;
+  -webkit-backdrop-filter: blur(30px) !important;
+  border: 1px solid rgba(248, 113, 113, 0.3) !important;
+  border-radius: var(--glass-radius) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Canvas elements (waterfall, games) — keep untouched but add border */
+.app-content-body canvas {
+  border-radius: var(--glass-radius-sm) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+/* Strong/bold text */
+.app-content-body strong {
+  color: var(--text-primary) !important;
+  font-weight: 600 !important;
+}
+
+/* Links */
+.app-content-body a {
+  color: var(--accent) !important;
+  text-decoration: none !important;
+}
+
+.app-content-body a:hover {
+  text-decoration: underline !important;
+}
+
+/* Dividers / hr */
+.app-content-body hr {
+  border: none !important;
+  height: 1px !important;
+  background: var(--glass-border) !important;
+  margin: 16px 0 !important;
+}
+
+/* Fix paragraphs */
+.app-content-body p {
+  color: var(--text-secondary) !important;
+  line-height: 1.6 !important;
+  font-size: 14px !important;
+}
+
+/* Inline style color overrides for common patterns */
+.app-content-body [style*="color: #eee"],
+.app-content-body [style*="color: #ccc"],
+.app-content-body [style*="color: rgb(238"],
+.app-content-body [style*="color: rgb(204"] {
+  color: var(--text-primary) !important;
+}
+
+.app-content-body [style*="color: #888"],
+.app-content-body [style*="color: #999"],
+.app-content-body [style*="color: rgb(136"] {
+  color: var(--text-secondary) !important;
+}
+
+/* Warning banners (IndoorTestOnly, OwnDevicesOnly) */
+.app-content-body div[style*="border: 2px solid"],
+.app-content-body div[style*="border: 2px solid #f44"] {
+  background: rgba(248, 113, 113, 0.06) !important;
+  border: 1px solid rgba(248, 113, 113, 0.25) !important;
+  border-radius: var(--glass-radius-sm) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+}
+
+/* Ensure the animated bg shows through */
+.app-content-body {
+  background: transparent !important;
+}
