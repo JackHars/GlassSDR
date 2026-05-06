@@ -20,3 +20,4 @@ pub mod pulse_analyze;
 pub mod scanner_engine;
 pub mod sig_gen;
 pub mod tone_detect;
+pub mod bpsk_demod;

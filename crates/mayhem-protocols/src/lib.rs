@@ -13,3 +13,7 @@ pub mod rds;
 pub mod sonde;
 pub mod ook;
 pub mod weather;
+pub mod apt;
+pub mod dab;
+pub mod dsc;
+pub mod epirb;
