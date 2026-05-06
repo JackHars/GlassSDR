@@ -1,9 +1,13 @@
 //! Apps live here. Each app implements the App trait and registers with AppRegistry.
 
 pub mod adsb_rx;
+pub mod am_rx;
+pub mod cw_rx;
 pub mod nfm_audio;
 pub mod pocsag_tx;
+pub mod rds_rx;
 pub mod registry;
+pub mod ssb_rx;
 pub mod wfm_rx;
 
 use anyhow::Result;
