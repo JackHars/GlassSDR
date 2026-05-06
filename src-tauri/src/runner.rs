@@ -3,9 +3,10 @@
 
 use anyhow::Result;
 use mayhem_apps::{
-    adsb_rx::AdsbRxApp, am_rx::AmRxApp, cw_rx::CwRxApp, nfm_audio::NfmAudioApp,
-    pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, ssb_rx::SsbRxApp, wfm_rx::WfmRxApp,
-    App, AppRegistry, RunningApp,
+    acars_rx::AcarsRxApp, adsb_rx::AdsbRxApp, afsk_rx::AfskRxApp, ais_rx::AisRxApp,
+    am_rx::AmRxApp, aprs_rx::AprsRxApp, cw_rx::CwRxApp, nfm_audio::NfmAudioApp,
+    pocsag_rx::PocsagRxApp, pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, ssb_rx::SsbRxApp,
+    wfm_rx::WfmRxApp, App, AppRegistry, RunningApp,
 };
 use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, PocsagTxStatus, RdsData, SpectrumFrame};
 use serde_json::Value;
@@ -63,6 +64,26 @@ impl AppRunner {
         });
         registry.register(RdsRxApp::metadata(), || {
             let (app, _, _, _) = RdsRxApp::new();
+            app
+        });
+        registry.register(AprsRxApp::metadata(), || {
+            let (app, _, _) = AprsRxApp::new();
+            app
+        });
+        registry.register(AisRxApp::metadata(), || {
+            let (app, _, _) = AisRxApp::new();
+            app
+        });
+        registry.register(AcarsRxApp::metadata(), || {
+            let (app, _, _) = AcarsRxApp::new();
+            app
+        });
+        registry.register(PocsagRxApp::metadata(), || {
+            let (app, _, _) = PocsagRxApp::new();
+            app
+        });
+        registry.register(AfskRxApp::metadata(), || {
+            let (app, _, _) = AfskRxApp::new();
             app
         });
         Self {
@@ -150,6 +171,41 @@ impl AppRunner {
                 spawn_rds_pump(handle.clone(), rds_rx);
                 state.current = Some((id, running));
             }
+            AppId::AprsRx => {
+                let (app, event_rx, spec_rx) = AprsRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "aprs_packet", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::AisRx => {
+                let (app, event_rx, spec_rx) = AisRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "ais_ship", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::AcarsRx => {
+                let (app, event_rx, spec_rx) = AcarsRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "acars_message", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::PocsagRx => {
+                let (app, event_rx, spec_rx) = PocsagRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "pocsag_page", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::AfskRx => {
+                let (app, event_rx, spec_rx) = AfskRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "afsk_bits", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
         }
 
         let _ = handle.emit("app_status", AppStatus::Running { app: id });
@@ -217,6 +273,26 @@ fn spawn_event_pumps(
     tokio::spawn(async move {
         while let Some(frame) = spec_rx.recv().await {
             let _ = h2.emit("spectrum", frame);
+        }
+    });
+}
+
+fn spawn_typed_pump<T: serde::Serialize + Clone + Send + 'static>(
+    handle: AppHandle,
+    event_name: &'static str,
+    mut rx: mpsc::UnboundedReceiver<T>,
+) {
+    tokio::spawn(async move {
+        while let Some(evt) = rx.recv().await {
+            let _ = handle.emit(event_name, &evt);
+        }
+    });
+}
+
+fn spawn_spec_pump(handle: AppHandle, mut rx: mpsc::UnboundedReceiver<SpectrumFrame>) {
+    tokio::spawn(async move {
+        while let Some(frame) = rx.recv().await {
+            let _ = handle.emit("spectrum", frame);
         }
     });
 }
