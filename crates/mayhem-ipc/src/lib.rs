@@ -26,6 +26,14 @@ pub enum AppId {
     SondeRx,
     TwoToneRx,
     FlexRx,
+    TpmsRx,
+    OokAnalyzer,
+    Scanner,
+    Recon,
+    LookingGlass,
+    SigGen,
+    OokDecoders,
+    SubGhzCapture,
 }
 
 #[derive(Debug, Clone, Copy, Serialize, Deserialize, TS, PartialEq, Eq)]
@@ -287,6 +295,35 @@ pub struct FlexPageEvent {
     pub message: String,
     pub cycle: u8,
     pub frame: u8,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct ScanResultEvent {
+    pub freq_hz: f64,
+    pub power_db: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct PulseEventIpc {
+    pub is_high: bool,
+    pub duration_us: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct OokDecodeEvent {
+    pub protocol: String,
+    pub code_hex: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, TS)]
+#[ts(export, export_to = "../../../frontend/src/ipc/types/")]
+pub struct TpmsSensorEvent {
+    pub sensor_id: u32,
+    pub pressure_kpa: f32,
+    pub temp_c: f32,
 }
 
 #[cfg(test)]

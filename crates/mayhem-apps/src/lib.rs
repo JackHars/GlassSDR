@@ -1,6 +1,14 @@
 //! Apps live here. Each app implements the App trait and registers with AppRegistry.
 
 pub mod acars_rx;
+pub mod looking_glass;
+pub mod ook_analyzer;
+pub mod ook_decoders;
+pub mod recon;
+pub mod scanner;
+pub mod sig_gen_app;
+pub mod subghz_capture;
+pub mod tpms_rx;
 pub mod adsb_rx;
 pub mod afsk_rx;
 pub mod ais_rx;
