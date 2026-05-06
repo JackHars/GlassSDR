@@ -7,12 +7,17 @@ pub mod ais_rx;
 pub mod am_rx;
 pub mod aprs_rx;
 pub mod cw_rx;
+pub mod ert_rx;
+pub mod flex_rx;
 pub mod nfm_audio;
 pub mod pocsag_rx;
 pub mod pocsag_tx;
 pub mod rds_rx;
 pub mod registry;
+pub mod sonde_rx;
 pub mod ssb_rx;
+pub mod twotone_rx;
+pub mod weather_rx;
 pub mod wfm_rx;
 
 use anyhow::Result;

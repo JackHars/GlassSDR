@@ -4,9 +4,11 @@
 use anyhow::Result;
 use mayhem_apps::{
     acars_rx::AcarsRxApp, adsb_rx::AdsbRxApp, afsk_rx::AfskRxApp, ais_rx::AisRxApp,
-    am_rx::AmRxApp, aprs_rx::AprsRxApp, cw_rx::CwRxApp, nfm_audio::NfmAudioApp,
-    pocsag_rx::PocsagRxApp, pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, ssb_rx::SsbRxApp,
-    wfm_rx::WfmRxApp, App, AppRegistry, RunningApp,
+    am_rx::AmRxApp, aprs_rx::AprsRxApp, cw_rx::CwRxApp, ert_rx::ErtRxApp,
+    flex_rx::FlexRxApp, nfm_audio::NfmAudioApp, pocsag_rx::PocsagRxApp,
+    pocsag_tx::PocsagTxApp, rds_rx::RdsRxApp, sonde_rx::SondeRxApp, ssb_rx::SsbRxApp,
+    twotone_rx::TwoToneRxApp, weather_rx::WeatherRxApp, wfm_rx::WfmRxApp, App, AppRegistry,
+    RunningApp,
 };
 use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, PocsagTxStatus, RdsData, SpectrumFrame};
 use serde_json::Value;
@@ -84,6 +86,26 @@ impl AppRunner {
         });
         registry.register(AfskRxApp::metadata(), || {
             let (app, _, _) = AfskRxApp::new();
+            app
+        });
+        registry.register(ErtRxApp::metadata(), || {
+            let (app, _, _) = ErtRxApp::new();
+            app
+        });
+        registry.register(WeatherRxApp::metadata(), || {
+            let (app, _, _) = WeatherRxApp::new();
+            app
+        });
+        registry.register(SondeRxApp::metadata(), || {
+            let (app, _, _) = SondeRxApp::new();
+            app
+        });
+        registry.register(TwoToneRxApp::metadata(), || {
+            let (app, _, _) = TwoToneRxApp::new();
+            app
+        });
+        registry.register(FlexRxApp::metadata(), || {
+            let (app, _, _) = FlexRxApp::new();
             app
         });
         Self {
@@ -203,6 +225,41 @@ impl AppRunner {
                 let (app, event_rx, spec_rx) = AfskRxApp::new();
                 let running = app.start(params)?;
                 spawn_typed_pump(handle.clone(), "afsk_bits", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::ErtRx => {
+                let (app, event_rx, spec_rx) = ErtRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "ert_meter", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::WeatherRx => {
+                let (app, event_rx, spec_rx) = WeatherRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "weather_reading", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::SondeRx => {
+                let (app, event_rx, spec_rx) = SondeRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "sonde_telemetry", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::TwoToneRx => {
+                let (app, event_rx, spec_rx) = TwoToneRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "two_tone_alert", event_rx);
+                spawn_spec_pump(handle.clone(), spec_rx);
+                state.current = Some((id, running));
+            }
+            AppId::FlexRx => {
+                let (app, event_rx, spec_rx) = FlexRxApp::new();
+                let running = app.start(params)?;
+                spawn_typed_pump(handle.clone(), "flex_page", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
