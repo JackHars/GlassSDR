@@ -13,6 +13,11 @@ import { AisRxApp } from "./apps/ais-rx/AisRxApp";
 import { AcarsRxApp } from "./apps/acars-rx/AcarsRxApp";
 import { PocsagRxApp } from "./apps/pocsag-rx/PocsagRxApp";
 import { AfskRxApp } from "./apps/afsk-rx/AfskRxApp";
+import { ErtRxApp } from "./apps/ert-rx/ErtRxApp";
+import { WeatherRxApp } from "./apps/weather-rx/WeatherRxApp";
+import { SondeRxApp } from "./apps/sonde-rx/SondeRxApp";
+import { TwoToneRxApp } from "./apps/twotone-rx/TwoToneRxApp";
+import { FlexRxApp } from "./apps/flex-rx/FlexRxApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -66,6 +71,11 @@ export default function App() {
         {activeApp === "acars_rx" && <AcarsRxApp />}
         {activeApp === "pocsag_rx" && <PocsagRxApp />}
         {activeApp === "afsk_rx" && <AfskRxApp />}
+        {activeApp === "ert_rx" && <ErtRxApp />}
+        {activeApp === "weather_rx" && <WeatherRxApp />}
+        {activeApp === "sonde_rx" && <SondeRxApp />}
+        {activeApp === "two_tone_rx" && <TwoToneRxApp />}
+        {activeApp === "flex_rx" && <FlexRxApp />}
       </main>
     </div>
   );
