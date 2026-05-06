@@ -71,6 +71,13 @@ import { EncoderSuiteApp } from "./apps/encoder-suite/EncoderSuiteApp";
 import { DecoderSuiteApp } from "./apps/decoder-suite/DecoderSuiteApp";
 import { CaptureManagerApp } from "./apps/capture-manager/CaptureManagerApp";
 import { SpectrumPainterApp } from "./apps/spectrum-painter/SpectrumPainterApp";
+import { RfCharApp } from "./apps/rf-char/RfCharApp";
+import { ProtocolAnalyzerApp } from "./apps/protocol-analyzer/ProtocolAnalyzerApp";
+import { RemoteControlApp } from "./apps/remote-control/RemoteControlApp";
+import { IqPlayerApp } from "./apps/iq-player/IqPlayerApp";
+import { SdrBenchApp } from "./apps/sdr-bench/SdrBenchApp";
+import { FreqCounterApp } from "./apps/freq-counter/FreqCounterApp";
+import { CtcssDcsApp } from "./apps/ctcss-dcs/CtcssDcsApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -251,6 +258,13 @@ export default function App() {
         {activeApp === "decoder_suite" && <DecoderSuiteApp />}
         {activeApp === "capture_manager" && <CaptureManagerApp />}
         {activeApp === "spectrum_painter" && <SpectrumPainterApp />}
+        {activeApp === "rf_characterize" && <RfCharApp />}
+        {activeApp === "protocol_analyzer" && <ProtocolAnalyzerApp />}
+        {activeApp === "remote_control" && <RemoteControlApp />}
+        {activeApp === "iq_player" && <IqPlayerApp />}
+        {activeApp === "sdr_benchmark" && <SdrBenchApp />}
+        {activeApp === "freq_counter" && <FreqCounterApp />}
+        {activeApp === "ctcss_dcs" && <CtcssDcsApp />}
       </main>
     </div>
   );
