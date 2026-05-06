@@ -58,6 +58,12 @@ import { PlaylistApp } from "./apps/playlist/PlaylistApp";
 import { SettingsApp } from "./apps/settings/SettingsApp";
 import { CalculatorApp } from "./apps/calculator/CalculatorApp";
 import { NotepadApp } from "./apps/notepad/NotepadApp";
+import { SnakeApp } from "./apps/snake/SnakeApp";
+import { DoomApp } from "./apps/doom/DoomApp";
+import { MorseTrainerApp } from "./apps/morse-trainer/MorseTrainerApp";
+import { BandPlanApp } from "./apps/band-plan/BandPlanApp";
+import { AntennaCalcApp } from "./apps/antenna-calc/AntennaCalcApp";
+import { SignalMeterApp } from "./apps/signal-meter/SignalMeterApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -93,6 +99,50 @@ export default function App() {
             }}
           >
             {a.name}
+          </button>
+        ))}
+        <h3 style={{ margin: "16px 0 8px", color: "#888", fontSize: 12, textTransform: "uppercase", letterSpacing: 1 }}>RF Tools</h3>
+        {([
+          ["signal_meter", "Signal Meter"],
+          ["band_plan", "Band Plan"],
+          ["antenna_calc", "Antenna Calc"],
+        ] as const).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setActiveApp(id as any)}
+            style={{
+              display: "block",
+              width: "100%",
+              padding: 6,
+              marginBottom: 4,
+              background: activeApp === id ? "#444" : "transparent",
+              color: "#eee",
+              border: "1px solid #333",
+            }}
+          >
+            {label}
+          </button>
+        ))}
+        <h3 style={{ margin: "16px 0 8px", color: "#888", fontSize: 12, textTransform: "uppercase", letterSpacing: 1 }}>Games</h3>
+        {([
+          ["snake", "Snake"],
+          ["doom", "Doom"],
+          ["morse_trainer", "Morse Trainer"],
+        ] as const).map(([id, label]) => (
+          <button
+            key={id}
+            onClick={() => setActiveApp(id as any)}
+            style={{
+              display: "block",
+              width: "100%",
+              padding: 6,
+              marginBottom: 4,
+              background: activeApp === id ? "#444" : "transparent",
+              color: "#eee",
+              border: "1px solid #333",
+            }}
+          >
+            {label}
           </button>
         ))}
         <h3 style={{ margin: "16px 0 8px", color: "#888", fontSize: 12, textTransform: "uppercase", letterSpacing: 1 }}>Utilities</h3>
@@ -181,6 +231,12 @@ export default function App() {
         {activeApp === "settings" && <SettingsApp />}
         {activeApp === "calculator" && <CalculatorApp />}
         {activeApp === "notepad" && <NotepadApp />}
+        {activeApp === "snake" && <SnakeApp />}
+        {activeApp === "doom" && <DoomApp />}
+        {activeApp === "morse_trainer" && <MorseTrainerApp />}
+        {activeApp === "band_plan" && <BandPlanApp />}
+        {activeApp === "antenna_calc" && <AntennaCalcApp />}
+        {activeApp === "signal_meter" && <SignalMeterApp />}
       </main>
     </div>
   );
