@@ -20,3 +20,6 @@ pub mod epirb;
 pub mod baudot;
 pub mod morse;
 pub mod sstv;
+pub mod adsb_tx;
+pub mod gps;
+pub mod mdc1200;
