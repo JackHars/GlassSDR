@@ -40,6 +40,12 @@ import { AfskTxApp } from "./apps/afsk-tx/AfskTxApp";
 import { MorseTxApp } from "./apps/morse-tx/MorseTxApp";
 import { SoundboardTxApp } from "./apps/soundboard-tx/SoundboardTxApp";
 import { FlexTxApp } from "./apps/flex-tx/FlexTxApp";
+import { AdsbTxApp } from "./apps/adsb-tx/AdsbTxApp";
+import { GpsSimApp } from "./apps/gps-sim/GpsSimApp";
+import { Mdc1200TxApp } from "./apps/mdc1200-tx/Mdc1200TxApp";
+import { ReplayTxApp } from "./apps/replay-tx/ReplayTxApp";
+import { OokEditorTxApp } from "./apps/ook-editor-tx/OokEditorTxApp";
+import { FreqHopperApp } from "./apps/freq-hopper/FreqHopperApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -120,6 +126,12 @@ export default function App() {
         {activeApp === "morse_tx" && <MorseTxApp />}
         {activeApp === "soundboard_tx" && <SoundboardTxApp />}
         {activeApp === "flex_tx" && <FlexTxApp />}
+        {activeApp === "adsb_tx" && <AdsbTxApp />}
+        {activeApp === "gps_sim" && <GpsSimApp />}
+        {activeApp === "mdc1200_tx" && <Mdc1200TxApp />}
+        {activeApp === "replay_tx" && <ReplayTxApp />}
+        {activeApp === "ook_editor_tx" && <OokEditorTxApp />}
+        {activeApp === "freq_hopper" && <FreqHopperApp />}
       </main>
     </div>
   );
