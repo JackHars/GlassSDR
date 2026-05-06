@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { listApps } from "./ipc/commands";
 import { NfmAudioApp } from "./apps/nfm-audio/NfmAudioApp";
+import { AdsbRxApp } from "./apps/adsb-rx/AdsbRxApp";
 import { useStore } from "./store";
 
 export default function App() {
@@ -14,7 +15,7 @@ export default function App() {
       setApps(a);
       if (a.length > 0 && activeApp === null) setActiveApp(a[0].id);
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setApps, setActiveApp]);
 
   return (
@@ -39,8 +40,9 @@ export default function App() {
           </button>
         ))}
       </nav>
-      <main style={{ flex: 1, padding: 8 }}>
+      <main style={{ flex: 1, padding: 8, overflow: "auto" }}>
         {activeApp === "nfm_audio" && <NfmAudioApp />}
+        {activeApp === "adsb_rx" && <AdsbRxApp />}
       </main>
     </div>
   );
