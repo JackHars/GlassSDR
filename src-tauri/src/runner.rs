@@ -2,8 +2,8 @@
 //! v0.1 supports one app at a time. Switching apps stops the current one cleanly.
 
 use anyhow::Result;
-use mayhem_apps::{nfm_audio::NfmAudioApp, App, AppRegistry, RunningApp};
-use mayhem_ipc::{AppId, AppMetadata, AppStatus, AudioFrame, SpectrumFrame};
+use mayhem_apps::{adsb_rx::AdsbRxApp, nfm_audio::NfmAudioApp, App, AppRegistry, RunningApp};
+use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, SpectrumFrame};
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
@@ -27,6 +27,10 @@ impl AppRunner {
             // path doesn't need them — runtime channels are owned by the actual `start_app`
             // path in `AppRunner::start`.
             let (app, _, _) = NfmAudioApp::new();
+            app
+        });
+        registry.register(AdsbRxApp::metadata(), || {
+            let (app, _) = AdsbRxApp::new();
             app
         });
         Self {
@@ -63,8 +67,10 @@ impl AppRunner {
                 state.current = Some((id, running));
             }
             AppId::AdsbRx => {
-                // Task 12 implements this. For now, error out cleanly.
-                anyhow::bail!("AdsbRx app not yet wired in runner — Task 12 implements this");
+                let (app, state_rx) = AdsbRxApp::new();
+                let running = app.start(params)?;
+                spawn_aircraft_pump(handle.clone(), state_rx);
+                state.current = Some((id, running));
             }
         }
 
@@ -82,6 +88,17 @@ impl AppRunner {
         let _ = handle.emit("app_status", AppStatus::Idle);
         Ok(())
     }
+}
+
+fn spawn_aircraft_pump(
+    handle: AppHandle,
+    mut state_rx: mpsc::UnboundedReceiver<AircraftState>,
+) {
+    tokio::spawn(async move {
+        while let Some(s) = state_rx.recv().await {
+            let _ = handle.emit("aircraft_state", s);
+        }
+    });
 }
 
 fn spawn_event_pumps(
