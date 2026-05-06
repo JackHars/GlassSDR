@@ -16,4 +16,7 @@ pub mod spectrum;
 pub mod stereo_decode;
 pub mod manchester;
 pub mod ook_envelope;
+pub mod pulse_analyze;
+pub mod scanner_engine;
+pub mod sig_gen;
 pub mod tone_detect;
