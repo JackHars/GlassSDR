@@ -26,6 +26,11 @@ fn main() {
             commands::list_directory,
             commands::read_text_file,
             commands::write_text_file,
+            commands::list_usb_devices,
+            commands::start_recording,
+            commands::stop_recording,
+            commands::list_recordings,
+            commands::delete_recording,
         ])
         .setup(|app| {
             app.get_webview_window("main")

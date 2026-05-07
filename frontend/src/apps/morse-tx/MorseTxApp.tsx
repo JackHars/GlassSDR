@@ -3,6 +3,8 @@ import { useStore } from "../../store";
 import { armTx, disarmTx, startApp } from "../../ipc/commands";
 import { onTxStatus } from "../../ipc/events";
 import { LegalBanner } from "../../components/LegalBanner";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 export function MorseTxApp() {
   const { legalAccepted, armed, txStatus, setArmed, setTxStatus } = useStore();
@@ -24,75 +26,67 @@ export function MorseTxApp() {
     await armTx();
     setArmed(true);
   };
-
-  const handleDisarm = async () => {
-    await disarmTx();
-    setArmed(false);
-  };
-
+  const handleDisarm = async () => { await disarmTx(); setArmed(false); };
   const handleTransmit = async () => {
     if (!armed) return;
     await startApp("morse_tx" as any, {
-      message,
-      wpm,
-      tone_hz: toneHz,
+      message, wpm, tone_hz: toneHz,
       center_hz: parseFloat(frequency) || 0,
-      vga_gain_db: vgaGain,
-      amp_enabled: ampEnabled,
+      vga_gain_db: vgaGain, amp_enabled: ampEnabled,
     });
     setArmed(false);
   };
 
-  const inputStyle = { background: "#222", color: "#eee", border: "1px solid #444", padding: 4 };
-
   return (
-    <div style={{ padding: 16 }}>
+    <AppShell
+      title="Morse Transmitter"
+      status={
+        armed ? <><span style={{color: "#FF9500"}}>●</span> Armed</>
+        : txStatus?.kind === "transmitting" ? <><span style={{color: "#FF3B30"}}>●</span> Transmitting{txStatus.progress_pct !== undefined ? ` ${txStatus.progress_pct}%` : ""}</>
+        : <><span style={{color: "#999"}}>○</span> Idle</>
+      }
+      controls={
+        <ControlRow
+          actions={
+            !armed
+              ? <button className="glass-btn" onClick={handleArm} style={{ background: "#FF9500", color: "#fff" }}>ARM TX</button>
+              : <>
+                  <button className="glass-btn" onClick={handleDisarm}>Disarm</button>
+                  <button className="glass-btn" onClick={handleTransmit} style={{ background: "#FF3B30", color: "#fff", fontWeight: 700 }}>TRANSMIT</button>
+                </>
+          }
+        >
+          <ControlField label="Frequency (Hz)" size="lg">
+            <input type="number" value={frequency} onChange={(e) => setFrequency(e.target.value)} placeholder="e.g. 7030000" />
+          </ControlField>
+          <ControlField label={`Speed ${wpm} WPM`} size="md">
+            <input type="range" min={5} max={60} value={wpm} onChange={(e) => setWpm(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Tone (Hz)" size="sm">
+            <input type="number" value={toneHz} onChange={(e) => setToneHz(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label={`TX VGA ${vgaGain} dB`} size="md">
+            <input type="range" min={0} max={47} value={vgaGain} onChange={(e) => setVgaGain(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Amp" size="sm">
+            <input type="checkbox" checked={ampEnabled} onChange={(e) => setAmpEnabled(e.target.checked)} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"morse_tx" as any} format="iq" centerHz={parseFloat(frequency) || undefined} />}
+    >
       {showLegal && <LegalBanner onAccept={() => setShowLegal(false)} />}
-      <h2>Morse TX</h2>
-      <p style={{ color: "#aaa", fontSize: 13 }}>CW Morse code transmitter — PARIS standard timing</p>
-
-      <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: 8, maxWidth: 500 }}>
-        <label>Message</label>
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} rows={3} style={inputStyle} placeholder="Text to send in Morse..." />
-
-        <label>Speed (WPM)</label>
-        <div>
-          <input type="range" min={5} max={60} value={wpm} onChange={(e) => setWpm(Number(e.target.value))} />
-          <span style={{ marginLeft: 8 }}>{wpm} WPM</span>
+      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", gap: 12, minHeight: 0 }}>
+        <div style={{ flex: 1, padding: 16, background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", borderRadius: 12, backdropFilter: "blur(16px)", display: "flex", flexDirection: "column", gap: 8, minHeight: 0 }}>
+          <label style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--text-secondary)" }}>Message</label>
+          <textarea value={message} onChange={(e) => setMessage(e.target.value)} placeholder="Text to send in Morse…" style={{ flex: 1, resize: "none", minHeight: 120 }} />
         </div>
-
-        <label>Tone (Hz)</label>
-        <input type="number" value={toneHz} onChange={(e) => setToneHz(Number(e.target.value))} style={inputStyle} />
-
-        <label>Frequency (Hz)</label>
-        <input type="number" value={frequency} onChange={(e) => setFrequency(e.target.value)} placeholder="e.g. 7030000" style={inputStyle} />
-
-        <label>TX VGA Gain</label>
-        <div>
-          <input type="range" min={0} max={47} value={vgaGain} onChange={(e) => setVgaGain(Number(e.target.value))} />
-          <span style={{ marginLeft: 8 }}>{vgaGain} dB</span>
-        </div>
-
-        <label>AMP</label>
-        <input type="checkbox" checked={ampEnabled} onChange={(e) => setAmpEnabled(e.target.checked)} />
-      </div>
-
-      <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-        {!armed ? (
-          <button onClick={handleArm} style={{ padding: "8px 16px", background: "#c50", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}>ARM TX</button>
-        ) : (
-          <>
-            <button onClick={handleDisarm} style={{ padding: "8px 16px", background: "#555", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}>DISARM</button>
-            <button onClick={handleTransmit} style={{ padding: "8px 16px", background: "#f44", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: "bold" }}>TRANSMIT</button>
-          </>
+        {txStatus && (
+          <div style={{ padding: 12, background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 8, fontFamily: "var(--font-mono)", fontSize: 12, color: "var(--text-primary)" }}>
+            Status: {txStatus.kind}{txStatus.progress_pct !== undefined ? ` · ${txStatus.progress_pct}%` : ""}{txStatus.message ? ` · ${txStatus.message}` : ""}
+          </div>
         )}
       </div>
-
-      {txStatus && (
-        <div style={{ marginTop: 12, padding: 8, background: "#222", borderRadius: 4 }}>
-          Status: {txStatus.kind}{txStatus.progress_pct !== undefined ? ` (${txStatus.progress_pct}%)` : ""}{txStatus.message ? ` — ${txStatus.message}` : ""}
-        </div>
-      )}
-    </div>
+    </AppShell>
   );
 }

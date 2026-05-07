@@ -2,19 +2,22 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
+import { DecoderTable } from "../../components/DecoderTable";
 
-interface AptLineEvent {
-  line_number: number;
-  channel: string;
-  pixels_len: number;
-}
+interface AptLineEvent { line_number: number; channel: string; pixels_len: number; }
 
 export function HrptRxApp() {
   const [freq, setFreq] = useState(1_698_000_000);
   const [lines, setLines] = useState<AptLineEvent[]>([]);
+  const [running, setRunning] = useState(false);
 
-  const handleStart = () =>
-    startApp("hrpt_rx" as AppId, { center_hz: freq, lna_gain_db: 40, vga_gain_db: 30, amp_enabled: true });
+  const handleStart = async () => {
+    await startApp("hrpt_rx" as AppId, { center_hz: freq, lna_gain_db: 40, vga_gain_db: 30, amp_enabled: true });
+    setRunning(true);
+  };
+  const handleStop = async () => { await stopApp(); setRunning(false); };
 
   useEffect(() => {
     const unlisten = listen<AptLineEvent>("apt_line", (e) =>
@@ -24,41 +27,32 @@ export function HrptRxApp() {
   }, []);
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>NOAA HRPT RX</h2>
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, alignItems: "center" }}>
-        <label>Freq (Hz):</label>
-        <input
-          type="number"
-          value={freq}
-          onChange={(e) => setFreq(Number(e.target.value))}
-          style={{ width: 150, padding: "4px 8px", background: "#222", color: "#eee", border: "1px solid #444" }}
-        />
-        <button onClick={handleStart} style={{ padding: "8px 16px", background: "#2a2", color: "#fff", border: "none", borderRadius: 4 }}>Start</button>
-        <button onClick={stopApp} style={{ padding: "8px 16px", background: "#555", color: "#fff", border: "none", borderRadius: 4 }}>Stop</button>
-        <button onClick={() => setLines([])} style={{ padding: "8px 16px", background: "#444", color: "#eee", border: "none", borderRadius: 4 }}>Clear</button>
-        <span style={{ color: "#888" }}>{lines.length} lines</span>
-      </div>
-      <div style={{ overflowY: "auto", maxHeight: "calc(100vh - 160px)" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-          <thead>
-            <tr style={{ background: "#1c1c2c", textAlign: "left" }}>
-              <th style={{ padding: "6px 8px" }}>Line #</th>
-              <th style={{ padding: "6px 8px" }}>Channel</th>
-              <th style={{ padding: "6px 8px" }}>Pixels</th>
-            </tr>
-          </thead>
-          <tbody>
-            {lines.map((l, i) => (
-              <tr key={i} style={{ borderBottom: "1px solid #222" }}>
-                <td style={{ padding: "4px 8px", fontFamily: "monospace" }}>{l.line_number}</td>
-                <td style={{ padding: "4px 8px" }}>{l.channel}</td>
-                <td style={{ padding: "4px 8px" }}>{l.pixels_len}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <AppShell
+      title="NOAA HRPT"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Decoding · {lines.length} lines</> : <><span style={{color: "#999"}}>○</span> Idle · 1.7 GHz · dish required</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
+              <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
+              <button className="glass-btn" onClick={() => setLines([])}>Clear</button>
+            </>
+          }
+        >
+          <ControlField label="Frequency (Hz)" size="lg">
+            <input type="number" value={freq} onChange={(e) => setFreq(Number(e.target.value))} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"hrpt_rx" as any} format="img" centerHz={freq} />}
+    >
+      <DecoderTable
+        headers={["Line #", "Channel", "Pixels"]}
+        rows={lines}
+        renderRow={(l) => [l.line_number, l.channel, l.pixels_len]}
+        emptyMessage="No HRPT image lines yet — high-resolution imagery requires a dish antenna pointed at NOAA / MetOp during a pass."
+      />
+    </AppShell>
   );
 }

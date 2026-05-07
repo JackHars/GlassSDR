@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 interface CtcssDetectEvent { tone_hz: number; power_db: number; }
-
-const inp: React.CSSProperties = {
-  background: "#222", color: "#eee", border: "1px solid #555",
-  borderRadius: 3, padding: "4px 8px", width: 140,
-};
 
 const KNOWN_TONES = [
   67.0, 71.9, 74.4, 77.0, 79.7, 82.5, 85.4, 88.5, 91.5, 94.8,
@@ -34,69 +31,77 @@ export function CtcssDcsApp() {
     return () => { ul.then((f) => f()); };
   }, []);
 
-  const start = () => {
+  const start = async () => {
     setDetected(null);
-    startApp("ctcss_dcs" as AppId, { center_hz: centerHz });
+    await startApp("ctcss_dcs" as AppId, { center_hz: centerHz });
     setRunning(true);
   };
-  const stop = () => { stopApp(); setRunning(false); };
+  const stop = async () => { await stopApp(); setRunning(false); };
 
   const hasSignal = detected && detected.tone_hz > 0;
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2 style={{ marginTop: 0 }}>CTCSS/DCS Decoder</h2>
-      <p style={{ color: "#aaa", fontSize: 13 }}>
-        Detects sub-audible CTCSS tones (67–250.3 Hz) used in FM repeater squelch.
-      </p>
-      <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: 8, maxWidth: 420, marginBottom: 16 }}>
-        <label>Frequency (Hz):</label>
-        <input type="number" value={centerHz} onChange={(e) => setCenterHz(Number(e.target.value))} style={inp} />
-      </div>
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-        <button onClick={start} disabled={running}
-          style={{ padding: "7px 16px", background: "#262", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Start
-        </button>
-        <button onClick={stop} disabled={!running}
-          style={{ padding: "7px 16px", background: "#622", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Stop
-        </button>
-      </div>
-
-      <div style={{
-        background: "#0d0d1a", borderRadius: 6, padding: "20px 24px",
-        display: "inline-flex", flexDirection: "column", gap: 8, minWidth: 300,
-      }}>
-        <div style={{ fontSize: 12, color: "#555", textTransform: "uppercase", letterSpacing: 1 }}>Detected Tone</div>
-        <div style={{ fontSize: 42, fontFamily: "monospace", color: hasSignal ? "#4fc" : "#333" }}>
-          {hasSignal ? nearestTone(detected!.tone_hz) : "—"}
-        </div>
-        {hasSignal && (
-          <div style={{ fontSize: 12, color: "#668" }}>
-            Power: {detected!.power_db.toFixed(1)} dB
+    <AppShell
+      title="CTCSS / DCS Decoder"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Listening · {hasSignal ? `tone ${detected!.tone_hz.toFixed(1)} Hz` : "no tone"}</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={start} disabled={running}>Start</button>
+              <button className="glass-btn" onClick={stop} disabled={!running}>Stop</button>
+            </>
+          }
+        >
+          <ControlField label="Frequency (Hz)" size="lg">
+            <input type="number" value={centerHz} onChange={(e) => setCenterHz(Number(e.target.value))} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"ctcss_dcs" as any} format="jsonl" centerHz={centerHz} />}
+    >
+      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", gap: 16, minHeight: 0 }}>
+        <div style={{
+          padding: 24, background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", borderRadius: 12, backdropFilter: "blur(16px)",
+          display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+        }}>
+          <div style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.6, color: "var(--text-secondary)" }}>
+            Detected Tone
           </div>
-        )}
-        {!hasSignal && running && (
-          <div style={{ fontSize: 13, color: "#555" }}>Listening…</div>
-        )}
-      </div>
-
-      <div style={{ marginTop: 16 }}>
-        <div style={{ fontSize: 12, color: "#555", marginBottom: 6 }}>Standard CTCSS Tones</div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
-          {KNOWN_TONES.map((t) => (
-            <span key={t} style={{
-              padding: "2px 6px", borderRadius: 3, fontSize: 11,
-              background: hasSignal && Math.abs(detected!.tone_hz - t) < 1.0 ? "#2a4" : "#1a1a2e",
-              color: hasSignal && Math.abs(detected!.tone_hz - t) < 1.0 ? "#fff" : "#446",
-              fontFamily: "monospace",
-            }}>
-              {t.toFixed(1)}
-            </span>
-          ))}
+          <div style={{ fontSize: 56, fontFamily: "var(--font-mono)", color: hasSignal ? "var(--accent)" : "var(--text-tertiary)" }}>
+            {hasSignal ? nearestTone(detected!.tone_hz) : "—"}
+          </div>
+          {hasSignal && (
+            <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+              Power {detected!.power_db.toFixed(1)} dB
+            </div>
+          )}
+          {!hasSignal && running && (
+            <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>Listening…</div>
+          )}
+        </div>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.6, color: "var(--text-secondary)", marginBottom: 8 }}>
+            Standard CTCSS Tones
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+            {KNOWN_TONES.map((t) => {
+              const match = hasSignal && Math.abs(detected!.tone_hz - t) < 1.0;
+              return (
+                <span key={t} style={{
+                  padding: "4px 10px", borderRadius: 6, fontSize: 11,
+                  background: match ? "var(--accent)" : "rgba(255,255,255,0.5)",
+                  color: match ? "#fff" : "var(--text-secondary)",
+                  fontFamily: "var(--font-mono)",
+                  border: "1px solid rgba(0,0,0,0.06)",
+                }}>
+                  {t.toFixed(1)}
+                </span>
+              );
+            })}
+          </div>
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 }

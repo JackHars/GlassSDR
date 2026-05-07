@@ -2,27 +2,14 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 interface TxStatus {
   kind: "idle" | "armed" | "transmitting" | "complete" | "error";
   progress_pct?: number;
   message?: string;
 }
-
-const inp: React.CSSProperties = {
-  background: "#222", color: "#eee", border: "1px solid #555",
-  borderRadius: 3, padding: "4px 8px", width: 140,
-};
-
-const INDOOR_BANNER = (
-  <div style={{
-    background: "#2a1500", border: "1px solid #f80", borderRadius: 4,
-    padding: "8px 12px", marginBottom: 12, color: "#fb8", fontSize: 13,
-    fontWeight: 600,
-  }}>
-    INDOOR TEST ONLY — operate only inside a shielded enclosure.
-  </div>
-);
 
 export function RfCharApp() {
   const [startHz, setStartHz] = useState(88_000_000);
@@ -36,41 +23,58 @@ export function RfCharApp() {
     return () => { ul.then((f) => f()); };
   }, []);
 
-  const start = () => {
-    startApp("rf_characterize" as AppId, { start_hz: startHz, stop_hz: stopHz, step_hz: stepHz });
+  const start = async () => {
+    await startApp("rf_characterize" as AppId, { start_hz: startHz, stop_hz: stopHz, step_hz: stepHz });
     setRunning(true);
   };
-  const stop = () => { stopApp(); setRunning(false); };
+  const stop = async () => { await stopApp(); setRunning(false); };
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2 style={{ marginTop: 0 }}>RF Characterization</h2>
-      {INDOOR_BANNER}
-      <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: 8, maxWidth: 420, marginBottom: 16 }}>
-        <label>Start Freq (Hz):</label>
-        <input type="number" value={startHz} onChange={(e) => setStartHz(Number(e.target.value))} style={inp} />
-        <label>Stop Freq (Hz):</label>
-        <input type="number" value={stopHz} onChange={(e) => setStopHz(Number(e.target.value))} style={inp} />
-        <label>Step (Hz):</label>
-        <input type="number" value={stepHz} onChange={(e) => setStepHz(Number(e.target.value))} style={inp} />
-      </div>
-      <div style={{ display: "flex", gap: 8 }}>
-        <button onClick={start} disabled={running}
-          style={{ padding: "7px 16px", background: "#262", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Start Sweep
-        </button>
-        <button onClick={stop} disabled={!running}
-          style={{ padding: "7px 16px", background: "#622", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Stop
-        </button>
-      </div>
-      {status && (
-        <div style={{ marginTop: 12, padding: 8, background: "#1a1a2e", borderRadius: 4, fontFamily: "monospace", fontSize: 13 }}>
-          Status: <span style={{ color: "#8cf" }}>{status.kind}</span>
-          {status.progress_pct !== undefined ? ` — ${status.progress_pct}%` : ""}
-          {status.message ? ` — ${status.message}` : ""}
+    <AppShell
+      title="RF Characterization"
+      status={
+        running ? <><span style={{color: "#34C759"}}>●</span> Sweeping {(startHz / 1e6).toFixed(1)}–{(stopHz / 1e6).toFixed(1)} MHz</>
+        : <><span style={{color: "#999"}}>○</span> Idle</>
+      }
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={start} disabled={running}>Start Sweep</button>
+              <button className="glass-btn" onClick={stop} disabled={!running}>Stop</button>
+            </>
+          }
+        >
+          <ControlField label="Start (Hz)" size="md">
+            <input type="number" value={startHz} onChange={(e) => setStartHz(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Stop (Hz)" size="md">
+            <input type="number" value={stopHz} onChange={(e) => setStopHz(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Step (Hz)" size="sm">
+            <input type="number" value={stepHz} onChange={(e) => setStepHz(Number(e.target.value))} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"rf_characterize" as any} format="iq" />}
+    >
+      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ padding: "12px 16px", background: "rgba(255,149,0,0.08)", border: "1px solid rgba(255,149,0,0.4)", borderRadius: 10, color: "#A86200", fontSize: 13 }}>
+          <strong>INDOOR TEST ONLY</strong> — operate only inside a shielded enclosure.
         </div>
-      )}
-    </div>
+        <div style={{ flex: 1, padding: 16, background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", borderRadius: 12, backdropFilter: "blur(16px)", display: "flex", flexDirection: "column", gap: 8 }}>
+          <h3 style={{ margin: 0, fontSize: 13, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Sweep Configuration</h3>
+          <div style={{ fontFamily: "var(--font-mono)", color: "var(--text-primary)", fontSize: 13, lineHeight: 1.7 }}>
+            Range: {(startHz / 1e6).toFixed(3)} – {(stopHz / 1e6).toFixed(3)} MHz<br />
+            Step: {(stepHz / 1e3).toFixed(1)} kHz · {Math.ceil((stopHz - startHz) / stepHz)} points
+          </div>
+        </div>
+        {status && (
+          <div style={{ padding: 12, background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 8, fontFamily: "var(--font-mono)", fontSize: 12 }}>
+            Status: {status.kind}{status.progress_pct !== undefined ? ` · ${status.progress_pct}%` : ""}{status.message ? ` · ${status.message}` : ""}
+          </div>
+        )}
+      </div>
+    </AppShell>
   );
 }

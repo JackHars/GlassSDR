@@ -4,6 +4,8 @@ import { AircraftMap } from "../../components/AircraftMap";
 import { startAdsb, stopApp } from "../../ipc/commands";
 import { onAircraftState, onAppStatus } from "../../ipc/events";
 import { useStore } from "../../store";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlRow } from "../../components/AppShell";
 
 export function AdsbRxApp() {
   const aircraft = useStore((s) => s.aircraft);
@@ -20,19 +22,34 @@ export function AdsbRxApp() {
   }, [upsertAircraft, setStatus]);
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: 8, height: "100%" }}>
-      <div style={{ display: "flex", gap: 8 }}>
-        <button onClick={() => startAdsb({})} disabled={running}>Start</button>
-        <button onClick={() => stopApp()} disabled={!running}>Stop</button>
-        <button onClick={() => clearAircraft()}>Clear</button>
-        <span style={{ marginLeft: 12, color: "#888" }}>
-          Tracking {aircraft.size} aircraft
-        </span>
+    <AppShell
+      title="ADS-B Receiver"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Tracking {aircraft.size} aircraft</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={() => startAdsb({})} disabled={running}>Start</button>
+              <button className="glass-btn" onClick={() => stopApp()} disabled={!running}>Stop</button>
+              <button className="glass-btn" onClick={() => clearAircraft()}>Clear</button>
+            </>
+          }
+        >
+          <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+            Listening on 1090 MHz · Mode S squitter
+          </span>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"adsb_rx" as any} format="jsonl" />}
+    >
+      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", gap: 12, minHeight: 0 }}>
+        <div style={{ flex: "2 1 0", minHeight: 200, borderRadius: 12, overflow: "hidden" }}>
+          <AircraftMap aircraft={aircraft} />
+        </div>
+        <div style={{ flex: "1 1 0", minHeight: 120, overflow: "auto", borderRadius: 12, background: "rgba(255,255,255,0.55)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.7)" }}>
+          <AircraftTable aircraft={aircraft} />
+        </div>
       </div>
-      <AircraftMap aircraft={aircraft} />
-      <div style={{ overflow: "auto", maxHeight: 240 }}>
-        <AircraftTable aircraft={aircraft} />
-      </div>
-    </div>
+    </AppShell>
   );
 }

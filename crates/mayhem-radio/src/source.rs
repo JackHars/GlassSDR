@@ -42,15 +42,16 @@ impl HackRfSourceConfig {
 /// first-class `amp_enable` API, migrate to that; for v0.1 the args-string approach is correct.
 pub fn build_source(cfg: &HackRfSourceConfig) -> Result<Block> {
     cfg.validate()?;
-    let amp_val = if cfg.amp_enabled { 1 } else { 0 };
-    let args = format!("driver=hackrf,amp={amp_val}");
+    let args = "driver=soapy";
+    tracing::info!("opening HackRF with args={args:?}, freq={}, rate={}, gain={}",
+        cfg.center_hz, cfg.sample_rate, cfg.lna_gain_db as f64 + cfg.vga_gain_db as f64);
     let block = futuresdr::blocks::seify::SourceBuilder::new()
-        .args(args.as_str())?
+        .args(args)?
         .frequency(cfg.center_hz)
         .sample_rate(cfg.sample_rate)
-        // Seify abstracts gain as a single value; HackRF backend splits LNA/VGA internally. (See Task 1 spike.)
         .gain(cfg.lna_gain_db as f64 + cfg.vga_gain_db as f64)
         .build()?;
+    tracing::info!("HackRF source block built successfully");
     Ok(block)
 }
 

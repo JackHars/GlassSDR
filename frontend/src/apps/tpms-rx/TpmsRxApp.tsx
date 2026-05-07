@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
+import { DecoderTable } from "../../components/DecoderTable";
 
-interface TpmsSensorEvent {
-  sensor_id: number;
-  pressure_kpa: number;
-  temp_c: number;
-}
+interface TpmsSensorEvent { sensor_id: number; pressure_kpa: number; temp_c: number; }
 
 const FREQS = [
   { label: "315 MHz", hz: 315_000_000 },
@@ -17,14 +16,15 @@ const FREQS = [
 export function TpmsRxApp() {
   const [sensors, setSensors] = useState<TpmsSensorEvent[]>([]);
   const [freqIdx, setFreqIdx] = useState(1);
+  const [running, setRunning] = useState(false);
 
-  const handleStart = () =>
-    startApp("tpms_rx" as AppId, {
-      center_hz: FREQS[freqIdx].hz,
-      lna_gain_db: 40,
-      vga_gain_db: 20,
-      amp_enabled: false,
+  const handleStart = async () => {
+    await startApp("tpms_rx" as AppId, {
+      center_hz: FREQS[freqIdx].hz, lna_gain_db: 40, vga_gain_db: 20, amp_enabled: false,
     });
+    setRunning(true);
+  };
+  const handleStop = async () => { await stopApp(); setRunning(false); };
 
   useEffect(() => {
     const unlisten = listen<TpmsSensorEvent>("tpms_sensor", (e) =>
@@ -42,44 +42,37 @@ export function TpmsRxApp() {
   }, []);
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>TPMS Receiver</h2>
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, alignItems: "center" }}>
-        <label>Frequency:</label>
-        <select
-          value={freqIdx}
-          onChange={(e) => setFreqIdx(Number(e.target.value))}
-          style={{ padding: "4px 8px", background: "#222", color: "#eee", border: "1px solid #555" }}
+    <AppShell
+      title="TPMS Receiver"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Listening · {sensors.length} sensors</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
+              <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
+              <button className="glass-btn" onClick={() => setSensors([])}>Clear</button>
+            </>
+          }
         >
-          {FREQS.map((f, i) => (
-            <option key={f.label} value={i}>{f.label}</option>
-          ))}
-        </select>
-        <button onClick={handleStart} style={{ padding: "8px 16px", background: "#2a2", color: "#fff", border: "none", borderRadius: 4 }}>Start</button>
-        <button onClick={stopApp} style={{ padding: "8px 16px", background: "#555", color: "#fff", border: "none", borderRadius: 4 }}>Stop</button>
-        <button onClick={() => setSensors([])} style={{ padding: "8px 16px", background: "#444", color: "#eee", border: "none", borderRadius: 4 }}>Clear</button>
-        <span style={{ color: "#888" }}>{sensors.length} sensors</span>
-      </div>
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-        <thead>
-          <tr style={{ background: "#1c1c2c", textAlign: "left" }}>
-            <th style={{ padding: "6px 8px" }}>Sensor ID</th>
-            <th style={{ padding: "6px 8px" }}>Pressure (kPa)</th>
-            <th style={{ padding: "6px 8px" }}>Temp (°C)</th>
-          </tr>
-        </thead>
-        <tbody>
-          {sensors.map((s) => (
-            <tr key={s.sensor_id} style={{ borderBottom: "1px solid #222" }}>
-              <td style={{ padding: "4px 8px", fontFamily: "monospace" }}>
-                {s.sensor_id.toString(16).toUpperCase().padStart(8, "0")}
-              </td>
-              <td style={{ padding: "4px 8px" }}>{s.pressure_kpa.toFixed(1)}</td>
-              <td style={{ padding: "4px 8px" }}>{s.temp_c.toFixed(1)}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+          <ControlField label="Frequency" size="md">
+            <select value={freqIdx} onChange={(e) => setFreqIdx(Number(e.target.value))}>
+              {FREQS.map((f, i) => (
+                <option key={f.label} value={i}>{f.label}</option>
+              ))}
+            </select>
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"tpms_rx" as any} format="jsonl" centerHz={FREQS[freqIdx].hz} />}
+    >
+      <DecoderTable
+        headers={["Sensor ID", "Pressure (kPa)", "Temp (°C)"]}
+        rows={sensors}
+        rowKey={(s) => s.sensor_id}
+        renderRow={(s) => [s.sensor_id.toString(16).toUpperCase().padStart(8, "0"), s.pressure_kpa.toFixed(1), s.temp_c.toFixed(1)]}
+        emptyMessage="No sensors detected — TPMS frames are bursty; you may need to be near vehicles."
+      />
+    </AppShell>
   );
 }

@@ -1,0 +1,15 @@
+[package]
+name = "mayhem-recorder"
+version = "0.0.1"
+edition.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+mayhem-ipc = { path = "../mayhem-ipc" }
+serde = { workspace = true }
+serde_json.workspace = true
+ts-rs = { workspace = true, features = ["serde-compat", "no-serde-warnings"] }
+tracing.workspace = true
+
+[dev-dependencies]
+tempfile = "3"

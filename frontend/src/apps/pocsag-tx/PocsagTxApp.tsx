@@ -3,6 +3,8 @@ import { useStore } from "../../store";
 import { armTx, disarmTx, startApp } from "../../ipc/commands";
 import { onPocsagTxStatus } from "../../ipc/events";
 import { LegalBanner } from "../../components/LegalBanner";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 export function PocsagTxApp() {
   const { legalAccepted, armed, txStatus, setArmed, setTxStatus } = useStore();
@@ -48,68 +50,95 @@ export function PocsagTxApp() {
   };
 
   return (
-    <div style={{ padding: 16 }}>
+    <AppShell
+      title="POCSAG Transmitter"
+      status={
+        armed
+          ? <><span style={{color: "#FF9500"}}>●</span> Armed — ready to transmit</>
+          : txStatus?.kind === "transmitting"
+            ? <><span style={{color: "#FF3B30"}}>●</span> Transmitting{txStatus.progress_pct !== undefined ? ` ${txStatus.progress_pct}%` : ""}</>
+            : <><span style={{color: "#999"}}>○</span> Idle</>
+      }
+      controls={
+        <ControlRow
+          actions={
+            !armed ? (
+              <button className="glass-btn" onClick={handleArm} style={{ background: "#FF9500", color: "#fff" }}>ARM TX</button>
+            ) : (
+              <>
+                <button className="glass-btn" onClick={handleDisarm}>Disarm</button>
+                <button className="glass-btn" onClick={handleTransmit} style={{ background: "#FF3B30", color: "#fff", fontWeight: 700 }}>TRANSMIT</button>
+              </>
+            )
+          }
+        >
+          <ControlField label="Frequency (Hz)" size="lg">
+            <input type="number" value={frequency} onChange={(e) => setFrequency(e.target.value)} placeholder="e.g. 439987500" />
+          </ControlField>
+          <ControlField label="Baud" size="sm">
+            <select value={baudRate} onChange={(e) => setBaudRate(Number(e.target.value))}>
+              <option value={512}>512</option>
+              <option value={1200}>1200</option>
+              <option value={2400}>2400</option>
+            </select>
+          </ControlField>
+          <ControlField label={`TX VGA ${vgaGain} dB`} size="md">
+            <input type="range" min={0} max={47} value={vgaGain} onChange={(e) => setVgaGain(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Amp" size="sm">
+            <input type="checkbox" checked={ampEnabled} onChange={(e) => setAmpEnabled(e.target.checked)} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"pocsag_tx" as any} format="iq" />}
+    >
       {showLegal && <LegalBanner onAccept={() => setShowLegal(false)} />}
-      <h2>POCSAG Transmitter</h2>
-
-      <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: 8, maxWidth: 500 }}>
-        <label>RIC</label>
-        <input type="number" value={ric} onChange={(e) => setRic(e.target.value)} placeholder="0–2097151" style={{ background: "#222", color: "#eee", border: "1px solid #444", padding: 4 }} />
-
-        <label>Function</label>
-        <select value={funcBits} onChange={(e) => setFuncBits(Number(e.target.value))} style={{ background: "#222", color: "#eee", border: "1px solid #444", padding: 4 }}>
-          <option value={0}>A (0)</option>
-          <option value={1}>B (1)</option>
-          <option value={2}>C (2)</option>
-          <option value={3}>D (3)</option>
-        </select>
-
-        <label>Message Type</label>
-        <select value={messageType} onChange={(e) => setMessageType(e.target.value as any)} style={{ background: "#222", color: "#eee", border: "1px solid #444", padding: 4 }}>
-          <option value="alphanumeric">Alphanumeric</option>
-          <option value="numeric">Numeric</option>
-          <option value="tone_only">Tone Only</option>
-        </select>
-
-        <label>Message</label>
-        <textarea value={message} onChange={(e) => setMessage(e.target.value)} disabled={messageType === "tone_only"} rows={3} style={{ background: "#222", color: "#eee", border: "1px solid #444", padding: 4 }} />
-
-        <label>Baud Rate</label>
-        <select value={baudRate} onChange={(e) => setBaudRate(Number(e.target.value))} style={{ background: "#222", color: "#eee", border: "1px solid #444", padding: 4 }}>
-          <option value={512}>512 bps</option>
-          <option value={1200}>1200 bps</option>
-          <option value={2400}>2400 bps</option>
-        </select>
-
-        <label>Frequency (Hz)</label>
-        <input type="number" value={frequency} onChange={(e) => setFrequency(e.target.value)} placeholder="e.g. 439987500" style={{ background: "#222", color: "#eee", border: "1px solid #444", padding: 4 }} />
-
-        <label>TX VGA Gain</label>
-        <div>
-          <input type="range" min={0} max={47} value={vgaGain} onChange={(e) => setVgaGain(Number(e.target.value))} />
-          <span style={{ marginLeft: 8 }}>{vgaGain} dB</span>
+      <div className="app-shell__grow" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, alignContent: "start", minHeight: 0 }}>
+        <div style={{ padding: 16, background: "rgba(255,255,255,0.55)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.7)", backdropFilter: "blur(16px)" }}>
+          <h3 style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Page</h3>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--text-secondary)" }}>RIC (0–2097151)</span>
+              <input type="number" value={ric} onChange={(e) => setRic(e.target.value)} placeholder="1234567" />
+            </label>
+            <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--text-secondary)" }}>Function</span>
+              <select value={funcBits} onChange={(e) => setFuncBits(Number(e.target.value))}>
+                <option value={0}>A (0)</option>
+                <option value={1}>B (1)</option>
+                <option value={2}>C (2)</option>
+                <option value={3}>D (3)</option>
+              </select>
+            </label>
+            <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--text-secondary)" }}>Message Type</span>
+              <select value={messageType} onChange={(e) => setMessageType(e.target.value as any)}>
+                <option value="alphanumeric">Alphanumeric</option>
+                <option value="numeric">Numeric</option>
+                <option value="tone_only">Tone Only</option>
+              </select>
+            </label>
+            <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <span style={{ fontSize: 11, fontWeight: 600, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--text-secondary)" }}>Message</span>
+              <textarea value={message} onChange={(e) => setMessage(e.target.value)} disabled={messageType === "tone_only"} rows={4} />
+            </label>
+          </div>
         </div>
-
-        <label>AMP</label>
-        <input type="checkbox" checked={ampEnabled} onChange={(e) => setAmpEnabled(e.target.checked)} />
-      </div>
-
-      <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-        {!armed ? (
-          <button onClick={handleArm} style={{ padding: "8px 16px", background: "#c50", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}>ARM TX</button>
-        ) : (
-          <>
-            <button onClick={handleDisarm} style={{ padding: "8px 16px", background: "#555", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}>DISARM</button>
-            <button onClick={handleTransmit} style={{ padding: "8px 16px", background: "#f44", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: "bold" }}>TRANSMIT</button>
-          </>
-        )}
-      </div>
-
-      {txStatus && (
-        <div style={{ marginTop: 12, padding: 8, background: "#222", borderRadius: 4 }}>
-          Status: {txStatus.kind}{txStatus.progress_pct !== undefined ? ` (${txStatus.progress_pct}%)` : ""}{txStatus.message ? ` — ${txStatus.message}` : ""}
+        <div style={{ padding: 16, background: "rgba(255,255,255,0.55)", borderRadius: 12, border: "1px solid rgba(255,255,255,0.7)", backdropFilter: "blur(16px)" }}>
+          <h3 style={{ margin: "0 0 12px", fontSize: 13, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Status</h3>
+          {txStatus ? (
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 13, color: "var(--text-primary)" }}>
+              <div>Kind: {txStatus.kind}</div>
+              {txStatus.progress_pct !== undefined && <div>Progress: {txStatus.progress_pct}%</div>}
+              {txStatus.message && <div>Message: {txStatus.message}</div>}
+            </div>
+          ) : (
+            <div style={{ color: "var(--text-tertiary)", fontSize: 13 }}>
+              No transmission yet. Configure the page on the left, arm TX, then press Transmit.
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </AppShell>
   );
 }

@@ -1,11 +1,8 @@
 import { useState } from "react";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
-
-const inp: React.CSSProperties = {
-  background: "#222", color: "#eee", border: "1px solid #555",
-  borderRadius: 3, padding: "4px 8px",
-};
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 type IqFormat = "cs8" | "cu8" | "cs16" | "cf32";
 
@@ -15,54 +12,54 @@ export function IqPlayerApp() {
   const [centerHz, setCenterHz] = useState(100_000_000);
   const [playing, setPlaying] = useState(false);
 
-  const play = () => {
+  const play = async () => {
     if (!filePath.trim()) return;
-    startApp("iq_player" as AppId, { file_path: filePath, format, center_hz: centerHz });
+    await startApp("iq_player" as AppId, { file_path: filePath, format, center_hz: centerHz });
     setPlaying(true);
   };
-  const stop = () => { stopApp(); setPlaying(false); };
+  const stop = async () => { await stopApp(); setPlaying(false); };
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2 style={{ marginTop: 0 }}>IQ File Player</h2>
-      <p style={{ color: "#aaa", fontSize: 13 }}>
-        Load and replay a recorded IQ file for offline analysis.
-      </p>
-      <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: 8, maxWidth: 480, marginBottom: 16 }}>
-        <label>File Path:</label>
-        <input
-          type="text"
-          value={filePath}
-          onChange={(e) => setFilePath(e.target.value)}
-          placeholder="/path/to/recording.cs8"
-          style={{ ...inp, width: "100%" }}
-        />
-        <label>IQ Format:</label>
-        <select value={format} onChange={(e) => setFormat(e.target.value as IqFormat)}
-          style={{ ...inp, width: "auto" }}>
-          <option value="cs8">CS8 (int8, HackRF default)</option>
-          <option value="cu8">CU8 (uint8, RTL-SDR)</option>
-          <option value="cs16">CS16 (int16)</option>
-          <option value="cf32">CF32 (float32)</option>
-        </select>
-        <label>Center Freq (Hz):</label>
-        <input type="number" value={centerHz} onChange={(e) => setCenterHz(Number(e.target.value))} style={inp} />
-      </div>
-      <div style={{ display: "flex", gap: 8 }}>
-        <button onClick={play} disabled={playing || !filePath.trim()}
-          style={{ padding: "7px 16px", background: "#262", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Play
-        </button>
-        <button onClick={stop} disabled={!playing}
-          style={{ padding: "7px 16px", background: "#622", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Stop
-        </button>
-      </div>
-      {playing && (
-        <div style={{ marginTop: 12, color: "#8cf", fontSize: 13 }}>
-          Playing: <code style={{ color: "#fc8" }}>{filePath}</code>
+    <AppShell
+      title="IQ File Player"
+      status={playing ? <><span style={{color: "#34C759"}}>●</span> Playing · {format.toUpperCase()}</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={play} disabled={playing || !filePath.trim()}>Play</button>
+              <button className="glass-btn" onClick={stop} disabled={!playing}>Stop</button>
+            </>
+          }
+        >
+          <ControlField label="IQ Format" size="md">
+            <select value={format} onChange={(e) => setFormat(e.target.value as IqFormat)}>
+              <option value="cs8">CS8 (HackRF)</option>
+              <option value="cu8">CU8 (RTL-SDR)</option>
+              <option value="cs16">CS16</option>
+              <option value="cf32">CF32</option>
+            </select>
+          </ControlField>
+          <ControlField label="Center Frequency (Hz)" size="lg">
+            <input type="number" value={centerHz} onChange={(e) => setCenterHz(Number(e.target.value))} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"iq_player" as any} format="iq" centerHz={centerHz} />}
+    >
+      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", gap: 12, minHeight: 0 }}>
+        <div style={{ flex: 1, padding: 16, background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", borderRadius: 12, backdropFilter: "blur(16px)", display: "flex", flexDirection: "column", gap: 12 }}>
+          <label style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <span style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--text-secondary)" }}>File Path</span>
+            <input type="text" value={filePath} onChange={(e) => setFilePath(e.target.value)} placeholder="/path/to/recording.cs8" />
+          </label>
+          {playing && (
+            <div style={{ marginTop: 12, color: "var(--accent)", fontSize: 13 }}>
+              Playing: <code style={{ color: "var(--text-primary)" }}>{filePath}</code>
+            </div>
+          )}
         </div>
-      )}
-    </div>
+      </div>
+    </AppShell>
   );
 }

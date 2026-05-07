@@ -1,4 +1,5 @@
 import { useState, useCallback, type ChangeEvent } from "react";
+import { AppShell, ControlRow } from "../../components/AppShell";
 
 const LS_KEY = "mayhem_notepad";
 
@@ -33,33 +34,47 @@ export function NotepadApp() {
   };
 
   return (
-    <div style={{ padding: 16, display: "flex", flexDirection: "column", height: "calc(100vh - 48px)", boxSizing: "border-box" }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12, marginBottom: 8 }}>
-        <h2 style={{ margin: 0 }}>Notepad</h2>
-        <button onClick={insertTimestamp} style={{ background: "#226", color: "#eee", border: "none", borderRadius: 3, padding: "4px 10px", cursor: "pointer", fontSize: 13 }}>Insert timestamp</button>
-        <button onClick={clear} style={{ background: "#400", color: "#eee", border: "none", borderRadius: 3, padding: "4px 10px", cursor: "pointer", fontSize: 13 }}>Clear</button>
-        {saved && <span style={{ color: "#4c4", fontSize: 12 }}>Auto-saved</span>}
-      </div>
+    <AppShell
+      title="Notepad"
+      status={
+        <span style={{ color: saved ? "#34C759" : "var(--text-secondary)" }}>
+          {saved ? "● Auto-saved" : `${text.length} chars · ${text.split("\n").length} lines`}
+        </span>
+      }
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn" onClick={insertTimestamp}>Insert timestamp</button>
+              <button className="glass-btn" onClick={clear} style={{ background: "rgba(255,59,48,0.12)", color: "#FF3B30", border: "1px solid rgba(255,59,48,0.4)" }}>Clear</button>
+            </>
+          }
+        >
+          <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+            Notes are auto-saved to local storage as you type.
+          </span>
+        </ControlRow>
+      }
+    >
       <textarea
+        className="app-shell__grow"
         value={text}
         onChange={handleChange}
+        placeholder="Start typing — log frequencies, observations, anything you want to keep."
         style={{
-          flex: 1,
-          background: "#1a1a1a",
-          color: "#ddd",
-          border: "1px solid #333",
-          borderRadius: 4,
-          padding: 10,
-          fontFamily: "monospace",
-          fontSize: 13,
+          background: "rgba(255,255,255,0.7)",
+          color: "var(--text-primary)",
+          border: "1px solid rgba(255,255,255,0.7)",
+          borderRadius: 12,
+          padding: 16,
+          fontFamily: "var(--font-mono)",
+          fontSize: 14,
           resize: "none",
           lineHeight: 1.5,
+          width: "100%",
+          minHeight: 200,
         }}
-        placeholder="Start typing… notes are auto-saved to localStorage."
       />
-      <div style={{ marginTop: 6, fontSize: 11, color: "#555", textAlign: "right" }}>
-        {text.length} chars · {text.split("\n").length} lines
-      </div>
-    </div>
+    </AppShell>
   );
 }

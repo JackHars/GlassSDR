@@ -1,5 +1,6 @@
 import { useState, useEffect, lazy, Suspense } from "react";
-import { listApps } from "./ipc/commands";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { listApps, listUsbDevices, UsbDevice } from "./ipc/commands";
 import { useStore } from "./store";
 import { AppGrid } from "./components/shell/AppGrid";
 import "./styles/glass.css";
@@ -58,13 +59,10 @@ const FlipperTxApp = lazy(() => import("./apps/flipper-tx/FlipperTxApp").then(m 
 const KeyfobTxApp = lazy(() => import("./apps/keyfob-tx/KeyfobTxApp").then(m => ({ default: m.KeyfobTxApp })));
 const LgeTxApp = lazy(() => import("./apps/lge-tx/LgeTxApp").then(m => ({ default: m.LgeTxApp })));
 const FreqManagerApp = lazy(() => import("./apps/freq-manager/FreqManagerApp").then(m => ({ default: m.FreqManagerApp })));
-const FileManagerApp = lazy(() => import("./apps/file-manager/FileManagerApp").then(m => ({ default: m.FileManagerApp })));
 const PlaylistApp = lazy(() => import("./apps/playlist/PlaylistApp").then(m => ({ default: m.PlaylistApp })));
 const SettingsApp = lazy(() => import("./apps/settings/SettingsApp").then(m => ({ default: m.SettingsApp })));
 const CalculatorApp = lazy(() => import("./apps/calculator/CalculatorApp").then(m => ({ default: m.CalculatorApp })));
 const NotepadApp = lazy(() => import("./apps/notepad/NotepadApp").then(m => ({ default: m.NotepadApp })));
-const SnakeApp = lazy(() => import("./apps/snake/SnakeApp").then(m => ({ default: m.SnakeApp })));
-const DoomApp = lazy(() => import("./apps/doom/DoomApp").then(m => ({ default: m.DoomApp })));
 const MorseTrainerApp = lazy(() => import("./apps/morse-trainer/MorseTrainerApp").then(m => ({ default: m.MorseTrainerApp })));
 const BandPlanApp = lazy(() => import("./apps/band-plan/BandPlanApp").then(m => ({ default: m.BandPlanApp })));
 const AntennaCalcApp = lazy(() => import("./apps/antenna-calc/AntennaCalcApp").then(m => ({ default: m.AntennaCalcApp })));
@@ -89,6 +87,7 @@ const P25RxApp = lazy(() => import("./apps/p25-rx/P25RxApp").then(m => ({ defaul
 const NxdnRxApp = lazy(() => import("./apps/nxdn-rx/NxdnRxApp").then(m => ({ default: m.NxdnRxApp })));
 const TetraRxApp = lazy(() => import("./apps/tetra-rx/TetraRxApp").then(m => ({ default: m.TetraRxApp })));
 const PagerAggApp = lazy(() => import("./apps/pager-agg/PagerAggApp").then(m => ({ default: m.PagerAggApp })));
+const RecordingsApp = lazy(() => import("./apps/recordings/RecordingsApp").then(m => ({ default: m.RecordingsApp })));
 
 // Map of app ID → component
 const APP_MAP: Record<string, React.LazyExoticComponent<React.ComponentType<any>>> = {
@@ -109,8 +108,8 @@ const APP_MAP: Record<string, React.LazyExoticComponent<React.ComponentType<any>
   ook_editor_tx: OokEditorTxApp, freq_hopper: FreqHopperApp, btle_tx: BtleTxApp,
   nrf24_tx: Nrf24TxApp, rfm69_tx: Rfm69TxApp, flipper_tx: FlipperTxApp,
   keyfob_tx: KeyfobTxApp, lge_tx: LgeTxApp, freq_manager: FreqManagerApp,
-  file_manager: FileManagerApp, playlist: PlaylistApp, settings: SettingsApp,
-  calculator: CalculatorApp, notepad: NotepadApp, snake: SnakeApp, doom: DoomApp,
+  playlist: PlaylistApp, settings: SettingsApp,
+  calculator: CalculatorApp, notepad: NotepadApp,
   morse_trainer: MorseTrainerApp, band_plan: BandPlanApp, antenna_calc: AntennaCalcApp,
   signal_meter: SignalMeterApp, btle_rx: BtleRxApp, btle_comm: BtleCommApp,
   nrf24_rx: Nrf24RxApp, encoder_suite: EncoderSuiteApp, decoder_suite: DecoderSuiteApp,
@@ -120,6 +119,7 @@ const APP_MAP: Record<string, React.LazyExoticComponent<React.ComponentType<any>
   freq_counter: FreqCounterApp, ctcss_dcs: CtcssDcsApp, dmr_rx: DmrRxApp,
   dpmr_rx: DpmrRxApp, p25_rx: P25RxApp, nxdn_rx: NxdnRxApp, tetra_rx: TetraRxApp,
   pager_aggregator: PagerAggApp,
+  recordings: RecordingsApp,
 };
 
 // Special cases that need props
@@ -142,10 +142,34 @@ function LoadingSpinner() {
 export default function App() {
   const setApps = useStore((s) => s.setApps);
   const [activeApp, setActiveApp] = useState<string | null>(null);
+  const [selectedDevice, setSelectedDevice] = useState("");
+  const [usbDevices, setUsbDevices] = useState<UsbDevice[]>([]);
 
   useEffect(() => {
     listApps().then(setApps);
   }, [setApps]);
+
+  useEffect(() => {
+    const refresh = () => {
+      listUsbDevices().then((devices) => {
+        // Only update state if device list actually changed
+        setUsbDevices((prev) => {
+          const prevIds = prev.map(d => d.id).join(",");
+          const newIds = devices.map(d => d.id).join(",");
+          if (prevIds === newIds) return prev;
+          // Auto-select HackRF if available and nothing selected
+          const hackrf = devices.find((d) => d.is_hackrf);
+          if (hackrf && !selectedDevice) {
+            setSelectedDevice(hackrf.id);
+          }
+          return devices;
+        });
+      }).catch(() => {});
+    };
+    refresh();
+    const interval = setInterval(refresh, 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleBack = () => setActiveApp(null);
 
@@ -176,19 +200,53 @@ export default function App() {
     <>
       <div className="glass-bg" />
       <div className="app-content">
-        {/* Top bar */}
-        <div className="top-bar">
-          {activeApp && (
-            <button className="back-btn" onClick={handleBack}>
-              ← Home
-            </button>
-          )}
+        {/* Top bar — draggable titlebar region */}
+        <div
+          className="top-bar"
+          onMouseDown={(e) => {
+            if ((e.target as HTMLElement).closest("button, select, a, input, .device-selector, .traffic-lights")) return;
+            e.preventDefault();
+            getCurrentWindow().startDragging();
+          }}
+          onDoubleClick={(e) => {
+            if ((e.target as HTMLElement).closest("button, select, a, input, .device-selector, .traffic-lights")) return;
+            getCurrentWindow().toggleMaximize();
+          }}
+        >
+          <div className="traffic-lights" onMouseDown={(e) => e.stopPropagation()}>
+            <button className="tl-btn tl-close" onClick={() => getCurrentWindow().close()} />
+            <button className="tl-btn tl-minimize" onClick={() => getCurrentWindow().minimize()} />
+            <button className="tl-btn tl-maximize" onClick={() => getCurrentWindow().toggleMaximize()} />
+          </div>
           <span className="logo">GlassSDR</span>
           <div style={{ flex: 1 }} />
+          {!activeApp && (
+            <div className="device-selector">
+              <span className={`device-indicator ${usbDevices.some(d => d.is_hackrf) ? "" : "disconnected"}`} />
+              <select
+                value={selectedDevice}
+                onChange={(e) => setSelectedDevice(e.target.value)}
+              >
+                {usbDevices.length === 0 && (
+                  <option value="">No devices found</option>
+                )}
+                {usbDevices.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.name}{d.is_hackrf ? " ✓" : ""}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           {activeApp && (
-            <span style={{ fontSize: 12, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)" }}>
-              {activeApp}
-            </span>
+            <>
+              <button className="back-btn" onClick={handleBack}>
+                ← Home
+              </button>
+              <span style={{ fontSize: 12, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", marginLeft: 8 }}>
+                {activeApp}
+              </span>
+            </>
           )}
         </div>
 

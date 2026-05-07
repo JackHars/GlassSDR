@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback } from "react";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 const MORSE: Record<string, string> = {
   A:".-",B:"-...",C:"-.-.",D:"-..",E:".",F:"..-.",G:"--.",H:"....",I:"..",J:".---",
@@ -6,7 +7,6 @@ const MORSE: Record<string, string> = {
   U:"..-",V:"...-",W:".--",X:"-..-",Y:"-.--",Z:"--.."
 };
 const LETTERS = Object.keys(MORSE);
-const DIT = 60; // ms at 20 WPM
 
 async function playMorse(code: string, wpm: number, pitchHz: number, ctx: AudioContext) {
   const dit = Math.round(1200 / wpm);
@@ -22,7 +22,6 @@ async function playMorse(code: string, wpm: number, pitchHz: number, ctx: AudioC
     osc.stop();
     await new Promise<void>(r => setTimeout(r, dit));
   }
-  void DIT; // suppress unused warning
 }
 
 export function MorseTrainerApp() {
@@ -52,28 +51,72 @@ export function MorseTrainerApp() {
     if (!letter) return;
     const correct = answer.trim().toUpperCase() === letter;
     setFeedback(correct ? "Correct!" : `Wrong — it was ${letter}`);
-    setScore(s => correct ? { ...s, right: s.right+1 } : { ...s, wrong: s.wrong+1 });
+    setScore((s) => correct ? { ...s, right: s.right + 1 } : { ...s, wrong: s.wrong + 1 });
   }, [letter, answer]);
 
   return (
-    <div style={{ padding: 16, maxWidth: 500 }}>
-      <h2 style={{ marginTop: 0 }}>Morse Trainer</h2>
-      <div style={{ display: "flex", gap: 12, marginBottom: 12, flexWrap: "wrap" }}>
-        <label style={{ color: "#aaa", fontSize: 13 }}>WPM <input type="number" value={wpm} min={5} max={40} onChange={e=>setWpm(+e.target.value)} style={{ width: 60, background: "#222", color: "#eee", border: "1px solid #444", borderRadius: 3, padding: "2px 6px" }} /></label>
-        <label style={{ color: "#aaa", fontSize: 13 }}>Pitch Hz <input type="number" value={pitch} min={300} max={1200} step={50} onChange={e=>setPitch(+e.target.value)} style={{ width: 70, background: "#222", color: "#eee", border: "1px solid #444", borderRadius: 3, padding: "2px 6px" }} /></label>
-      </div>
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-        <button onClick={nextLetter} style={{ padding: "6px 14px", background: "#226", color: "#eee", border: "1px solid #44a", borderRadius: 3, cursor: "pointer" }}>New Letter</button>
-        <button onClick={play} disabled={!letter} style={{ padding: "6px 14px", background: "#262", color: "#eee", border: "1px solid #4a4", borderRadius: 3, cursor: "pointer" }}>Play</button>
-      </div>
-      {letter && <>
-        <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-          <input value={answer} onChange={e=>setAnswer(e.target.value)} onKeyDown={e=>e.key==="Enter"&&check()} placeholder="Type the letter…" style={{ flex: 1, background: "#222", color: "#eee", border: "1px solid #444", borderRadius: 3, padding: "6px 10px", fontSize: 16 }} autoFocus />
-          <button onClick={check} style={{ padding: "6px 14px", background: "#444", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>Check</button>
+    <AppShell
+      title="Morse Trainer"
+      status={<span style={{ fontFamily: "var(--font-mono)" }}>✓ {score.right} · ✗ {score.wrong}</span>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={nextLetter}>New Letter</button>
+              <button className="glass-btn" onClick={play} disabled={!letter}>Play</button>
+            </>
+          }
+        >
+          <ControlField label={`Speed ${wpm} WPM`} size="md">
+            <input type="range" min={5} max={40} value={wpm} onChange={(e) => setWpm(+e.target.value)} />
+          </ControlField>
+          <ControlField label={`Pitch ${pitch} Hz`} size="md">
+            <input type="range" min={300} max={1200} step={50} value={pitch} onChange={(e) => setPitch(+e.target.value)} />
+          </ControlField>
+        </ControlRow>
+      }
+    >
+      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 16, minHeight: 0 }}>
+        <div style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.6, color: "var(--text-secondary)" }}>
+          Listen and identify the letter
         </div>
-      </>}
-      {feedback && <div style={{ marginBottom: 8, color: feedback.startsWith("C") ? "#4f4" : "#f64", fontWeight: "bold" }}>{feedback}</div>}
-      <div style={{ color: "#888", fontSize: 13 }}>Correct: {score.right} · Wrong: {score.wrong}</div>
-    </div>
+        <div style={{
+          fontFamily: "var(--font-mono)",
+          fontSize: 60,
+          color: letter ? "var(--accent)" : "var(--text-tertiary)",
+          background: "rgba(255,255,255,0.55)",
+          border: "1px solid rgba(255,255,255,0.7)",
+          padding: "16px 32px",
+          borderRadius: 16,
+          backdropFilter: "blur(16px)",
+          minWidth: 200,
+          textAlign: "center",
+        }}>
+          {letter ? MORSE[letter] : "—"}
+        </div>
+        {letter && (
+          <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+            <input
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && check()}
+              placeholder="Type the letter…"
+              autoFocus
+              style={{ fontSize: 18, width: 200, textAlign: "center" }}
+            />
+            <button className="glass-btn" onClick={check}>Check</button>
+          </div>
+        )}
+        {feedback && (
+          <div style={{
+            color: feedback.startsWith("C") ? "#34C759" : "#FF3B30",
+            fontWeight: 700,
+            fontSize: 16,
+          }}>
+            {feedback}
+          </div>
+        )}
+      </div>
+    </AppShell>
   );
 }

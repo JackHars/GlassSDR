@@ -1,5 +1,5 @@
 [package]
-name = "mayhem-pc"
+name = "glass-sdr"
 version = "0.0.1"
 edition.workspace = true
 
@@ -10,12 +10,14 @@ tauri-build = { version = "2", features = [] }
 anyhow.workspace = true
 mayhem-apps = { path = "../crates/mayhem-apps" }
 mayhem-ipc = { path = "../crates/mayhem-ipc" }
+mayhem-recorder = { path = "../crates/mayhem-recorder" }
 serde.workspace = true
 serde_json.workspace = true
-tauri = { version = "2", features = [] }
+tauri = { version = "2", features = ["macos-private-api"] }
 tokio.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
+rusb = "0.9"
 
 [features]
 default = ["custom-protocol"]

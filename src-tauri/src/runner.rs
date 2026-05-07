@@ -36,14 +36,20 @@ use mayhem_apps::{
     App, AppRegistry, RunningApp,
 };
 use mayhem_ipc::{AircraftState, AppId, AppMetadata, AppStatus, AudioFrame, AptLineEvent, BleAdvEvent, CtcssDetectEvent, DabServiceEvent, DigitalVoiceEvent, DscMessageEvent, EpirbBeaconEvent, FreqMeasureEvent, OokDecodeEvent, PocsagPageEvent, PocsagTxStatus, PulseEventIpc, RdsData, ScanResultEvent, SondeEvent, SpectrumFrame, TpmsSensorEvent};
+use mayhem_recorder::ActiveRecording;
 use serde_json::Value;
 use std::sync::Arc;
 use tauri::{AppHandle, Emitter};
 use tokio::sync::{mpsc, Mutex};
 
+/// Shared active recording handle. The pumps below check this on every frame
+/// and write to the recorder when present.
+pub type RecordingHandle = Arc<std::sync::Mutex<Option<ActiveRecording>>>;
+
 pub struct AppRunner {
     registry: AppRegistry,
     state: Mutex<RunnerState>,
+    pub recording: RecordingHandle,
 }
 
 struct RunnerState {
@@ -356,6 +362,7 @@ impl AppRunner {
         Self {
             registry,
             state: Mutex::new(RunnerState { current: None }),
+            recording: Arc::new(std::sync::Mutex::new(None)),
         }
     }
 
@@ -386,7 +393,7 @@ impl AppRunner {
             AppId::NfmAudio => {
                 let (app, audio_rx, spec_rx) = NfmAudioApp::new();
                 let running = app.start(params)?;
-                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                spawn_event_pumps(handle.clone(), self.recording.clone(), audio_rx, spec_rx);
                 state.current = Some((id, running));
             }
             AppId::AdsbRx => {
@@ -404,326 +411,326 @@ impl AppRunner {
             AppId::WfmRx => {
                 let (app, audio_rx, spec_rx) = WfmRxApp::new();
                 let running = app.start(params)?;
-                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                spawn_event_pumps(handle.clone(), self.recording.clone(), audio_rx, spec_rx);
                 state.current = Some((id, running));
             }
             AppId::AmRx => {
                 let (app, audio_rx, spec_rx) = AmRxApp::new();
                 let running = app.start(params)?;
-                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                spawn_event_pumps(handle.clone(), self.recording.clone(), audio_rx, spec_rx);
                 state.current = Some((id, running));
             }
             AppId::UsbRx => {
                 let (app, audio_rx, spec_rx) = SsbRxApp::new_usb();
                 let running = app.start(params)?;
-                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                spawn_event_pumps(handle.clone(), self.recording.clone(), audio_rx, spec_rx);
                 state.current = Some((id, running));
             }
             AppId::LsbRx => {
                 let (app, audio_rx, spec_rx) = SsbRxApp::new_lsb();
                 let running = app.start(params)?;
-                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                spawn_event_pumps(handle.clone(), self.recording.clone(), audio_rx, spec_rx);
                 state.current = Some((id, running));
             }
             AppId::CwRx => {
                 let (app, audio_rx, spec_rx) = CwRxApp::new();
                 let running = app.start(params)?;
-                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                spawn_event_pumps(handle.clone(), self.recording.clone(), audio_rx, spec_rx);
                 state.current = Some((id, running));
             }
             AppId::RdsRx => {
                 let (app, audio_rx, spec_rx, rds_rx) = RdsRxApp::new();
                 let running = app.start(params)?;
-                spawn_event_pumps(handle.clone(), audio_rx, spec_rx);
+                spawn_event_pumps(handle.clone(), self.recording.clone(), audio_rx, spec_rx);
                 spawn_rds_pump(handle.clone(), rds_rx);
                 state.current = Some((id, running));
             }
             AppId::AprsRx => {
                 let (app, event_rx, spec_rx) = AprsRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "aprs_packet", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "aprs_packet", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::AisRx => {
                 let (app, event_rx, spec_rx) = AisRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "ais_ship", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "ais_ship", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::AcarsRx => {
                 let (app, event_rx, spec_rx) = AcarsRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "acars_message", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "acars_message", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::PocsagRx => {
                 let (app, event_rx, spec_rx) = PocsagRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "pocsag_page", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "pocsag_page", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::AfskRx => {
                 let (app, event_rx, spec_rx) = AfskRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "afsk_bits", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "afsk_bits", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::ErtRx => {
                 let (app, event_rx, spec_rx) = ErtRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "ert_meter", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "ert_meter", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::WeatherRx => {
                 let (app, event_rx, spec_rx) = WeatherRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "weather_reading", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "weather_reading", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::SondeRx => {
                 let (app, event_rx, spec_rx) = SondeRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "sonde_telemetry", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "sonde_telemetry", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::TwoToneRx => {
                 let (app, event_rx, spec_rx) = TwoToneRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "two_tone_alert", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "two_tone_alert", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::FlexRx => {
                 let (app, event_rx, spec_rx) = FlexRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump(handle.clone(), "flex_page", event_rx);
+                spawn_typed_pump(handle.clone(), self.recording.clone(), "flex_page", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::TpmsRx => {
                 let (app, event_rx, spec_rx) = TpmsRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<TpmsSensorEvent>(handle.clone(), "tpms_sensor", event_rx);
+                spawn_typed_pump::<TpmsSensorEvent>(handle.clone(), self.recording.clone(), "tpms_sensor", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::OokAnalyzer => {
                 let (app, event_rx, spec_rx) = OokAnalyzerApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PulseEventIpc>(handle.clone(), "pulse_event", event_rx);
+                spawn_typed_pump::<PulseEventIpc>(handle.clone(), self.recording.clone(), "pulse_event", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::Scanner => {
                 let (app, event_rx, spec_rx) = ScannerApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<ScanResultEvent>(handle.clone(), "scan_result", event_rx);
+                spawn_typed_pump::<ScanResultEvent>(handle.clone(), self.recording.clone(), "scan_result", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::Recon => {
                 let (app, event_rx, spec_rx) = ReconApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<ScanResultEvent>(handle.clone(), "scan_result", event_rx);
+                spawn_typed_pump::<ScanResultEvent>(handle.clone(), self.recording.clone(), "scan_result", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::LookingGlass => {
                 let (app, event_rx, spec_rx) = LookingGlassApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<ScanResultEvent>(handle.clone(), "scan_result", event_rx);
+                spawn_typed_pump::<ScanResultEvent>(handle.clone(), self.recording.clone(), "scan_result", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::SigGen => {
                 let (app, status_rx) = SigGenApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "pocsag_tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "pocsag_tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::OokDecoders => {
                 let (app, event_rx, spec_rx) = OokDecodersApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<OokDecodeEvent>(handle.clone(), "ook_decode", event_rx);
+                spawn_typed_pump::<OokDecodeEvent>(handle.clone(), self.recording.clone(), "ook_decode", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::SubGhzCapture => {
                 let (app, event_rx, spec_rx) = SubGhzCaptureApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PulseEventIpc>(handle.clone(), "pulse_event", event_rx);
+                spawn_typed_pump::<PulseEventIpc>(handle.clone(), self.recording.clone(), "pulse_event", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::AptRx => {
                 let (app, event_rx, spec_rx) = AptRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<AptLineEvent>(handle.clone(), "apt_line", event_rx);
+                spawn_typed_pump::<AptLineEvent>(handle.clone(), self.recording.clone(), "apt_line", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::DscRx => {
                 let (app, event_rx, spec_rx) = DscRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<DscMessageEvent>(handle.clone(), "dsc_message", event_rx);
+                spawn_typed_pump::<DscMessageEvent>(handle.clone(), self.recording.clone(), "dsc_message", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::EpirbRx => {
                 let (app, event_rx, spec_rx) = EpirbRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<EpirbBeaconEvent>(handle.clone(), "epirb_beacon", event_rx);
+                spawn_typed_pump::<EpirbBeaconEvent>(handle.clone(), self.recording.clone(), "epirb_beacon", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::SondeRxExt => {
                 let (app, event_rx, spec_rx) = SondeRxExtApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<SondeEvent>(handle.clone(), "sonde_telemetry", event_rx);
+                spawn_typed_pump::<SondeEvent>(handle.clone(), self.recording.clone(), "sonde_telemetry", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::DabRx => {
                 let (app, event_rx, spec_rx) = DabRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<DabServiceEvent>(handle.clone(), "dab_service", event_rx);
+                spawn_typed_pump::<DabServiceEvent>(handle.clone(), self.recording.clone(), "dab_service", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::HrptRx => {
                 let (app, event_rx, spec_rx) = HrptRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<AptLineEvent>(handle.clone(), "apt_line", event_rx);
+                spawn_typed_pump::<AptLineEvent>(handle.clone(), self.recording.clone(), "apt_line", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::LrptRx => {
                 let (app, event_rx, spec_rx) = LrptRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<AptLineEvent>(handle.clone(), "apt_line", event_rx);
+                spawn_typed_pump::<AptLineEvent>(handle.clone(), self.recording.clone(), "apt_line", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::AdsbRxExt => {
                 let (app, state_rx) = AdsbRxExtApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<AircraftState>(handle.clone(), "aircraft_state", state_rx);
+                spawn_typed_pump::<AircraftState>(handle.clone(), self.recording.clone(), "aircraft_state", state_rx);
                 state.current = Some((id, running));
             }
             AppId::RttyTx => {
                 let (app, status_rx) = RttyTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::SstvTx => {
                 let (app, status_rx) = SstvTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::AfskTx => {
                 let (app, status_rx) = AfskTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::MorseTx => {
                 let (app, status_rx) = MorseTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::SoundboardTx => {
                 let (app, status_rx) = SoundboardTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::FlexTx => {
                 let (app, status_rx) = FlexTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::AdsbTx => {
                 let (app, status_rx) = AdsbTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::GpsSim => {
                 let (app, status_rx) = GpsSimApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::Mdc1200Tx => {
                 let (app, status_rx) = Mdc1200TxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::ReplayTx => {
                 let (app, status_rx) = ReplayTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::OokEditorTx => {
                 let (app, status_rx) = OokEditorTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::FreqHopper => {
                 let (app, status_rx) = FreqHopperApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::BtleTx => {
                 let (app, status_rx) = BtleTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::Nrf24Tx => {
                 let (app, status_rx) = Nrf24TxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::Rfm69Tx => {
                 let (app, status_rx) = Rfm69TxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::FlipperTx => {
                 let (app, status_rx) = FlipperTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::KeyfobTx => {
                 let (app, status_rx) = KeyfobTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::LgeTx => {
                 let (app, status_rx) = LgeTxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::SignalMeter => {
@@ -735,49 +742,49 @@ impl AppRunner {
             AppId::BtleRx => {
                 let (app, event_rx) = BtleRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<BleAdvEvent>(handle.clone(), "ble_adv", event_rx);
+                spawn_typed_pump::<BleAdvEvent>(handle.clone(), self.recording.clone(), "ble_adv", event_rx);
                 state.current = Some((id, running));
             }
             AppId::BtleComm => {
                 let (app, event_rx) = BtleCommApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<BleAdvEvent>(handle.clone(), "ble_adv", event_rx);
+                spawn_typed_pump::<BleAdvEvent>(handle.clone(), self.recording.clone(), "ble_adv", event_rx);
                 state.current = Some((id, running));
             }
             AppId::Nrf24Rx => {
                 let (app, event_rx) = Nrf24RxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<OokDecodeEvent>(handle.clone(), "ook_decode", event_rx);
+                spawn_typed_pump::<OokDecodeEvent>(handle.clone(), self.recording.clone(), "ook_decode", event_rx);
                 state.current = Some((id, running));
             }
             AppId::EncoderSuite => {
                 let (app, status_rx) = EncoderSuiteApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::DecoderSuite => {
                 let (app, event_rx) = DecoderSuiteApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<OokDecodeEvent>(handle.clone(), "ook_decode", event_rx);
+                spawn_typed_pump::<OokDecodeEvent>(handle.clone(), self.recording.clone(), "ook_decode", event_rx);
                 state.current = Some((id, running));
             }
             AppId::CaptureManager => {
                 let (app, status_rx) = CaptureManagerApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::SpectrumPainter => {
                 let (app, status_rx) = SpectrumPainterApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::RfCharacterize => {
                 let (app, status_rx) = RfCharacterizeApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), "tx_status", status_rx);
+                spawn_typed_pump::<PocsagTxStatus>(handle.clone(), self.recording.clone(), "tx_status", status_rx);
                 state.current = Some((id, running));
             }
             AppId::ProtocolAnalyzer => {
@@ -807,64 +814,61 @@ impl AppRunner {
             AppId::FreqCounter => {
                 let (app, event_rx) = FreqCounterApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<FreqMeasureEvent>(handle.clone(), "freq_measure", event_rx);
+                spawn_typed_pump::<FreqMeasureEvent>(handle.clone(), self.recording.clone(), "freq_measure", event_rx);
                 state.current = Some((id, running));
             }
             AppId::CtcssDcs => {
                 let (app, event_rx) = CtcssDcsApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<CtcssDetectEvent>(handle.clone(), "ctcss_detect", event_rx);
+                spawn_typed_pump::<CtcssDetectEvent>(handle.clone(), self.recording.clone(), "ctcss_detect", event_rx);
                 state.current = Some((id, running));
             }
             AppId::DmrRx => {
                 let (app, event_rx, spec_rx) = DmrRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), self.recording.clone(), "digital_voice", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::DpmrRx => {
                 let (app, event_rx, spec_rx) = DpmrRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), self.recording.clone(), "digital_voice", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::P25Rx => {
                 let (app, event_rx, spec_rx) = P25RxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), self.recording.clone(), "digital_voice", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::NxdnRx => {
                 let (app, event_rx, spec_rx) = NxdnRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), self.recording.clone(), "digital_voice", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::TetraRx => {
                 let (app, event_rx, spec_rx) = TetraRxApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), "digital_voice", event_rx);
+                spawn_typed_pump::<DigitalVoiceEvent>(handle.clone(), self.recording.clone(), "digital_voice", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
             AppId::PagerAggregator => {
                 let (app, event_rx, spec_rx) = PagerAggregatorApp::new();
                 let running = app.start(params)?;
-                spawn_typed_pump::<PocsagPageEvent>(handle.clone(), "pocsag_page", event_rx);
+                spawn_typed_pump::<PocsagPageEvent>(handle.clone(), self.recording.clone(), "pocsag_page", event_rx);
                 spawn_spec_pump(handle.clone(), spec_rx);
                 state.current = Some((id, running));
             }
-            AppId::Snake
-            | AppId::Doom
-            | AppId::MorseTrainer
+            AppId::MorseTrainer
             | AppId::BandPlan
             | AppId::AntennaCalc
             | AppId::FreqManager
-            | AppId::FileManager
             | AppId::Playlist
             | AppId::Settings
             | AppId::Calculator
@@ -928,12 +932,19 @@ fn spawn_aircraft_pump(
 
 fn spawn_event_pumps(
     handle: AppHandle,
+    rec: RecordingHandle,
     mut audio_rx: mpsc::UnboundedReceiver<AudioFrame>,
     mut spec_rx: mpsc::UnboundedReceiver<SpectrumFrame>,
 ) {
     let h1 = handle.clone();
+    let rec1 = rec.clone();
     tokio::spawn(async move {
         while let Some(frame) = audio_rx.recv().await {
+            if let Ok(mut g) = rec1.lock() {
+                if let Some(active) = g.as_mut() {
+                    let _ = active.write_audio(&frame);
+                }
+            }
             let _ = h1.emit("audio", frame);
         }
     });
@@ -947,11 +958,17 @@ fn spawn_event_pumps(
 
 fn spawn_typed_pump<T: serde::Serialize + Clone + Send + 'static>(
     handle: AppHandle,
+    rec: RecordingHandle,
     event_name: &'static str,
     mut rx: mpsc::UnboundedReceiver<T>,
 ) {
     tokio::spawn(async move {
         while let Some(evt) = rx.recv().await {
+            if let Ok(mut g) = rec.lock() {
+                if let Some(active) = g.as_mut() {
+                    let _ = active.write_event(&evt);
+                }
+            }
             let _ = handle.emit(event_name, &evt);
         }
     });

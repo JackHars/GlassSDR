@@ -2,23 +2,21 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
-interface PulseEventIpc {
-  is_high: boolean;
-  duration_us: number;
-}
+interface PulseEventIpc { is_high: boolean; duration_us: number; }
 
 export function SubGhzCaptureApp() {
   const [pulses, setPulses] = useState<PulseEventIpc[]>([]);
   const [freqHz, setFreqHz] = useState(433_920_000);
+  const [running, setRunning] = useState(false);
 
-  const handleStart = () =>
-    startApp("sub_ghz_capture" as AppId, {
-      center_hz: freqHz,
-      lna_gain_db: 40,
-      vga_gain_db: 20,
-      amp_enabled: false,
-    });
+  const handleStart = async () => {
+    await startApp("sub_ghz_capture" as AppId, { center_hz: freqHz, lna_gain_db: 40, vga_gain_db: 20, amp_enabled: false });
+    setRunning(true);
+  };
+  const handleStop = async () => { await stopApp(); setRunning(false); };
 
   useEffect(() => {
     const unlisten = listen<PulseEventIpc>("pulse_event", (e) =>
@@ -30,58 +28,49 @@ export function SubGhzCaptureApp() {
   const totalDuration = pulses.reduce((acc, p) => acc + p.duration_us, 0);
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>Sub-GHz Capture</h2>
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, alignItems: "center" }}>
-        <label>Freq (Hz):</label>
-        <input
-          type="number"
-          value={freqHz}
-          onChange={(e) => setFreqHz(Number(e.target.value))}
-          style={{ width: 140, padding: "4px 8px", background: "#222", color: "#eee", border: "1px solid #555" }}
-        />
-        <button onClick={handleStart} style={{ padding: "8px 16px", background: "#2a2", color: "#fff", border: "none", borderRadius: 4 }}>Start</button>
-        <button onClick={stopApp} style={{ padding: "8px 16px", background: "#555", color: "#fff", border: "none", borderRadius: 4 }}>Stop</button>
-        <button onClick={() => setPulses([])} style={{ padding: "8px 16px", background: "#444", color: "#eee", border: "none", borderRadius: 4 }}>Clear</button>
-        <span style={{ color: "#888" }}>
-          {pulses.length} pulses — {(totalDuration / 1000).toFixed(2)} ms total
-        </span>
-      </div>
-      <div
-        style={{
-          overflowY: "auto",
-          maxHeight: "calc(100vh - 160px)",
-          fontFamily: "monospace",
-          fontSize: 12,
-        }}
-      >
-        {pulses.map((p, i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 8,
-              padding: "2px 8px",
-              borderBottom: "1px solid #1a1a1a",
-            }}
-          >
-            <span style={{ color: p.is_high ? "#4f4" : "#888", width: 36 }}>
-              {p.is_high ? "HIGH" : "LOW"}
-            </span>
-            <span style={{ width: 80, textAlign: "right" }}>{p.duration_us.toFixed(1)} µs</span>
-            <div
-              style={{
+    <AppShell
+      title="Sub-GHz Capture"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Capturing · {pulses.length} pulses · {(totalDuration / 1000).toFixed(2)} ms</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
+              <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
+              <button className="glass-btn" onClick={() => setPulses([])}>Clear</button>
+            </>
+          }
+        >
+          <ControlField label="Frequency (Hz)" size="lg">
+            <input type="number" value={freqHz} onChange={(e) => setFreqHz(Number(e.target.value))} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"sub_ghz_capture" as any} format="jsonl" centerHz={freqHz} />}
+    >
+      <div className="app-shell__grow" style={{ overflow: "auto", borderRadius: 12, background: "rgba(255,255,255,0.55)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.7)", fontFamily: "var(--font-mono)", fontSize: 12, minHeight: 200 }}>
+        {pulses.length === 0 ? (
+          <div style={{ padding: 32, textAlign: "center", color: "var(--text-tertiary)" }}>
+            No pulses yet — capturing OOK transitions for replay.
+          </div>
+        ) : (
+          pulses.map((p, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: 12, padding: "4px 12px", borderBottom: "1px solid rgba(0,0,0,0.04)" }}>
+              <span style={{ color: p.is_high ? "#34C759" : "var(--text-tertiary)", fontWeight: 600, width: 50 }}>
+                {p.is_high ? "HIGH" : "LOW"}
+              </span>
+              <span style={{ width: 90, textAlign: "right", color: "var(--text-primary)" }}>{p.duration_us.toFixed(1)} µs</span>
+              <div style={{
                 flex: 1,
                 height: 6,
-                background: p.is_high ? "#2a6" : "#444",
-                maxWidth: Math.min(400, p.duration_us * 0.2),
-                borderRadius: 1,
-              }}
-            />
-          </div>
-        ))}
+                background: p.is_high ? "rgba(52,199,89,0.6)" : "rgba(0,0,0,0.2)",
+                maxWidth: Math.min(420, p.duration_us * 0.2),
+                borderRadius: 2,
+              }} />
+            </div>
+          ))
+        )}
       </div>
-    </div>
+    </AppShell>
   );
 }

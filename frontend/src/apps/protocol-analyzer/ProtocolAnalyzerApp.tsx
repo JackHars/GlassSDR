@@ -1,51 +1,50 @@
 import { useState } from "react";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
-
-const inp: React.CSSProperties = {
-  background: "#222", color: "#eee", border: "1px solid #555",
-  borderRadius: 3, padding: "4px 8px", width: 140,
-};
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 export function ProtocolAnalyzerApp() {
   const [freqHz, setFreqHz] = useState(433_920_000);
   const [symbolRate, setSymbolRate] = useState(9600);
   const [running, setRunning] = useState(false);
 
-  const start = () => {
-    startApp("protocol_analyzer" as AppId, { center_hz: freqHz, symbol_rate: symbolRate });
+  const start = async () => {
+    await startApp("protocol_analyzer" as AppId, { center_hz: freqHz, symbol_rate: symbolRate });
     setRunning(true);
   };
-  const stop = () => { stopApp(); setRunning(false); };
+  const stop = async () => { await stopApp(); setRunning(false); };
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2 style={{ marginTop: 0 }}>Protocol Analyzer</h2>
-      <p style={{ color: "#aaa", fontSize: 13 }}>
-        Passive capture with eye diagram visualization for digital signal analysis.
-      </p>
-      <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: 8, maxWidth: 420, marginBottom: 16 }}>
-        <label>Frequency (Hz):</label>
-        <input type="number" value={freqHz} onChange={(e) => setFreqHz(Number(e.target.value))} style={inp} />
-        <label>Symbol Rate (bps):</label>
-        <input type="number" value={symbolRate} onChange={(e) => setSymbolRate(Number(e.target.value))} style={inp} />
+    <AppShell
+      title="Protocol Analyzer"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Capturing · {symbolRate} bps</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={start} disabled={running}>Capture</button>
+              <button className="glass-btn" onClick={stop} disabled={!running}>Stop</button>
+            </>
+          }
+        >
+          <ControlField label="Frequency (Hz)" size="lg">
+            <input type="number" value={freqHz} onChange={(e) => setFreqHz(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Symbol Rate (bps)" size="md">
+            <input type="number" value={symbolRate} onChange={(e) => setSymbolRate(Number(e.target.value))} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"protocol_analyzer" as any} format="iq" centerHz={freqHz} />}
+    >
+      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", gap: 12, minHeight: 0 }}>
+        <div style={{ flex: 1, background: "#0a0a16", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 12, display: "flex", alignItems: "center", justifyContent: "center", minHeight: 240 }}>
+          <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 13, fontFamily: "var(--font-mono)" }}>
+            Eye diagram — capture a signal to populate
+          </span>
+        </div>
       </div>
-      <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-        <button onClick={start} disabled={running}
-          style={{ padding: "7px 16px", background: "#262", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Capture
-        </button>
-        <button onClick={stop} disabled={!running}
-          style={{ padding: "7px 16px", background: "#622", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Stop
-        </button>
-      </div>
-      <div style={{
-        width: 480, height: 240, background: "#0a0a16", border: "1px solid #334",
-        borderRadius: 4, display: "flex", alignItems: "center", justifyContent: "center",
-      }}>
-        <span style={{ color: "#445", fontSize: 13 }}>Eye diagram — capture a signal to populate</span>
-      </div>
-    </div>
+    </AppShell>
   );
 }

@@ -3,6 +3,7 @@ import type { SpectrumFrame } from "./types/SpectrumFrame";
 import type { AudioFrame } from "./types/AudioFrame";
 import type { AppStatus } from "./types/AppStatus";
 import type { AircraftState } from "./types/AircraftState";
+import type { RecordingStatus } from "./types/RecordingStatus";
 
 export function onSpectrum(handler: (frame: SpectrumFrame) => void): Promise<UnlistenFn> {
   return listen<SpectrumFrame>("spectrum", (e) => handler(e.payload));
@@ -32,4 +33,8 @@ export function onPocsagTxStatus(handler: (s: PocsagTxStatus) => void): Promise<
 
 export function onTxStatus(handler: (s: PocsagTxStatus) => void): Promise<UnlistenFn> {
   return listen<PocsagTxStatus>("tx_status", (e) => handler(e.payload));
+}
+
+export function onRecordingStatus(handler: (s: RecordingStatus) => void): Promise<UnlistenFn> {
+  return listen<RecordingStatus>("recording_status", (e) => handler(e.payload));
 }

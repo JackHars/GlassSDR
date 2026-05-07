@@ -2,15 +2,11 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 interface FreqMeasureEvent { frequency_hz: number; precision_hz: number; }
-
 type GateTime = 100 | 1000 | 10000;
-
-const inp: React.CSSProperties = {
-  background: "#222", color: "#eee", border: "1px solid #555",
-  borderRadius: 3, padding: "4px 8px", width: 140,
-};
 
 function formatHz(hz: number): string {
   if (hz >= 1e9) return `${(hz / 1e9).toFixed(6)} GHz`;
@@ -30,51 +26,56 @@ export function FreqCounterApp() {
     return () => { ul.then((f) => f()); };
   }, []);
 
-  const start = () => {
-    startApp("freq_counter" as AppId, { center_hz: centerHz, gate_ms: gateMs });
+  const start = async () => {
+    await startApp("freq_counter" as AppId, { center_hz: centerHz, gate_ms: gateMs });
     setRunning(true);
   };
-  const stop = () => { stopApp(); setRunning(false); };
+  const stop = async () => { await stopApp(); setRunning(false); };
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2 style={{ marginTop: 0 }}>Frequency Counter</h2>
-      <p style={{ color: "#aaa", fontSize: 13 }}>
-        High-precision frequency measurement via zero-crossing analysis.
-      </p>
-      <div style={{ display: "grid", gridTemplateColumns: "160px 1fr", gap: 8, maxWidth: 420, marginBottom: 16 }}>
-        <label>Center Freq (Hz):</label>
-        <input type="number" value={centerHz} onChange={(e) => setCenterHz(Number(e.target.value))} style={inp} />
-        <label>Gate Time:</label>
-        <select value={gateMs} onChange={(e) => setGateMs(Number(e.target.value) as GateTime)} style={inp}>
-          <option value={100}>100 ms</option>
-          <option value={1000}>1 s</option>
-          <option value={10000}>10 s</option>
-        </select>
-      </div>
-      <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
-        <button onClick={start} disabled={running}
-          style={{ padding: "7px 16px", background: "#262", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Start
-        </button>
-        <button onClick={stop} disabled={!running}
-          style={{ padding: "7px 16px", background: "#622", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer" }}>
-          Stop
-        </button>
-      </div>
-      <div style={{
-        fontSize: 44, fontFamily: "monospace", letterSpacing: 2,
-        color: measured ? "#8cf" : "#333",
-        background: "#0d0d1a", borderRadius: 6, padding: "16px 24px",
-        display: "inline-block", minWidth: 320, textAlign: "center",
-      }}>
-        {measured ? formatHz(measured.frequency_hz) : "—"}
-      </div>
-      {measured && (
-        <div style={{ marginTop: 8, color: "#666", fontSize: 12 }}>
-          Precision: ±{measured.precision_hz.toFixed(1)} Hz
+    <AppShell
+      title="Frequency Counter"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Measuring · gate {gateMs} ms</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={start} disabled={running}>Start</button>
+              <button className="glass-btn" onClick={stop} disabled={!running}>Stop</button>
+            </>
+          }
+        >
+          <ControlField label="Center Frequency (Hz)" size="lg">
+            <input type="number" value={centerHz} onChange={(e) => setCenterHz(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Gate Time" size="md">
+            <select value={gateMs} onChange={(e) => setGateMs(Number(e.target.value) as GateTime)}>
+              <option value={100}>100 ms</option>
+              <option value={1000}>1 s</option>
+              <option value={10000}>10 s</option>
+            </select>
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"freq_counter" as any} format="jsonl" centerHz={centerHz} />}
+    >
+      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12 }}>
+        <div style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.6, color: "var(--text-secondary)" }}>
+          Measured Frequency
         </div>
-      )}
-    </div>
+        <div style={{
+          fontSize: 64, fontFamily: "var(--font-mono)", letterSpacing: 2,
+          color: measured ? "var(--accent)" : "var(--text-tertiary)",
+          textAlign: "center",
+        }}>
+          {measured ? formatHz(measured.frequency_hz) : "—"}
+        </div>
+        {measured && (
+          <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+            Precision ±{measured.precision_hz.toFixed(1)} Hz
+          </div>
+        )}
+      </div>
+    </AppShell>
   );
 }

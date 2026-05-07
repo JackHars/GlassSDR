@@ -2,23 +2,21 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
-interface PulseEventIpc {
-  is_high: boolean;
-  duration_us: number;
-}
+interface PulseEventIpc { is_high: boolean; duration_us: number; }
 
 export function OokAnalyzerApp() {
   const [pulses, setPulses] = useState<PulseEventIpc[]>([]);
   const [freqHz, setFreqHz] = useState(433_920_000);
+  const [running, setRunning] = useState(false);
 
-  const handleStart = () =>
-    startApp("ook_analyzer" as AppId, {
-      center_hz: freqHz,
-      lna_gain_db: 40,
-      vga_gain_db: 20,
-      amp_enabled: false,
-    });
+  const handleStart = async () => {
+    await startApp("ook_analyzer" as AppId, { center_hz: freqHz, lna_gain_db: 40, vga_gain_db: 20, amp_enabled: false });
+    setRunning(true);
+  };
+  const handleStop = async () => { await stopApp(); setRunning(false); };
 
   useEffect(() => {
     const unlisten = listen<PulseEventIpc>("pulse_event", (e) =>
@@ -28,38 +26,42 @@ export function OokAnalyzerApp() {
   }, []);
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>OOK Analyzer</h2>
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, alignItems: "center" }}>
-        <label>Freq (Hz):</label>
-        <input
-          type="number"
-          value={freqHz}
-          onChange={(e) => setFreqHz(Number(e.target.value))}
-          style={{ width: 140, padding: "4px 8px", background: "#222", color: "#eee", border: "1px solid #555" }}
-        />
-        <button onClick={handleStart} style={{ padding: "8px 16px", background: "#2a2", color: "#fff", border: "none", borderRadius: 4 }}>Start</button>
-        <button onClick={stopApp} style={{ padding: "8px 16px", background: "#555", color: "#fff", border: "none", borderRadius: 4 }}>Stop</button>
-        <button onClick={() => setPulses([])} style={{ padding: "8px 16px", background: "#444", color: "#eee", border: "none", borderRadius: 4 }}>Clear</button>
-        <span style={{ color: "#888" }}>{pulses.length} pulses</span>
-      </div>
-      <div style={{ overflowY: "auto", maxHeight: "calc(100vh - 160px)", fontFamily: "monospace", fontSize: 12 }}>
-        {pulses.map((p, i) => (
-          <div
-            key={i}
-            style={{
-              padding: "2px 8px",
-              background: p.is_high ? "#1a3a1a" : "#1c1c2c",
-              borderBottom: "1px solid #222",
-            }}
-          >
-            <span style={{ color: p.is_high ? "#4f4" : "#888", marginRight: 12 }}>
-              {p.is_high ? "HIGH" : "LOW "}
-            </span>
-            {p.duration_us.toFixed(1)} µs
+    <AppShell
+      title="OOK Analyzer"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Capturing pulses · {pulses.length}</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
+              <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
+              <button className="glass-btn" onClick={() => setPulses([])}>Clear</button>
+            </>
+          }
+        >
+          <ControlField label="Frequency (Hz)" size="lg">
+            <input type="number" value={freqHz} onChange={(e) => setFreqHz(Number(e.target.value))} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"ook_analyzer" as any} format="jsonl" centerHz={freqHz} />}
+    >
+      <div className="app-shell__grow" style={{ overflow: "auto", borderRadius: 12, background: "rgba(255,255,255,0.55)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.7)", fontFamily: "var(--font-mono)", fontSize: 12, minHeight: 200 }}>
+        {pulses.length === 0 ? (
+          <div style={{ padding: 32, textAlign: "center", color: "var(--text-tertiary)" }}>
+            No pulses yet — listening for OOK transitions.
           </div>
-        ))}
+        ) : (
+          pulses.map((p, i) => (
+            <div key={i} style={{ padding: "4px 12px", borderBottom: "1px solid rgba(0,0,0,0.04)", background: p.is_high ? "rgba(52,199,89,0.06)" : "transparent" }}>
+              <span style={{ color: p.is_high ? "#34C759" : "var(--text-tertiary)", fontWeight: 600, marginRight: 12, display: "inline-block", width: 50 }}>
+                {p.is_high ? "HIGH" : "LOW"}
+              </span>
+              {p.duration_us.toFixed(1)} µs
+            </div>
+          ))
+        )}
       </div>
-    </div>
+    </AppShell>
   );
 }

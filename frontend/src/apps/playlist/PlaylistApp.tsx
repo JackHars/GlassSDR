@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 interface Step { appId: string; durationSec: number; }
 
@@ -10,7 +11,6 @@ const APPS: string[] = [
 ];
 
 const LS_KEY = "mayhem_playlist";
-const inp = { background: "#222", color: "#eee", border: "1px solid #444", padding: "4px 6px", borderRadius: 3 };
 
 function loadSteps(): Step[] {
   try { return JSON.parse(localStorage.getItem(LS_KEY) ?? "[]"); } catch { return []; }
@@ -51,49 +51,66 @@ export function PlaylistApp() {
   };
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2 style={{ marginTop: 0 }}>Playlist</h2>
-
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, flexWrap: "wrap" }}>
-        <select value={newApp} onChange={(e) => setNewApp(e.target.value)} style={inp}>
-          {APPS.map((a) => <option key={a} value={a}>{a}</option>)}
-        </select>
-        <input type="number" min={1} max={3600} value={newDur} onChange={(e) => setNewDur(Number(e.target.value))} style={{ ...inp, width: 70 }} />
-        <span style={{ alignSelf: "center", color: "#aaa", fontSize: 13 }}>sec</span>
-        <button onClick={add} style={{ background: "#226", color: "#eee", border: "none", borderRadius: 3, padding: "4px 12px", cursor: "pointer" }}>Add</button>
-      </div>
-
-      <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13, marginBottom: 16 }}>
-        <thead>
-          <tr style={{ background: "#222" }}>
-            <th style={{ padding: 6, textAlign: "left" }}>#</th>
-            <th style={{ padding: 6, textAlign: "left" }}>App</th>
-            <th style={{ padding: 6, textAlign: "left" }}>Duration</th>
-            <th />
-          </tr>
-        </thead>
-        <tbody>
-          {steps.map((s, i) => (
-            <tr key={i} style={{ borderBottom: "1px solid #2a2a2a", background: curIdx === i ? "#113" : "transparent" }}>
-              <td style={{ padding: "5px 6px", color: "#666" }}>{i + 1}</td>
-              <td style={{ padding: "5px 6px" }}>{s.appId}</td>
-              <td style={{ padding: "5px 6px" }}>{s.durationSec}s</td>
-              <td style={{ padding: "5px 6px", textAlign: "center" }}>
-                <button onClick={() => remove(i)} style={{ background: "#500", color: "#eee", border: "none", borderRadius: 3, cursor: "pointer", padding: "2px 8px" }}>✕</button>
-              </td>
+    <AppShell
+      title="TX Playlist"
+      status={
+        playing && curIdx !== null
+          ? <><span style={{color: "#34C759"}}>●</span> Playing step {curIdx + 1}/{steps.length} · {steps[curIdx].appId}</>
+          : <><span style={{color: "#999"}}>○</span> Idle · {steps.length} step{steps.length === 1 ? "" : "s"}</>
+      }
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={play} disabled={playing || steps.length === 0}>▶ Play</button>
+              <button className="glass-btn" onClick={stop} disabled={!playing}>■ Stop</button>
+            </>
+          }
+        >
+          <ControlField label="App" size="md">
+            <select value={newApp} onChange={(e) => setNewApp(e.target.value)}>
+              {APPS.map((a) => <option key={a} value={a}>{a}</option>)}
+            </select>
+          </ControlField>
+          <ControlField label="Duration (s)" size="sm">
+            <input type="number" min={1} max={3600} value={newDur} onChange={(e) => setNewDur(Number(e.target.value))} />
+          </ControlField>
+          <button className="glass-btn" onClick={add}>Add step</button>
+        </ControlRow>
+      }
+    >
+      <div className="app-shell__grow" style={{ overflow: "auto", borderRadius: 12, background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", backdropFilter: "blur(16px)", minHeight: 200 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <thead>
+            <tr style={{ position: "sticky", top: 0, background: "rgba(255,255,255,0.85)", textAlign: "left", backdropFilter: "blur(8px)" }}>
+              <th style={{ padding: "8px 12px", width: 40, fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>#</th>
+              <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>App</th>
+              <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Duration</th>
+              <th style={{ padding: "8px 12px", width: 60 }} />
             </tr>
-          ))}
-          {steps.length === 0 && <tr><td colSpan={4} style={{ padding: 16, color: "#555", textAlign: "center" }}>No steps</td></tr>}
-        </tbody>
-      </table>
-
-      <div style={{ display: "flex", gap: 8 }}>
-        <button onClick={play} disabled={playing || steps.length === 0} style={{ background: "#262", color: "#eee", border: "none", borderRadius: 3, padding: "6px 16px", cursor: "pointer" }}>▶ Play</button>
-        <button onClick={stop} disabled={!playing} style={{ background: "#555", color: "#eee", border: "none", borderRadius: 3, padding: "6px 16px", cursor: "pointer" }}>■ Stop</button>
+          </thead>
+          <tbody>
+            {steps.map((s, i) => (
+              <tr key={i} style={{ borderBottom: "1px solid rgba(0,0,0,0.04)", background: curIdx === i ? "rgba(0,122,255,0.08)" : "transparent" }}>
+                <td style={{ padding: "6px 12px", color: "var(--text-tertiary)" }}>{i + 1}</td>
+                <td style={{ padding: "6px 12px", fontFamily: "var(--font-mono)", color: curIdx === i ? "var(--accent)" : "var(--text-primary)" }}>{s.appId}</td>
+                <td style={{ padding: "6px 12px" }}>{s.durationSec}s</td>
+                <td style={{ padding: "6px 12px", textAlign: "center" }}>
+                  <button onClick={() => remove(i)}
+                    style={{ background: "transparent", border: "1px solid rgba(255,80,80,0.4)", color: "#ff8080", borderRadius: 4, cursor: "pointer", fontSize: 11, padding: "1px 6px" }}>
+                    ✕
+                  </button>
+                </td>
+              </tr>
+            ))}
+            {steps.length === 0 && (
+              <tr><td colSpan={4} style={{ padding: 32, textAlign: "center", color: "var(--text-tertiary)" }}>
+                No steps yet — pick an app and duration above and tap Add.
+              </td></tr>
+            )}
+          </tbody>
+        </table>
       </div>
-      {playing && curIdx !== null && (
-        <div style={{ marginTop: 8, color: "#8af", fontSize: 13 }}>Playing step {curIdx + 1}: {steps[curIdx].appId}</div>
-      )}
-    </div>
+    </AppShell>
   );
 }

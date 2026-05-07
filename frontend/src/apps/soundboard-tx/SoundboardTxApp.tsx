@@ -3,6 +3,8 @@ import { useStore } from "../../store";
 import { armTx, disarmTx, startApp } from "../../ipc/commands";
 import { onTxStatus } from "../../ipc/events";
 import { LegalBanner } from "../../components/LegalBanner";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 const CLIPS = [
   { id: "default", label: "Test Tone (1 kHz)" },
@@ -25,71 +27,68 @@ export function SoundboardTxApp() {
 
   const handleArm = async () => {
     if (!legalAccepted) { setShowLegal(true); return; }
-    await armTx();
-    setArmed(true);
+    await armTx(); setArmed(true);
   };
-
-  const handleDisarm = async () => {
-    await disarmTx();
-    setArmed(false);
-  };
-
+  const handleDisarm = async () => { await disarmTx(); setArmed(false); };
   const handleTransmit = async () => {
     if (!armed) return;
     await startApp("soundboard_tx" as any, {
       clip_id: clipId,
       center_hz: parseFloat(frequency) || 0,
-      vga_gain_db: vgaGain,
-      amp_enabled: ampEnabled,
+      vga_gain_db: vgaGain, amp_enabled: ampEnabled,
     });
     setArmed(false);
   };
 
-  const inputStyle = { background: "#222", color: "#eee", border: "1px solid #444", padding: 4 };
-
   return (
-    <div style={{ padding: 16 }}>
+    <AppShell
+      title="Audio Transmitter"
+      status={
+        armed ? <><span style={{color: "#FF9500"}}>●</span> Armed</>
+        : txStatus?.kind === "transmitting" ? <><span style={{color: "#FF3B30"}}>●</span> Transmitting{txStatus.progress_pct !== undefined ? ` ${txStatus.progress_pct}%` : ""}</>
+        : <><span style={{color: "#999"}}>○</span> Idle</>
+      }
+      controls={
+        <ControlRow
+          actions={
+            !armed
+              ? <button className="glass-btn" onClick={handleArm} style={{ background: "#FF9500", color: "#fff" }}>ARM TX</button>
+              : <>
+                  <button className="glass-btn" onClick={handleDisarm}>Disarm</button>
+                  <button className="glass-btn" onClick={handleTransmit} style={{ background: "#FF3B30", color: "#fff", fontWeight: 700 }}>TRANSMIT</button>
+                </>
+          }
+        >
+          <ControlField label="Clip" size="md">
+            <select value={clipId} onChange={(e) => setClipId(e.target.value)}>
+              {CLIPS.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
+            </select>
+          </ControlField>
+          <ControlField label="Frequency (Hz)" size="lg">
+            <input type="number" value={frequency} onChange={(e) => setFrequency(e.target.value)} placeholder="e.g. 146520000" />
+          </ControlField>
+          <ControlField label={`TX VGA ${vgaGain} dB`} size="md">
+            <input type="range" min={0} max={47} value={vgaGain} onChange={(e) => setVgaGain(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Amp" size="sm">
+            <input type="checkbox" checked={ampEnabled} onChange={(e) => setAmpEnabled(e.target.checked)} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"soundboard_tx" as any} format="iq" centerHz={parseFloat(frequency) || undefined} />}
+    >
       {showLegal && <LegalBanner onAccept={() => setShowLegal(false)} />}
-      <h2>Soundboard TX</h2>
-      <p style={{ color: "#aaa", fontSize: 13 }}>Transmit pre-recorded audio clips via FM</p>
-
-      <div style={{ display: "grid", gridTemplateColumns: "140px 1fr", gap: 8, maxWidth: 500 }}>
-        <label>Clip</label>
-        <select value={clipId} onChange={(e) => setClipId(e.target.value)} style={inputStyle}>
-          {CLIPS.map((c) => (
-            <option key={c.id} value={c.id}>{c.label}</option>
-          ))}
-        </select>
-
-        <label>Frequency (Hz)</label>
-        <input type="number" value={frequency} onChange={(e) => setFrequency(e.target.value)} placeholder="e.g. 146520000" style={inputStyle} />
-
-        <label>TX VGA Gain</label>
-        <div>
-          <input type="range" min={0} max={47} value={vgaGain} onChange={(e) => setVgaGain(Number(e.target.value))} />
-          <span style={{ marginLeft: 8 }}>{vgaGain} dB</span>
+      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, color: "var(--text-secondary)" }}>
+        <div style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.6 }}>Selected clip</div>
+        <div style={{ fontSize: 28, fontWeight: 600, color: "var(--text-primary)" }}>
+          {CLIPS.find((c) => c.id === clipId)?.label}
         </div>
-
-        <label>AMP</label>
-        <input type="checkbox" checked={ampEnabled} onChange={(e) => setAmpEnabled(e.target.checked)} />
-      </div>
-
-      <div style={{ marginTop: 16, display: "flex", gap: 8 }}>
-        {!armed ? (
-          <button onClick={handleArm} style={{ padding: "8px 16px", background: "#c50", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}>ARM TX</button>
-        ) : (
-          <>
-            <button onClick={handleDisarm} style={{ padding: "8px 16px", background: "#555", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer" }}>DISARM</button>
-            <button onClick={handleTransmit} style={{ padding: "8px 16px", background: "#f44", color: "#fff", border: "none", borderRadius: 4, cursor: "pointer", fontWeight: "bold" }}>TRANSMIT</button>
-          </>
+        {txStatus && (
+          <div style={{ marginTop: 12, padding: 12, background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 8, fontFamily: "var(--font-mono)", fontSize: 12 }}>
+            Status: {txStatus.kind}{txStatus.progress_pct !== undefined ? ` · ${txStatus.progress_pct}%` : ""}{txStatus.message ? ` · ${txStatus.message}` : ""}
+          </div>
         )}
       </div>
-
-      {txStatus && (
-        <div style={{ marginTop: 12, padding: 8, background: "#222", borderRadius: 4 }}>
-          Status: {txStatus.kind}{txStatus.progress_pct !== undefined ? ` (${txStatus.progress_pct}%)` : ""}{txStatus.message ? ` — ${txStatus.message}` : ""}
-        </div>
-      )}
-    </div>
+    </AppShell>
   );
 }

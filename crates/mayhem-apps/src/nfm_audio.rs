@@ -100,81 +100,67 @@ async fn run_nfm(
     use futuresdr::runtime::Flowgraph;
     use num_complex::Complex32;
 
-    // DSP stages — plain owned values, moved directly into the Apply closure.
-    let mut dec = FirDecimator::new(
-        100_000.0,
-        HACKRF_RATE as f32,
-        DECIM,
-        NUM_TAPS,
-    );
-    let mut demod = QuadDemod::new(
-        FM_MAX_DEVIATION_HZ,
-        (HACKRF_RATE / DECIM as f64) as f32,
-    );
-    let mut resamp = AudioResampler::new(
-        (HACKRF_RATE as usize) / DECIM,
-        AUDIO_OUT_RATE,
-        1024,
-    )?;
+    // Audio DSP runs in a separate tokio task that consumes batches of IQ over
+    // a channel. The flowgraph's audio_sink block is a cheap pass-through that
+    // batches samples and ships them out — running the FIR/demod/resampler
+    // per-sample inside an Apply closure was too slow at 2.4 Msps and caused
+    // continuous Seify Source Overflow warnings.
+    const IQ_BATCH: usize = 8192;
+    let (iq_tx, mut iq_rx) = mpsc::channel::<Vec<Complex32>>(8);
 
     let audio_tx_inner = audio_tx;
-    let mut audio_seq: u32 = 0;
-
-    // Pre-allocate intermediate buffers; reused each call via .clear().
-    let mut decimated: Vec<Complex32> = Vec::with_capacity(8);
-    let mut demod_out: Vec<f32> = Vec::with_capacity(8);
-    let mut pcm_scratch: Vec<i16> = Vec::with_capacity(2048);
-
-    // Capture the squelch threshold so it can be moved into the closure below.
-    // Convention: squelch_db = -80 means "open at very low levels = always open";
-    //             squelch_db =   0 means "only loud signals pass."
     let squelch_threshold_db = tuning.squelch_db;
+    tokio::spawn(async move {
+        let mut dec = FirDecimator::new(100_000.0, HACKRF_RATE as f32, DECIM, NUM_TAPS);
+        let mut demod = QuadDemod::new(FM_MAX_DEVIATION_HZ, (HACKRF_RATE / DECIM as f64) as f32);
+        let mut resamp = match AudioResampler::new((HACKRF_RATE as usize) / DECIM, AUDIO_OUT_RATE, 1024) {
+            Ok(r) => r,
+            Err(e) => { warn!("NFM resampler init failed: {e}"); return; }
+        };
+        let mut decimated: Vec<Complex32> = Vec::with_capacity(IQ_BATCH / DECIM + 1);
+        let mut demod_out: Vec<f32> = Vec::with_capacity(IQ_BATCH / DECIM + 1);
+        let mut pcm_scratch: Vec<i16> = Vec::with_capacity(2048);
+        let mut audio_seq: u32 = 0;
 
-    // Audio Apply block: runs the full DSP chain per-sample and emits AudioFrames.
-    // Returns the input sample unchanged so the stream continues to the spectrum sink.
-    let audio_sink = futuresdr::blocks::Apply::new(move |x: &Complex32| -> Complex32 {
-        let buf = [*x];
-        decimated.clear();
-        dec.process(&buf, &mut decimated);
+        while let Some(batch) = iq_rx.recv().await {
+            decimated.clear();
+            dec.process(&batch, &mut decimated);
+            demod_out.clear();
+            demod.process(&decimated, &mut demod_out);
 
-        demod_out.clear();
-        demod.process(&decimated, &mut demod_out);
-
-        // Squelch: gate audio when post-demod RMS falls below squelch_db threshold.
-        // Only run when the decimator actually produced output (DECIM=10, so ~9 out of
-        // 10 calls produce an empty demod_out — skip those to avoid wasted work).
-        //
-        // TODO(v0.2): Replace RMS squelch with FM noise-squelch: high-pass filter the
-        // demod output and measure noise above audio bandwidth. RMS-based squelch trips
-        // on loud noise the same as on loud signal, making it less discriminating than
-        // traditional FM noise-squelch.
-        if !demod_out.is_empty() {
-            let rms_sq: f32 = demod_out.iter().map(|s| s * s).sum::<f32>()
-                / demod_out.len() as f32;
-            // Guard against log10(0) = -inf gating everything when the signal is exactly 0.
-            if rms_sq > 0.0 {
-                // 20*log10(rms) == 10*log10(rms^2)
-                let level_db = 10.0 * rms_sq.log10();
-                if level_db < squelch_threshold_db {
-                    // Below threshold: zero out demod output so the resampler emits
-                    // silence. Zeroing (not skipping) keeps the 48 kHz audio stream in
-                    // sync so the AudioWorklet ring buffer does not underrun.
-                    demod_out.iter_mut().for_each(|s| *s = 0.0);
+            // Squelch: gate audio when post-demod RMS falls below threshold.
+            // Convention: squelch_db = -80 → always open; 0 → only loud signals pass.
+            if !demod_out.is_empty() {
+                let rms_sq: f32 = demod_out.iter().map(|s| s * s).sum::<f32>()
+                    / demod_out.len() as f32;
+                if rms_sq > 0.0 {
+                    let level_db = 10.0 * rms_sq.log10();
+                    if level_db < squelch_threshold_db {
+                        demod_out.iter_mut().for_each(|s| *s = 0.0);
+                    }
                 }
             }
+
+            pcm_scratch.clear();
+            let _ = resamp.process(&demod_out, &mut pcm_scratch);
+            if !pcm_scratch.is_empty() {
+                let _ = audio_tx_inner.send(AudioFrame {
+                    seq: audio_seq,
+                    samples: pcm_scratch.clone(),
+                });
+                audio_seq = audio_seq.wrapping_add(1);
+            }
         }
+    });
 
-        pcm_scratch.clear();
-        let _ = resamp.process(&demod_out, &mut pcm_scratch);
-
-        if !pcm_scratch.is_empty() {
-            let _ = audio_tx_inner.send(AudioFrame {
-                seq: audio_seq,
-                samples: pcm_scratch.clone(),
-            });
-            audio_seq = audio_seq.wrapping_add(1);
+    let mut iq_batch: Vec<Complex32> = Vec::with_capacity(IQ_BATCH);
+    let iq_tx_apply = iq_tx;
+    let audio_sink = futuresdr::blocks::Apply::new(move |x: &Complex32| -> Complex32 {
+        iq_batch.push(*x);
+        if iq_batch.len() >= IQ_BATCH {
+            let chunk = std::mem::replace(&mut iq_batch, Vec::with_capacity(IQ_BATCH));
+            let _ = iq_tx_apply.try_send(chunk);
         }
-
         *x
     });
 
@@ -189,6 +175,7 @@ async fn run_nfm(
     // Hoist FFT planner out of the closure: planner and plan are created once.
     let mut planner = rustfft::FftPlanner::<f32>::new();
     let fft = planner.plan_fft_forward(FFT_SIZE);
+    let window = mayhem_dsp::spectrum::hann_window(FFT_SIZE);
 
     let spec_sink = futuresdr::blocks::Apply::new(move |x: &Complex32| -> Complex32 {
         fft_buf.push(*x);
@@ -196,8 +183,14 @@ async fn run_nfm(
             && last_emit.elapsed()
                 >= std::time::Duration::from_millis(SPECTRUM_PERIOD_MS)
         {
-            let mut buf: Vec<rustfft::num_complex::Complex<f32>> = fft_buf
+            // Take FFT_SIZE samples and apply Hann window before FFT
+            let mut windowed: Vec<Complex32> = fft_buf
                 .drain(..FFT_SIZE)
+                .collect();
+            mayhem_dsp::spectrum::apply_window(&mut windowed, &window);
+
+            let mut buf: Vec<rustfft::num_complex::Complex<f32>> = windowed
+                .iter()
                 .map(|c| rustfft::num_complex::Complex::new(c.re, c.im))
                 .collect();
             fft.process(&mut buf);
@@ -238,18 +231,37 @@ async fn run_nfm(
         let mut fg = Flowgraph::new();
 
         // amp_enabled is now passed via the args string in build_source() as `amp={0,1}`.
-        let src = build_source(&cfg_thread)?;
+        info!("building HackRF source: center={} Hz, rate={} Sps, lna={} dB, vga={} dB, amp={}",
+            cfg_thread.center_hz, cfg_thread.sample_rate,
+            cfg_thread.lna_gain_db, cfg_thread.vga_gain_db, cfg_thread.amp_enabled);
+        let src = match build_source(&cfg_thread) {
+            Ok(s) => {
+                info!("HackRF source block created successfully");
+                s
+            }
+            Err(e) => {
+                warn!("build_source failed: {e:?}");
+                return Err(e);
+            }
+        };
 
         connect!(fg, src > audio_sink > spec_sink > null);
+        info!("flowgraph connected, starting runtime...");
 
         let rt = futuresdr::runtime::Runtime::new();
         let (task, handle) = rt.start_sync(fg);
+        info!("runtime started, flowgraph running");
 
         // Publish the FlowgraphHandle so the stop path can call terminate().
         *fg_handle_shared.lock().unwrap() = Some(handle);
 
         // Block until the flowgraph finishes (either naturally or after terminate()).
-        async_io::block_on(task).map_err(|e| anyhow::anyhow!("flowgraph error: {e}"))?;
+        let result = async_io::block_on(task);
+        match &result {
+            Ok(_) => info!("flowgraph task completed ok"),
+            Err(e) => warn!("flowgraph task error: {e:?}"),
+        }
+        result.map_err(|e| anyhow::anyhow!("flowgraph error: {e}"))?;
 
         Ok(())
     });

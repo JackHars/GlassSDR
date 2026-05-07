@@ -2,106 +2,93 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
-interface ScanResultEvent {
-  freq_hz: number;
-  power_db: number;
-}
+interface ScanResultEvent { freq_hz: number; power_db: number; }
 
 export function ReconApp() {
   const [signals, setSignals] = useState<ScanResultEvent[]>([]);
   const [startHz, setStartHz] = useState(88_000_000);
   const [stopHz, setStopHz] = useState(1_000_000_000);
   const [stepHz, setStepHz] = useState(100_000);
+  const [running, setRunning] = useState(false);
 
-  const handleStart = () =>
-    startApp("recon" as AppId, {
-      start_hz: startHz,
-      stop_hz: stopHz,
-      step_hz: stepHz,
-      lna_gain_db: 32,
-      vga_gain_db: 20,
-      amp_enabled: false,
+  const handleStart = async () => {
+    await startApp("recon" as AppId, {
+      start_hz: startHz, stop_hz: stopHz, step_hz: stepHz,
+      lna_gain_db: 32, vga_gain_db: 20, amp_enabled: false,
     });
+    setRunning(true);
+  };
+  const handleStop = async () => { await stopApp(); setRunning(false); };
 
-  return (
-    <div style={{ padding: 16 }}>
-      <h2>Recon</h2>
-      <div style={{ display: "flex", gap: 8, marginBottom: 12, alignItems: "center", flexWrap: "wrap" }}>
-        <label>Start (Hz):</label>
-        <input
-          type="number"
-          value={startHz}
-          onChange={(e) => setStartHz(Number(e.target.value))}
-          style={{ width: 130, padding: "4px 8px", background: "#222", color: "#eee", border: "1px solid #555" }}
-        />
-        <label>Stop (Hz):</label>
-        <input
-          type="number"
-          value={stopHz}
-          onChange={(e) => setStopHz(Number(e.target.value))}
-          style={{ width: 130, padding: "4px 8px", background: "#222", color: "#eee", border: "1px solid #555" }}
-        />
-        <label>Step (Hz):</label>
-        <input
-          type="number"
-          value={stepHz}
-          onChange={(e) => setStepHz(Number(e.target.value))}
-          style={{ width: 100, padding: "4px 8px", background: "#222", color: "#eee", border: "1px solid #555" }}
-        />
-        <button onClick={handleStart} style={{ padding: "8px 16px", background: "#2a2", color: "#fff", border: "none", borderRadius: 4 }}>Start</button>
-        <button onClick={stopApp} style={{ padding: "8px 16px", background: "#555", color: "#fff", border: "none", borderRadius: 4 }}>Stop</button>
-        <button onClick={() => setSignals([])} style={{ padding: "8px 16px", background: "#444", color: "#eee", border: "none", borderRadius: 4 }}>Clear</button>
-        <span style={{ color: "#888" }}>{signals.length} signals</span>
-      </div>
-      <ReconSignalList signals={signals} setSignals={setSignals} />
-    </div>
-  );
-}
-
-function ReconSignalList({
-  signals,
-  setSignals,
-}: {
-  signals: ScanResultEvent[];
-  setSignals: React.Dispatch<React.SetStateAction<ScanResultEvent[]>>;
-}) {
   useEffect(() => {
     const unlisten = listen<ScanResultEvent>("scan_result", (e) =>
       setSignals((prev) => [e.payload, ...prev].slice(0, 1000))
     );
     return () => { unlisten.then((f) => f()); };
-  }, [setSignals]);
+  }, []);
 
   return (
-    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-      <thead>
-        <tr style={{ background: "#1c1c2c", textAlign: "left" }}>
-          <th style={{ padding: "6px 8px" }}>Frequency</th>
-          <th style={{ padding: "6px 8px" }}>Power (dB)</th>
-          <th style={{ padding: "6px 8px" }}>Level</th>
-        </tr>
-      </thead>
-      <tbody>
-        {signals.map((s, i) => (
-          <tr key={i} style={{ borderBottom: "1px solid #222" }}>
-            <td style={{ padding: "4px 8px", fontFamily: "monospace" }}>
-              {(s.freq_hz / 1e6).toFixed(4)} MHz
-            </td>
-            <td style={{ padding: "4px 8px" }}>{s.power_db.toFixed(1)}</td>
-            <td style={{ padding: "4px 8px" }}>
-              <div
-                style={{
-                  height: 8,
-                  width: `${Math.max(0, Math.min(100, (s.power_db + 100) * 1.0))}%`,
-                  background: s.power_db > -60 ? "#4f4" : "#555",
-                  borderRadius: 2,
-                }}
-              />
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    <AppShell
+      title="Recon"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Sweeping · {signals.length} signals</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
+              <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
+              <button className="glass-btn" onClick={() => setSignals([])}>Clear</button>
+            </>
+          }
+        >
+          <ControlField label="Start (Hz)" size="md">
+            <input type="number" value={startHz} onChange={(e) => setStartHz(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Stop (Hz)" size="md">
+            <input type="number" value={stopHz} onChange={(e) => setStopHz(Number(e.target.value))} />
+          </ControlField>
+          <ControlField label="Step (Hz)" size="sm">
+            <input type="number" value={stepHz} onChange={(e) => setStepHz(Number(e.target.value))} />
+          </ControlField>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"recon" as any} format="jsonl" />}
+    >
+      <div className="app-shell__grow" style={{ overflow: "auto", borderRadius: 12, background: "rgba(255,255,255,0.55)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.7)", minHeight: 200 }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
+          <thead>
+            <tr style={{ position: "sticky", top: 0, background: "rgba(255,255,255,0.85)", textAlign: "left", backdropFilter: "blur(8px)" }}>
+              <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Frequency</th>
+              <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Power (dB)</th>
+              <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            {signals.map((s, i) => (
+              <tr key={i} style={{ borderBottom: "1px solid rgba(0,0,0,0.04)" }}>
+                <td style={{ padding: "6px 12px", fontFamily: "var(--font-mono)" }}>{(s.freq_hz / 1e6).toFixed(4)} MHz</td>
+                <td style={{ padding: "6px 12px", fontFamily: "var(--font-mono)" }}>{s.power_db.toFixed(1)}</td>
+                <td style={{ padding: "6px 12px" }}>
+                  <div style={{
+                    height: 8,
+                    width: `${Math.max(0, Math.min(100, (s.power_db + 100) * 1.0))}%`,
+                    background: s.power_db > -60 ? "#34C759" : "rgba(0,0,0,0.3)",
+                    borderRadius: 3,
+                  }} />
+                </td>
+              </tr>
+            ))}
+            {signals.length === 0 && (
+              <tr><td colSpan={3} style={{ padding: 32, textAlign: "center", color: "var(--text-tertiary)" }}>
+                No signals detected — set a range and press Start.
+              </td></tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+    </AppShell>
   );
 }

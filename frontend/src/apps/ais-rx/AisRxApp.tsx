@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import { RecordBar } from "../../components/RecordBar";
+import { AppShell, ControlRow } from "../../components/AppShell";
+import { DecoderTable } from "../../components/DecoderTable";
 
 interface AisShipEvent {
   mmsi: number;
@@ -13,11 +16,14 @@ interface AisShipEvent {
 }
 
 export function AisRxApp() {
-  // Keyed by MMSI for deduplication / live update
   const [ships, setShips] = useState<Map<number, AisShipEvent>>(new Map());
+  const [running, setRunning] = useState(false);
 
-  const handleStart = () =>
-    startApp("ais_rx" as AppId, { center_hz: 161_975_000, lna_gain_db: 32, vga_gain_db: 20, amp_enabled: false });
+  const handleStart = async () => {
+    await startApp("ais_rx" as AppId, { center_hz: 161_975_000, lna_gain_db: 32, vga_gain_db: 20, amp_enabled: false });
+    setRunning(true);
+  };
+  const handleStop = async () => { await stopApp(); setRunning(false); };
 
   useEffect(() => {
     const unlisten = listen<AisShipEvent>("ais_ship", (e) =>
@@ -29,40 +35,33 @@ export function AisRxApp() {
   const rows = Array.from(ships.values());
 
   return (
-    <div style={{ padding: 16 }}>
-      <h2>AIS Receiver — 161.975 MHz</h2>
-      <div style={{ display: "flex", gap: 8, marginBottom: 12 }}>
-        <button onClick={handleStart} style={{ padding: "8px 16px", background: "#2a2", color: "#fff", border: "none", borderRadius: 4 }}>Start</button>
-        <button onClick={stopApp} style={{ padding: "8px 16px", background: "#555", color: "#fff", border: "none", borderRadius: 4 }}>Stop</button>
-        <button onClick={() => setShips(new Map())} style={{ padding: "8px 16px", background: "#444", color: "#eee", border: "none", borderRadius: 4 }}>Clear</button>
-        <span style={{ color: "#888", alignSelf: "center" }}>{rows.length} vessels</span>
-      </div>
-      <div style={{ overflowY: "auto", maxHeight: "calc(100vh - 160px)" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-          <thead>
-            <tr style={{ background: "#1c1c2c", textAlign: "left" }}>
-              <th style={{ padding: "6px 8px" }}>MMSI</th>
-              <th style={{ padding: "6px 8px" }}>Name</th>
-              <th style={{ padding: "6px 8px" }}>Lat</th>
-              <th style={{ padding: "6px 8px" }}>Lon</th>
-              <th style={{ padding: "6px 8px" }}>Speed (kt)</th>
-              <th style={{ padding: "6px 8px" }}>Course</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((s) => (
-              <tr key={s.mmsi} style={{ borderBottom: "1px solid #222" }}>
-                <td style={{ padding: "4px 8px", fontFamily: "monospace" }}>{s.mmsi}</td>
-                <td style={{ padding: "4px 8px" }}>{s.name ?? "—"}</td>
-                <td style={{ padding: "4px 8px" }}>{s.lat.toFixed(5)}</td>
-                <td style={{ padding: "4px 8px" }}>{s.lon.toFixed(5)}</td>
-                <td style={{ padding: "4px 8px" }}>{s.speed_kt.toFixed(1)}</td>
-                <td style={{ padding: "4px 8px" }}>{s.course.toFixed(1)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+    <AppShell
+      title="AIS Receiver"
+      status={running ? <><span style={{color: "#34C759"}}>●</span> Listening · 161.975 MHz · {rows.length} vessels</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      controls={
+        <ControlRow
+          actions={
+            <>
+              <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
+              <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
+              <button className="glass-btn" onClick={() => setShips(new Map())}>Clear</button>
+            </>
+          }
+        >
+          <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
+            Marine VHF · channels A (161.975) and B (162.025)
+          </span>
+        </ControlRow>
+      }
+      footer={<RecordBar appId={"ais_rx" as any} format="jsonl" centerHz={161_975_000} />}
+    >
+      <DecoderTable
+        headers={["MMSI", "Name", "Lat", "Lon", "Speed (kt)", "Course"]}
+        rows={rows}
+        rowKey={(s) => s.mmsi}
+        renderRow={(s) => [s.mmsi, s.name ?? "—", s.lat.toFixed(5), s.lon.toFixed(5), s.speed_kt.toFixed(1), s.course.toFixed(1)]}
+        emptyMessage="No vessels yet — press Start to listen."
+      />
+    </AppShell>
   );
 }

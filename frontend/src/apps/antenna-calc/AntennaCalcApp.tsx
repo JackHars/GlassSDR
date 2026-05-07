@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
 
 const m2ft = (m: number) => (m * 3.28084).toFixed(3);
 
@@ -15,38 +16,46 @@ function calcAntennas(freqMhz: number): Result[] {
   ];
 }
 
-const inp = { background: "#222", color: "#eee", border: "1px solid #444", borderRadius: 3, padding: "4px 8px" } as const;
-const row = { display: "flex", justifyContent: "space-between", padding: "6px 10px", borderBottom: "1px solid #222" } as const;
-
 export function AntennaCalcApp() {
   const [freqStr, setFreqStr] = useState("144.39");
   const freqMhz = parseFloat(freqStr);
   const results = calcAntennas(freqMhz);
 
   return (
-    <div style={{ padding: 16, maxWidth: 520 }}>
-      <h2 style={{ marginTop: 0 }}>Antenna Calculator</h2>
-      <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 16 }}>
-        <label style={{ color: "#aaa", fontSize: 13 }}>Frequency (MHz)</label>
-        <input value={freqStr} onChange={e => setFreqStr(e.target.value)} style={{ ...inp, width: 120, fontSize: 15 }} />
-      </div>
-      {results.length > 0 ? (
-        <div style={{ background: "#1a1a2a", borderRadius: 6, border: "1px solid #333", overflow: "hidden" }}>
-          <div style={{ ...row, background: "#1c1c2c", fontWeight: "bold", color: "#888", fontSize: 12 }}>
-            <span>Antenna Type</span><span style={{ minWidth: 100, textAlign: "right" }}>Meters</span><span style={{ minWidth: 100, textAlign: "right" }}>Feet</span>
-          </div>
-          {results.map(r => (
-            <div key={r.label} style={row}>
-              <span style={{ color: "#ccc", fontSize: 13 }}>{r.label}</span>
-              <span style={{ fontFamily: "monospace", color: "#8af", minWidth: 100, textAlign: "right" }}>{r.meters.toFixed(3)} m</span>
-              <span style={{ fontFamily: "monospace", color: "#fa8", minWidth: 100, textAlign: "right" }}>{m2ft(r.meters)} ft</span>
+    <AppShell
+      title="Antenna Calculator"
+      controls={
+        <ControlRow>
+          <ControlField label="Frequency (MHz)" size="md">
+            <input value={freqStr} onChange={(e) => setFreqStr(e.target.value)} style={{ fontSize: 15 }} />
+          </ControlField>
+        </ControlRow>
+      }
+      fillMain={false}
+    >
+      <div style={{ maxWidth: 600, width: "100%", margin: "0 auto", display: "flex", flexDirection: "column", gap: 16 }}>
+        {results.length > 0 ? (
+          <div style={{ background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", borderRadius: 12, backdropFilter: "blur(16px)", overflow: "hidden" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 110px 110px", padding: "10px 16px", background: "rgba(0,0,0,0.04)", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>
+              <span>Antenna Type</span>
+              <span style={{ textAlign: "right" }}>Meters</span>
+              <span style={{ textAlign: "right" }}>Feet</span>
             </div>
-          ))}
+            {results.map((r) => (
+              <div key={r.label} style={{ display: "grid", gridTemplateColumns: "1fr 110px 110px", padding: "12px 16px", borderTop: "1px solid rgba(0,0,0,0.05)" }}>
+                <span style={{ color: "var(--text-primary)", fontSize: 14 }}>{r.label}</span>
+                <span style={{ fontFamily: "var(--font-mono)", color: "var(--accent)", textAlign: "right" }}>{r.meters.toFixed(3)}</span>
+                <span style={{ fontFamily: "var(--font-mono)", color: "#FF9500", textAlign: "right" }}>{m2ft(r.meters)}</span>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ color: "var(--text-tertiary)" }}>Enter a valid frequency above.</div>
+        )}
+        <div style={{ fontSize: 12, color: "var(--text-tertiary)" }}>
+          Formulas assume the standard 95% velocity factor approximation.
         </div>
-      ) : (
-        <div style={{ color: "#666" }}>Enter a valid frequency above</div>
-      )}
-      <div style={{ marginTop: 12, fontSize: 11, color: "#444" }}>Formulas use standard 95% velocity factor approximation.</div>
-    </div>
+      </div>
+    </AppShell>
   );
 }
