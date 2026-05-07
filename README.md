@@ -7,10 +7,10 @@
 </p>
 
 <p align="center">
-  <a href="#-getting-started"><strong>Get Started</strong></a> &nbsp;&middot;&nbsp;
-  <a href="#-every-app"><strong>Every App</strong></a> &nbsp;&middot;&nbsp;
-  <a href="#-the-stack"><strong>The Stack</strong></a> &nbsp;&middot;&nbsp;
-  <a href="#-contributing"><strong>Contributing</strong></a>
+  <a href="#getting-started"><strong>Get Started</strong></a> &nbsp;&middot;&nbsp;
+  <a href="#every-app"><strong>Every App</strong></a> &nbsp;&middot;&nbsp;
+  <a href="#the-stack"><strong>The Stack</strong></a> &nbsp;&middot;&nbsp;
+  <a href="#contributing"><strong>Contributing</strong></a>
 </p>
 
 <p align="center">
@@ -107,7 +107,7 @@ The release build produces a single self-contained app. No runtime dependencies.
 
 ## Every App
 
-GlassSDR ships with **81 apps** across 7 categories. Every app is accessible from the home screen — just tap to launch.
+GlassSDR ships with **83 apps** across 7 categories. Every app is accessible from the home screen — just tap to launch.
 
 ### Receivers
 
