@@ -1,0 +1,356 @@
+/* ── LGE TX — red-orange hazard · house/gateway-antenna motif ───────────────── */
+
+[data-app="lge_tx"] .app-screen__title {
+  background: linear-gradient(135deg, #C84020, #E06030);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-app="lge_tx"] .app-screen__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 14px,
+    rgba(200, 64, 32, 0.07) 14px,
+    rgba(200, 64, 32, 0.07) 28px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Frequency row */
+.lge-tx__freq-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.lge-tx__freq-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: var(--glass-radius-sm, 8px);
+  border: 1.5px solid rgba(200, 64, 32, 0.20);
+  background: rgba(255, 255, 255, 0.22);
+  color: rgba(0, 0, 0, 0.52);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.lge-tx__freq-btn:hover {
+  background: rgba(200, 64, 32, 0.10);
+  border-color: rgba(200, 64, 32, 0.42);
+  color: #C84020;
+}
+
+.lge-tx__freq-btn--sel {
+  background: rgba(200, 64, 32, 0.14);
+  border-color: #C84020;
+  color: #C84020;
+  box-shadow: 0 0 0 2px rgba(200, 64, 32, 0.16);
+}
+
+.lge-tx__protocol-badge {
+  font-size: 11px;
+  color: rgba(200, 64, 32, 0.58);
+  font-family: var(--font-mono);
+}
+
+/* Body layout */
+.lge-tx__layout {
+  display: flex;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.lge-tx__cmd-panel {
+  flex: 1.3;
+  min-width: 0;
+}
+
+.lge-tx__device-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Command pad */
+.lge-tx__cmd-group {
+  margin-bottom: 8px;
+}
+
+.lge-tx__cmd-group-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(200, 64, 32, 0.48);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.lge-tx__cmd-grid {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.lge-tx__cmd-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: 1px solid rgba(200, 64, 32, 0.18);
+  background: rgba(255, 255, 255, 0.20);
+  cursor: pointer;
+  min-width: 48px;
+  transition: background 0.10s, border-color 0.10s;
+}
+
+.lge-tx__cmd-btn:hover {
+  background: rgba(200, 64, 32, 0.10);
+  border-color: rgba(200, 64, 32, 0.38);
+}
+
+.lge-tx__cmd-btn--sel {
+  background: rgba(200, 64, 32, 0.16);
+  border-color: #C84020;
+  box-shadow: 0 0 0 1.5px rgba(200, 64, 32, 0.22);
+}
+
+.lge-tx__cmd-btn--power { min-width: 70px; }
+
+.lge-tx__cmd-name {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: rgba(0, 0, 0, 0.60);
+}
+
+.lge-tx__cmd-btn--sel .lge-tx__cmd-name {
+  color: #C84020;
+}
+
+.lge-tx__cmd-hex {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(200, 64, 32, 0.50);
+}
+
+.lge-tx__cmd-btn--sel .lge-tx__cmd-hex {
+  color: rgba(200, 64, 32, 0.75);
+}
+
+/* Custom command */
+.lge-tx__custom-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(200, 64, 32, 0.10);
+  margin-top: 4px;
+}
+
+.lge-tx__custom-toggle {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 5px;
+  border: 1px dashed rgba(200, 64, 32, 0.25);
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(0, 0, 0, 0.48);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.lge-tx__custom-toggle:hover {
+  background: rgba(200, 64, 32, 0.10);
+  color: #C84020;
+}
+
+.lge-tx__custom-toggle--sel {
+  background: rgba(200, 64, 32, 0.14);
+  border-style: solid;
+  border-color: #C84020;
+  color: #C84020;
+}
+
+.lge-tx__custom-input-wrap {
+  display: flex;
+  align-items: center;
+  border-radius: 6px;
+  border: 1px solid rgba(200, 64, 32, 0.22);
+  background: rgba(255, 255, 255, 0.28);
+  overflow: hidden;
+  transition: border-color 0.14s, box-shadow 0.14s;
+}
+
+.lge-tx__custom-input-wrap:focus-within {
+  border-color: var(--accent, #C84020);
+  box-shadow: 0 0 0 2.5px rgba(200, 64, 32, 0.18);
+}
+
+.lge-tx__custom-prefix {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 4px 6px;
+  color: rgba(200, 64, 32, 0.55);
+  background: rgba(200, 64, 32, 0.07);
+  border-right: 1px solid rgba(200, 64, 32, 0.14);
+  user-select: none;
+}
+
+.lge-tx__custom-input {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  width: 36px;
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-transform: uppercase;
+}
+
+.lge-tx__custom-input:focus { outline: none; }
+
+/* Device stack */
+.lge-tx__device-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.lge-tx__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lge-tx__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.44);
+}
+
+.lge-tx__input-wrap {
+  display: flex;
+  align-items: center;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(200, 64, 32, 0.22);
+  background: rgba(255, 255, 255, 0.30);
+  overflow: hidden;
+  width: fit-content;
+  transition: border-color 0.14s, box-shadow 0.14s;
+}
+
+.lge-tx__input-wrap:focus-within {
+  border-color: var(--accent, #C84020);
+  box-shadow: 0 0 0 2.5px rgba(200, 64, 32, 0.18);
+}
+
+.lge-tx__input-prefix {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 5px 6px;
+  color: rgba(200, 64, 32, 0.55);
+  background: rgba(200, 64, 32, 0.07);
+  border-right: 1px solid rgba(200, 64, 32, 0.14);
+  user-select: none;
+}
+
+.lge-tx__input {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  width: 40px;
+  padding: 5px 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-transform: uppercase;
+}
+
+.lge-tx__input:focus { outline: none; }
+
+/* Packet summary */
+.lge-tx__pkt-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(200, 64, 32, 0.06);
+  border: 1px solid rgba(200, 64, 32, 0.12);
+}
+
+.lge-tx__pkt-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.lge-tx__pkt-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(200, 64, 32, 0.48);
+  min-width: 36px;
+}
+
+.lge-tx__pkt-val {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent, #C84020);
+  letter-spacing: 0.06em;
+}
+
+.lge-tx__pkt-name {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.42);
+  font-style: italic;
+}
+
+/* House SVG */
+.lge-tx__house-svg {
+  width: 100%;
+  max-width: 130px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.lge-tx__house-label {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  fill: rgba(200, 64, 32, 0.45);
+  text-transform: uppercase;
+}
+
+.lge-tx__slider {
+  width: 100%;
+  accent-color: #C84020;
+  cursor: pointer;
+}
+
+@media (max-width: 720px) {
+  .lge-tx__layout { flex-direction: column; }
+}

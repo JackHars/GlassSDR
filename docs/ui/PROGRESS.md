@@ -34,7 +34,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 - [x] pocsag_tx · [x] rtty_tx · [x] sstv_tx · [x] afsk_tx · [x] morse_tx · [x] soundboard_tx · [x] flex_tx · [x] sig_gen · [x] spectrum_painter
 
 ### Testing (hazard)
-- [x] adsb_tx · [x] gps_sim · [x] mdc1200_tx · [x] replay_tx · [x] ook_editor_tx · [x] freq_hopper · [x] btle_tx · [x] nrf24_tx · [x] rfm69_tx · [x] flipper_tx · [x] keyfob_tx · [ ] lge_tx
+- [x] adsb_tx · [x] gps_sim · [x] mdc1200_tx · [x] replay_tx · [x] ook_editor_tx · [x] freq_hopper · [x] btle_tx · [x] nrf24_tx · [x] rfm69_tx · [x] flipper_tx · [x] keyfob_tx · [x] lge_tx
 
 ### Analysis
 - [ ] scanner · [ ] recon · [ ] looking_glass · [ ] ook_analyzer · [ ] ook_decoders · [ ] sub_ghz_capture · [ ] signal_meter · [ ] freq_counter · [ ] btle_rx · [ ] btle_comm · [ ] nrf24_rx · [ ] encoder_suite · [ ] decoder_suite · [ ] capture_manager · [ ] rf_characterize · [ ] protocol_analyzer · [ ] iq_player · [ ] sdr_benchmark
