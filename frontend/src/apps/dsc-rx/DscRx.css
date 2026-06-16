@@ -1,0 +1,5 @@
+/* ── DSC Receiver — maritime navy identity ─────────────────────────────────── */
+[data-app="dsc_rx"] .app-screen__title { background: linear-gradient(135deg, #1860A8, #3090D0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.dsc-category-badge { display: inline-flex; align-items: center; padding: 1px 7px; border-radius: 4px; font-size: 10px; font-weight: 700; background: var(--accent-dim); border: 1px solid rgba(24,96,168,0.25); color: var(--accent); }
+.dsc-category-badge.distress { background: rgba(255,59,48,0.10); border-color: rgba(255,59,48,0.3); color: var(--danger); }
