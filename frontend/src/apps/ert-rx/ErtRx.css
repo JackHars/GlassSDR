@@ -1,0 +1,16 @@
+/* ── ERT Receiver — slate + signal-green identity ─────────────────────────── */
+[data-app="ert_rx"] .app-screen__title { background: linear-gradient(135deg, #28A870, #50D090); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.ert-meter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+
+.ert-meter-card { background: rgba(255,255,255,0.60); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: var(--glass-radius-sm); padding: 14px; box-shadow: var(--shadow-xs), var(--shadow-inset-top); border-left: 3px solid var(--accent); animation: fadeIn 300ms var(--ease-out-expo) both; }
+
+.ert-meter-id { font-size: 11px; font-family: var(--font-mono); font-weight: 700; color: var(--text-tertiary); }
+.ert-meter-type { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--text-tertiary); margin-top: 2px; }
+.ert-meter-value { font-size: 24px; font-family: var(--font-mono); font-weight: 700; color: var(--accent); margin-top: 8px; }
+.ert-meter-unit { font-size: 11px; color: var(--text-tertiary); margin-left: 3px; }
+
+.ert-stats { display: flex; gap: 14px; padding: 7px 12px; background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: var(--glass-radius-sm); flex-shrink: 0; }
+.ert-stat { display: flex; flex-direction: column; gap: 1px; }
+.ert-stat-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); }
+.ert-stat-value { font-size: 15px; font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
