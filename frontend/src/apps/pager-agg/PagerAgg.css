@@ -1,0 +1,31 @@
+/* ── Pager Aggregator — deeper rose identity ──────────────────────────────── */
+
+[data-app="pager_aggregator"] .app-screen__title {
+  background: linear-gradient(135deg, #C83070, #E060A0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.pagg-proto-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+}
+
+.pagg-proto-badge--POCSAG { background: rgba(224,64,122,0.12); color: #E0407A; border: 1px solid rgba(224,64,122,0.25); }
+.pagg-proto-badge--FLEX   { background: rgba(208,56,136,0.12); color: #D03888; border: 1px solid rgba(208,56,136,0.25); }
+
+.pagg-stats {
+  display: flex; gap: 14px; padding: 7px 12px;
+  background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255,255,255,0.7); border-radius: var(--glass-radius-sm); flex-shrink: 0;
+}
+
+.pagg-stat { display: flex; flex-direction: column; gap: 1px; }
+.pagg-stat-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); }
+.pagg-stat-value { font-size: 15px; font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
