@@ -585,11 +585,11 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "decode-bits",
   },
   capture_manager: {
-    accent: "#5880B0",
-    accentHover: "#4870A0",
-    accentGlow: "rgba(88,128,176,0.28)",
-    accentDim: "rgba(88,128,176,0.10)",
-    ambient: ["rgba(80,120,170,0.08)", "rgba(130,175,220,0.07)"],
+    accent: "#8B5CF6",
+    accentHover: "#7C3AED",
+    accentGlow: "rgba(139,92,246,0.28)",
+    accentDim: "rgba(139,92,246,0.10)",
+    ambient: ["rgba(110,65,220,0.09)", "rgba(155,100,245,0.07)"],
     motif: "capture-reel",
   },
   rf_characterize: {
