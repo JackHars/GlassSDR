@@ -601,11 +601,11 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "ruler-measure",
   },
   protocol_analyzer: {
-    accent: "#7080B0",
-    accentHover: "#6070A8",
-    accentGlow: "rgba(112,128,176,0.28)",
-    accentDim: "rgba(112,128,176,0.10)",
-    ambient: ["rgba(100,120,170,0.08)", "rgba(145,165,215,0.07)"],
+    accent: "#4A6FA5",
+    accentHover: "#3A5F95",
+    accentGlow: "rgba(74,111,165,0.26)",
+    accentDim: "rgba(74,111,165,0.10)",
+    ambient: ["rgba(50,75,120,0.07)", "rgba(70,100,150,0.06)"],
     motif: "packet-decode",
   },
   iq_player: {
