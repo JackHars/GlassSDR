@@ -1,0 +1,278 @@
+/* ── GPS Simulator — hazard amber · highest-caution identity ────────────────── */
+
+/* Hazard stripe + crosshair on header */
+[data-app="gps_sim"] .app-screen__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 12px,
+    rgba(184, 136, 0, 0.09) 12px,
+    rgba(184, 136, 0, 0.09) 24px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+[data-app="gps_sim"] .app-screen__title {
+  background: linear-gradient(135deg, #B88800, #D4AA20);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Layout */
+.gps-sim__layout {
+  display: flex;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.gps-sim__controls-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.gps-sim__skyplot-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Controls */
+.gps-sim__field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gps-sim__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.gps-sim__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.gps-sim__field-hint {
+  font-size: 10px;
+  color: rgba(184, 136, 0, 0.55);
+  font-family: var(--font-mono);
+  margin-top: 1px;
+}
+
+.gps-sim__prn-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gps-sim__input {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  width: 70px;
+  padding: 5px 8px;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(184, 136, 0, 0.25);
+  background: rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(4px);
+  color: inherit;
+  text-align: center;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.gps-sim__input:focus {
+  outline: none;
+  border-color: var(--accent, #B88800);
+  box-shadow: 0 0 0 2.5px var(--accent-glow, rgba(184, 136, 0, 0.2));
+}
+
+.gps-sim__prn-badge {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent, #B88800);
+  letter-spacing: 0.06em;
+  opacity: 0.85;
+}
+
+/* PRN quick-select grid */
+.gps-sim__prn-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 3px;
+}
+
+.gps-sim__prn-btn {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 2px;
+  border-radius: 4px;
+  border: 1px solid rgba(184, 136, 0, 0.18);
+  background: rgba(255, 255, 255, 0.25);
+  color: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+  text-align: center;
+}
+
+.gps-sim__prn-btn:hover {
+  background: rgba(184, 136, 0, 0.12);
+  border-color: rgba(184, 136, 0, 0.35);
+  color: #B88800;
+}
+
+.gps-sim__prn-btn--sel {
+  background: rgba(184, 136, 0, 0.18);
+  border-color: #B88800;
+  color: #B88800;
+  box-shadow: 0 0 0 1.5px rgba(184, 136, 0, 0.25);
+}
+
+.gps-sim__slider {
+  width: 100%;
+  accent-color: #B88800;
+  cursor: pointer;
+}
+
+.gps-sim__freq-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(184, 136, 0, 0.12);
+  margin-top: 4px;
+}
+
+.gps-sim__freq-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+.gps-sim__freq-val {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--accent, #B88800);
+  letter-spacing: 0.04em;
+}
+
+.gps-sim__freq-sub {
+  font-size: 11px;
+  color: rgba(184, 136, 0, 0.55);
+}
+
+/* Skyplot */
+.gps-sim__skyplot-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  align-items: center;
+  flex: 1;
+}
+
+.gps-sim__skyplot-svg {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  display: block;
+}
+
+.gps-sim__cardinal {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  fill: rgba(184, 136, 0, 0.6);
+  letter-spacing: 0.06em;
+}
+
+.gps-sim__el-label {
+  font-family: var(--font-mono);
+  font-size: 5px;
+  fill: rgba(184, 136, 0, 0.38);
+}
+
+.gps-sim__sv-pulse {
+  fill: rgba(184, 136, 0, 0.15);
+  animation: gps-sim-pulse 2s ease-out infinite;
+}
+
+@keyframes gps-sim-pulse {
+  0% { r: 6; opacity: 0.8; }
+  60% { r: 12; opacity: 0; }
+  100% { r: 12; opacity: 0; }
+}
+
+.gps-sim__prn-label {
+  font-family: var(--font-mono);
+  font-size: 5px;
+  fill: rgba(184, 136, 0, 0.55);
+  user-select: none;
+  dominant-baseline: auto;
+}
+
+.gps-sim__prn-label--sel {
+  fill: rgba(255, 220, 100, 0.95);
+  font-size: 6px;
+  font-weight: bold;
+}
+
+/* Legend */
+.gps-sim__skyplot-legend {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.gps-sim__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.gps-sim__legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.gps-sim__legend-dot--sv {
+  background: rgba(184, 136, 0, 0.45);
+  border: 1px solid rgba(184, 136, 0, 0.4);
+}
+
+.gps-sim__legend-dot--sel {
+  background: #B88800;
+  border: 1px solid rgba(255, 220, 100, 0.9);
+  box-shadow: 0 0 4px rgba(184, 136, 0, 0.5);
+}
+
+/* Narrow reflow */
+@media (max-width: 720px) {
+  .gps-sim__layout {
+    flex-direction: column;
+  }
+
+  .gps-sim__prn-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
