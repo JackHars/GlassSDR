@@ -19,7 +19,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 ## Phase B — app screens (one per iteration)
 
 ### Receivers
-- [x] nfm_audio · [x] wfm_rx · [ ] am_rx · [ ] usb_rx+lsb_rx (one component) · [ ] cw_rx · [ ] rds_rx · [ ] adsb_rx · [ ] adsb_rx_ext
+- [x] nfm_audio · [x] wfm_rx · [x] am_rx · [ ] usb_rx+lsb_rx (one component) · [ ] cw_rx · [ ] rds_rx · [ ] adsb_rx · [ ] adsb_rx_ext
 
 ### Digital
 - [ ] aprs_rx · [ ] ais_rx · [ ] acars_rx · [ ] pocsag_rx · [ ] flex_rx · [ ] afsk_rx · [ ] dmr_rx · [ ] dpmr_rx · [ ] p25_rx · [ ] nxdn_rx · [ ] tetra_rx · [ ] pager_aggregator
