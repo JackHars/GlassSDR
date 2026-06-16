@@ -1,0 +1,220 @@
+/* ── OOK Analyzer — purple-blue · logic-analyzer motif ──────────────────────── */
+
+[data-app="ook_analyzer"] .app-screen__title {
+  background: linear-gradient(135deg, #7068B0, #9080D0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Controls */
+.ook-az__controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.ook-az__field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ook-az__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.42);
+}
+
+.ook-az__input-wrap {
+  display: flex;
+  align-items: center;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(112, 104, 176, 0.22);
+  background: rgba(255, 255, 255, 0.30);
+  overflow: hidden;
+  transition: border-color 0.14s, box-shadow 0.14s;
+}
+
+.ook-az__input-wrap:focus-within {
+  border-color: var(--accent, #7068B0);
+  box-shadow: 0 0 0 2.5px rgba(112, 104, 176, 0.20);
+}
+
+.ook-az__input {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  width: 100px;
+  padding: 5px 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  -moz-appearance: textfield;
+}
+
+.ook-az__input::-webkit-outer-spin-button,
+.ook-az__input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.ook-az__input:focus { outline: none; }
+
+.ook-az__input-suffix {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 0 8px;
+  color: rgba(112, 104, 176, 0.55);
+  background: rgba(112, 104, 176, 0.07);
+  border-left: 1px solid rgba(112, 104, 176, 0.14);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.ook-az__slider {
+  width: 120px;
+  accent-color: #7068B0;
+  cursor: pointer;
+  margin-top: 2px;
+}
+
+.ook-az__actions {
+  display: flex;
+  gap: 6px;
+  align-self: flex-end;
+}
+
+.ook-az__btn {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(112, 104, 176, 0.25);
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.ook-az__btn--start { color: #34A85A; border-color: rgba(52,168,90,0.35); }
+.ook-az__btn--start:hover:not(:disabled) { background: rgba(52,168,90,0.13); border-color: rgba(52,168,90,0.60); }
+.ook-az__btn--stop { color: #C84020; border-color: rgba(200,64,32,0.35); }
+.ook-az__btn--stop:hover:not(:disabled) { background: rgba(200,64,32,0.11); border-color: rgba(200,64,32,0.55); }
+.ook-az__btn--clear { color: rgba(0,0,0,0.48); }
+.ook-az__btn--clear:hover { background: rgba(112,104,176,0.12); color: #7068B0; }
+.ook-az__btn--off { opacity: 0.38; cursor: default; }
+
+/* Trace panel */
+.ook-az__trace-panel {
+  margin-bottom: 10px;
+}
+
+.ook-az__trace-svg {
+  width: 100%;
+  height: 88px;
+  display: block;
+  border-radius: 3px;
+}
+
+.ook-az__dur-label {
+  font-family: var(--font-mono);
+  font-size: 5.5px;
+  fill: rgba(140, 130, 210, 0.70);
+}
+
+.ook-az__bit-label {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  font-weight: 700;
+  fill: rgba(200, 190, 255, 0.90);
+}
+
+.ook-az__level-label {
+  font-family: var(--font-mono);
+  font-size: 6px;
+  font-weight: 700;
+  fill: rgba(112, 104, 176, 0.55);
+  dominant-baseline: middle;
+}
+
+.ook-az__empty {
+  padding: 28px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(112, 104, 176, 0.48);
+  font-style: italic;
+}
+
+/* Stats + bits row */
+.ook-az__stats-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.ook-az__stats-panel {
+  flex: 1;
+  min-width: 180px;
+}
+
+.ook-az__bits-panel {
+  flex: 2;
+  min-width: 0;
+}
+
+.ook-az__stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 14px;
+}
+
+.ook-az__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ook-az__stat-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(112, 104, 176, 0.50);
+}
+
+.ook-az__stat-val {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent, #7068B0);
+  letter-spacing: 0.04em;
+}
+
+.ook-az__bit-str {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 700;
+  color: rgba(200, 190, 255, 0.90);
+  letter-spacing: 0.18em;
+  word-break: break-all;
+  line-height: 1.8;
+  background: rgba(6, 6, 14, 0.30);
+  border-radius: 4px;
+  padding: 6px 10px;
+}
+
+.ook-az__empty-bits {
+  font-family: var(--font-mono);
+  font-size: 18px;
+  color: rgba(112, 104, 176, 0.30);
+  text-align: center;
+  padding: 8px 0;
+}
+
+@media (max-width: 720px) {
+  .ook-az__controls { flex-direction: column; align-items: flex-start; }
+  .ook-az__stats-row { flex-direction: column; }
+}
