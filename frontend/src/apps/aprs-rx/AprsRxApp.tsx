@@ -1,91 +1,153 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
+import type { AprsPacketEvent } from "../../ipc/types/AprsPacketEvent";
 import { RecordBar } from "../../components/RecordBar";
-import { AppShell, ControlRow } from "../../components/AppShell";
+import { EntityMap } from "../../components/kit/EntityMap";
+import type { MapEntity } from "../../components/kit/EntityMap";
+import { DecoderFeed } from "../../components/kit/DecoderFeed";
+import type { DecoderColumn } from "../../components/kit/DecoderFeed";
+import { AppScreen } from "../../components/kit/AppScreen";
+import type { AppStatus } from "../../components/kit/AppScreen";
+import "./AprsRx.css";
 
-interface AprsPacketEvent {
-  src: string;
-  dst: string;
-  payload_type: string;
-  lat: number | null;
-  lon: number | null;
-  comment: string;
+type PacketWithId = AprsPacketEvent & { id: number };
+
+const COLUMNS: DecoderColumn<PacketWithId>[] = [
+  { key: "src", label: "Source", width: "110px", mono: true },
+  { key: "payload_type", label: "Type", width: "60px" },
+  { key: "comment", label: "Comment" },
+];
+
+function filterPacket(p: PacketWithId, q: string): boolean {
+  return p.src.toLowerCase().includes(q) ||
+    p.dst.toLowerCase().includes(q) ||
+    p.comment.toLowerCase().includes(q) ||
+    p.payload_type.toLowerCase().includes(q);
 }
 
+function StationDetail({ p }: { p: PacketWithId }) {
+  return (
+    <div className="aprs-station-detail">
+      <div className="aprs-station-detail__callsign">{p.src}</div>
+      <div className="aprs-station-detail__type">{p.payload_type} → {p.dst}</div>
+      {p.comment && <div className="aprs-station-detail__comment">{p.comment}</div>}
+      {p.lat != null && p.lon != null && (
+        <div className="aprs-station-detail__coords">{p.lat.toFixed(5)}°, {p.lon.toFixed(5)}°</div>
+      )}
+    </div>
+  );
+}
+
+let _id = 0;
+
 export function AprsRxApp() {
-  const [packets, setPackets] = useState<AprsPacketEvent[]>([]);
+  const [packets, setPackets] = useState<PacketWithId[]>([]);
   const [running, setRunning] = useState(false);
+  const [selected, setSelected] = useState<string | null>(null);
+
+  useEffect(() => {
+    const p = listen<AprsPacketEvent>("aprs_packet", (e) =>
+      setPackets((prev) => [{ ...e.payload, id: ++_id }, ...prev].slice(0, 300))
+    );
+    return () => { p.then((f) => f()); };
+  }, []);
 
   const handleStart = async () => {
     await startApp("aprs_rx" as AppId, { center_hz: 144_390_000, lna_gain_db: 32, vga_gain_db: 20, amp_enabled: false });
     setRunning(true);
   };
-  const handleStop = async () => {
-    await stopApp();
-    setRunning(false);
-  };
+  const handleStop = async () => { await stopApp(); setRunning(false); };
 
-  useEffect(() => {
-    const unlisten = listen<AprsPacketEvent>("aprs_packet", (e) =>
-      setPackets((prev) => [e.payload, ...prev].slice(0, 200))
-    );
-    return () => { unlisten.then((f) => f()); };
-  }, []);
+  // Derive entities from latest position per callsign
+  const stationMap = useMemo(() => {
+    const m = new Map<string, PacketWithId>();
+    // Newest packets first → take first occurrence of each callsign with position
+    for (const p of packets) {
+      if (!m.has(p.src) && p.lat != null && p.lon != null) {
+        m.set(p.src, p);
+      }
+    }
+    return m;
+  }, [packets]);
+
+  const entities = useMemo<MapEntity[]>(() => {
+    const result: MapEntity[] = [];
+    stationMap.forEach((p) => {
+      if (p.lat != null && p.lon != null) {
+        result.push({ id: p.src, lat: p.lat, lon: p.lon, kind: "station", label: p.src });
+      }
+    });
+    return result;
+  }, [stationMap]);
+
+  const selectedPacket = selected ? stationMap.get(selected) ?? null : null;
+
+  const count = packets.length;
+  const stationsWithPos = stationMap.size;
+  const appStatus: AppStatus = running ? (count > 0 ? "live" : "acquiring") : "idle";
 
   return (
-    <AppShell
+    <AppScreen
+      appId="aprs_rx"
       title="APRS Receiver"
-      status={running ? <><span style={{color: "#34C759"}}>●</span> Listening · 144.390 MHz · {packets.length} packets</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+      subtitle="144.390 MHz · 1200 baud"
+      status={appStatus}
+      statusText={running ? (count > 0 ? `${count} packets` : "Listening") : "Idle"}
       controls={
-        <ControlRow
-          actions={
-            <>
-              <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
-              <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
-              <button className="glass-btn" onClick={() => setPackets([])}>Clear</button>
-            </>
-          }
-        >
-          <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
-            Tuned to 144.390 MHz (NA) · 1200 baud Bell 202 AFSK
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <span style={{ fontSize: 13, color: "var(--text-secondary)", fontFamily: "var(--font-mono)" }}>
+            144.390 MHz NA · Bell 202 AFSK 1200 baud
           </span>
-        </ControlRow>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 8 }}>
+            <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
+            <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
+            <button className="glass-btn" onClick={() => { setPackets([]); setSelected(null); }}>Clear</button>
+          </div>
+        </div>
       }
-      footer={<RecordBar appId={"aprs_rx" as any} format="jsonl" />}
+      footer={
+        <RecordBar appId={"aprs_rx" as Parameters<typeof RecordBar>[0]["appId"]} format="jsonl" />
+      }
     >
-      <div className="app-shell__grow" style={{ overflow: "auto", borderRadius: 12, background: "rgba(255,255,255,0.55)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.7)" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-          <thead>
-            <tr style={{ position: "sticky", top: 0, background: "rgba(255,255,255,0.85)", textAlign: "left", backdropFilter: "blur(8px)" }}>
-              <th style={{ padding: "8px 12px" }}>Source</th>
-              <th style={{ padding: "8px 12px" }}>Dest</th>
-              <th style={{ padding: "8px 12px" }}>Type</th>
-              <th style={{ padding: "8px 12px" }}>Lat</th>
-              <th style={{ padding: "8px 12px" }}>Lon</th>
-              <th style={{ padding: "8px 12px" }}>Comment</th>
-            </tr>
-          </thead>
-          <tbody>
-            {packets.map((p, i) => (
-              <tr key={i} style={{ borderBottom: "1px solid rgba(0,0,0,0.05)" }}>
-                <td style={{ padding: "6px 12px", fontFamily: "var(--font-mono)" }}>{p.src}</td>
-                <td style={{ padding: "6px 12px", fontFamily: "var(--font-mono)" }}>{p.dst}</td>
-                <td style={{ padding: "6px 12px" }}>{p.payload_type}</td>
-                <td style={{ padding: "6px 12px" }}>{p.lat != null ? p.lat.toFixed(5) : "—"}</td>
-                <td style={{ padding: "6px 12px" }}>{p.lon != null ? p.lon.toFixed(5) : "—"}</td>
-                <td style={{ padding: "6px 12px", color: "var(--text-secondary)" }}>{p.comment}</td>
-              </tr>
-            ))}
-            {packets.length === 0 && (
-              <tr><td colSpan={6} style={{ padding: 32, textAlign: "center", color: "var(--text-tertiary)" }}>
-                No packets yet — press Start to listen.
-              </td></tr>
-            )}
-          </tbody>
-        </table>
+      <div className="aprs-layout">
+        {/* Map column */}
+        <div className="aprs-map-col">
+          {/* Stats strip */}
+          <div className="aprs-stats">
+            <div className="aprs-stat">
+              <span className="aprs-stat-label">Packets</span>
+              <span className="aprs-stat-value">{count}</span>
+            </div>
+            <div className="aprs-stat">
+              <span className="aprs-stat-label">Stations</span>
+              <span className="aprs-stat-value">{stationsWithPos}</span>
+            </div>
+          </div>
+          {/* Map */}
+          <EntityMap
+            entities={entities}
+            selected={selected}
+            onSelect={setSelected}
+            accentColor="#E86020"
+            emptyLabel="No stations with position yet"
+            detail={selectedPacket ? <StationDetail p={selectedPacket} /> : undefined}
+          />
+        </div>
+
+        {/* Feed column */}
+        <div className="aprs-feed-col">
+          <DecoderFeed
+            items={packets}
+            columns={COLUMNS}
+            filterFn={filterPacket}
+            emptyLabel="Waiting for APRS packets…"
+            emptyIcon="📡"
+            renderInspector={(p) => <StationDetail p={p} />}
+          />
+        </div>
       </div>
-    </AppShell>
+    </AppScreen>
   );
 }
