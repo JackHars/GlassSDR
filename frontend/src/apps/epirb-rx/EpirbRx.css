@@ -1,0 +1,15 @@
+/* ── EPIRB Receiver — emergency red, beacon pulse ─────────────────────────── */
+[data-app="epirb_rx"] .app-screen__title { background: linear-gradient(135deg, #D02820, #FF4030); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.epirb-beacon-stage { display: flex; flex-direction: column; align-items: center; gap: 16px; padding: 24px; background: rgba(255,255,255,0.60); backdrop-filter: blur(16px); border: 1px solid rgba(208,40,32,0.15); border-radius: var(--glass-radius); box-shadow: var(--shadow-md); flex-shrink: 0; }
+
+.epirb-pulse-ring { position: relative; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; }
+.epirb-pulse-ring::before, .epirb-pulse-ring::after { content: ""; position: absolute; border-radius: 50%; border: 2px solid rgba(208,40,32,0.3); animation: epirb-ring 2s ease-out infinite; }
+.epirb-pulse-ring::after { animation-delay: 1s; }
+@keyframes epirb-ring { 0% { width: 40px; height: 40px; opacity: 0.8; } 100% { width: 80px; height: 80px; opacity: 0; } }
+
+.epirb-icon { font-size: 28px; }
+
+.epirb-hex-id { font-size: 18px; font-family: var(--font-mono); font-weight: 800; color: var(--accent); letter-spacing: 2px; }
+.epirb-country { font-size: 11px; color: var(--text-tertiary); }
+.epirb-warning { font-size: 11px; color: var(--text-secondary); text-align: center; line-height: 1.5; }
