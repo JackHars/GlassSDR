@@ -25,7 +25,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 - [x] aprs_rx · [x] ais_rx · [x] acars_rx · [x] pocsag_rx · [x] flex_rx · [x] afsk_rx · [x] dmr_rx · [x] dpmr_rx · [x] p25_rx · [x] nxdn_rx · [x] tetra_rx · [x] pager_aggregator
 
 ### Sensors
-- [x] ert_rx · [x] weather_rx · [x] sonde_rx · [x] sonde_rx_ext · [x] tpms_rx · [x] two_tone_rx · [x] dsc_rx · [x] epirb_rx · [ ] ctcss_dcs
+- [x] ert_rx · [x] weather_rx · [x] sonde_rx · [x] sonde_rx_ext · [x] tpms_rx · [x] two_tone_rx · [x] dsc_rx · [x] epirb_rx · [x] ctcss_dcs
 
 ### Satellite
 - [ ] apt_rx · [ ] hrpt_rx · [ ] lrpt_rx · [ ] dab_rx
