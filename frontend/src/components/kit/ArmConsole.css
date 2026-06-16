@@ -1,0 +1,173 @@
+/* ── ArmConsole — TX arm/disarm gate with hazard identity ────────────────── */
+
+.arm-console {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius-sm);
+  box-shadow: var(--shadow-sm), var(--shadow-inset-top);
+  overflow: hidden;
+  transition: border-color var(--spring-smooth), box-shadow var(--spring-smooth);
+}
+
+/* Armed state: amber border + subtle glow */
+.arm-console--armed {
+  border-color: rgba(255, 149, 0, 0.5);
+  box-shadow: var(--shadow-sm), var(--shadow-inset-top), 0 0 0 2px rgba(255, 149, 0, 0.12);
+  animation: arm-breathe 2s ease-in-out infinite;
+}
+
+@keyframes arm-breathe {
+  0%, 100% { box-shadow: var(--shadow-sm), var(--shadow-inset-top), 0 0 0 2px rgba(255, 149, 0, 0.10); }
+  50%       { box-shadow: var(--shadow-md), var(--shadow-inset-top), 0 0 0 3px rgba(255, 149, 0, 0.22); }
+}
+
+/* Live state: red border + pulse */
+.arm-console--live {
+  border-color: rgba(255, 59, 48, 0.5);
+  box-shadow: var(--shadow-sm), var(--shadow-inset-top), 0 0 0 2px rgba(255, 59, 48, 0.15);
+  animation: live-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes live-pulse {
+  0%, 100% { box-shadow: var(--shadow-sm), var(--shadow-inset-top), 0 0 0 2px rgba(255, 59, 48, 0.12); }
+  50%       { box-shadow: var(--shadow-md), var(--shadow-inset-top), 0 0 0 4px rgba(255, 59, 48, 0.28); }
+}
+
+/* Warning banner with hazard stripe motif */
+.arm-console__warning {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 14px;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 149, 0, 0.06) 0px,
+    rgba(255, 149, 0, 0.06) 8px,
+    transparent 8px,
+    transparent 16px
+  ), rgba(255, 149, 0, 0.05);
+  border-bottom: 1px solid rgba(255, 149, 0, 0.20);
+}
+
+.arm-console__warning-icon {
+  font-size: 13px;
+  flex-shrink: 0;
+  color: #C86400;
+  margin-top: 1px;
+}
+
+.arm-console__warning-text {
+  font-size: 12px;
+  color: #9A5200;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* Body (composer / message editor slot) */
+.arm-console__body {
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Transmit progress bar */
+.arm-console__progress-track {
+  height: 3px;
+  background: rgba(0, 0, 0, 0.06);
+  flex-shrink: 0;
+}
+
+.arm-console__progress-fill {
+  height: 100%;
+  background: var(--danger);
+  transition: width 200ms ease;
+  box-shadow: 0 0 4px rgba(255, 59, 48, 0.4);
+}
+
+/* Footer — status text + action buttons */
+.arm-console__footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  flex-shrink: 0;
+}
+
+.arm-console__status-text {
+  flex: 1;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.arm-console__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* Buttons */
+.arm-console__btn {
+  height: 32px;
+  padding: 0 16px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  font-family: var(--font-sans);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+  border: none;
+  letter-spacing: 0.3px;
+}
+
+.arm-console__btn--arm {
+  background: #FF9500;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255, 149, 0, 0.30);
+}
+
+.arm-console__btn--arm:hover {
+  background: #E08500;
+  box-shadow: 0 4px 16px rgba(255, 149, 0, 0.40);
+  transform: translateY(-1px);
+}
+
+.arm-console__btn--disarm {
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  color: var(--text-secondary);
+}
+
+.arm-console__btn--disarm:hover {
+  background: rgba(255, 255, 255, 0.9);
+}
+
+.arm-console__btn--transmit {
+  background: var(--danger);
+  color: #fff;
+  box-shadow: 0 2px 10px rgba(255, 59, 48, 0.30);
+}
+
+.arm-console__btn--transmit:hover {
+  background: #E03028;
+  box-shadow: 0 4px 18px rgba(255, 59, 48, 0.40);
+  transform: translateY(-1px);
+}
+
+.arm-console__btn--live {
+  background: var(--danger);
+  color: #fff;
+  opacity: 0.7;
+  cursor: not-allowed;
+  animation: live-btn-pulse 0.9s ease-in-out infinite;
+}
+
+@keyframes live-btn-pulse {
+  0%, 100% { opacity: 0.65; }
+  50%       { opacity: 0.9; }
+}

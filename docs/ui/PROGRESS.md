@@ -13,7 +13,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 - [x] A6. Kit: `DecoderFeed` + `FieldInspector` (virtualized, flash-in, expand)
 - [x] A7. Kit: `EntityMap` (generalize `AircraftMap`) + detail card
 - [x] A8. Kit: `ProgressiveImage` (top-down line paint, scanline motif, save)
-- [ ] A9. Kit: `Composer` + `ArmConsole` (wraps existing arm/disarm + LegalBanner)
+- [x] A9. Kit: `Composer` + `ArmConsole` (wraps existing arm/disarm + LegalBanner)
 - [ ] A10. Kit: `Timeline`, `FrequencyDial`/`Keypad`, `EmptyState`, `HeroPanel`
 
 ## Phase B — app screens (one per iteration)
