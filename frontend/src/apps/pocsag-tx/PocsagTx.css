@@ -1,0 +1,2 @@
+/* ── POCSAG TX — paging pink TX identity ──────────────────────────────────── */
+[data-app="pocsag_tx"] .app-screen__title { background: linear-gradient(135deg, #C84080, #E060A8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
