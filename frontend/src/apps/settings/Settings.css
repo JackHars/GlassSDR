@@ -1,0 +1,278 @@
+/* ── Settings · neutral system · gear motif ─────────────────────────────── */
+
+[data-app="settings"] .stg-save-btn {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 650;
+  background: var(--accent);
+  border: none;
+  border-radius: 20px;
+  padding: 6px 18px;
+  color: #fff;
+  cursor: pointer;
+  letter-spacing: 0.1px;
+  box-shadow: 0 2px 6px var(--accent-glow), var(--shadow-inset-top);
+  transition: all var(--spring-snappy);
+}
+
+[data-app="settings"] .stg-save-btn:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+[data-app="settings"] .stg-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+/* ── Device panel ────────────────────────────────────────────────────────── */
+
+[data-app="settings"] .stg-refresh {
+  font-size: 15px;
+  background: transparent;
+  border: 1px solid rgba(90, 107, 122, 0.2);
+  border-radius: 6px;
+  padding: 2px 8px;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+}
+
+[data-app="settings"] .stg-refresh:hover {
+  background: var(--accent-dim);
+  transform: rotate(180deg);
+}
+
+[data-app="settings"] .stg-device-error,
+[data-app="settings"] .stg-device-empty {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  padding: 6px 0;
+}
+
+[data-app="settings"] .stg-device-empty__icon {
+  font-size: 18px;
+  opacity: 0.5;
+}
+
+[data-app="settings"] .stg-device-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+[data-app="settings"] .stg-device {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  background: rgba(0,0,0,0.04);
+  border-radius: 8px;
+  border: 1px solid rgba(0,0,0,0.06);
+}
+
+[data-app="settings"] .stg-device--hackrf {
+  background: rgba(90, 107, 122, 0.07);
+  border-color: rgba(90, 107, 122, 0.18);
+}
+
+[data-app="settings"] .stg-device__info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+[data-app="settings"] .stg-device__name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+[data-app="settings"] .stg-device__ids {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+}
+
+[data-app="settings"] .stg-device__badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(90, 107, 122, 0.3);
+  border-radius: 10px;
+  padding: 2px 8px;
+  color: var(--accent);
+}
+
+[data-app="settings"] .stg-device-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+[data-app="settings"] .stg-device-status__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 5px rgba(52, 199, 89, 0.5);
+}
+
+/* ── Setting rows ────────────────────────────────────────────────────────── */
+
+[data-app="settings"] .stg-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+[data-app="settings"] .stg-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+[data-app="settings"] .stg-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+[data-app="settings"] .stg-row__label {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+  min-width: 0;
+}
+
+[data-app="settings"] .stg-row__title {
+  font-size: 13.5px;
+  font-weight: 550;
+  color: var(--text-primary);
+}
+
+[data-app="settings"] .stg-row__sub {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  line-height: 1.4;
+}
+
+[data-app="settings"] .stg-row__control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* ── Slider ──────────────────────────────────────────────────────────────── */
+
+[data-app="settings"] .stg-slider {
+  appearance: none;
+  width: 120px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(90, 107, 122, 0.2);
+  outline: none;
+  cursor: pointer;
+}
+
+[data-app="settings"] .stg-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 1px 4px var(--accent-glow);
+  cursor: pointer;
+  transition: transform var(--spring-snappy);
+}
+
+[data-app="settings"] .stg-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+[data-app="settings"] .stg-slider-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent);
+  min-width: 52px;
+  text-align: right;
+}
+
+/* ── Toggle ──────────────────────────────────────────────────────────────── */
+
+[data-app="settings"] .stg-toggle {
+  width: 42px;
+  height: 24px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(0, 0, 0, 0.15);
+  padding: 0;
+  cursor: pointer;
+  position: relative;
+  transition: background var(--spring-snappy);
+  flex-shrink: 0;
+}
+
+[data-app="settings"] .stg-toggle--on {
+  background: var(--accent);
+}
+
+[data-app="settings"] .stg-toggle__thumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  transition: transform var(--spring-snappy);
+}
+
+[data-app="settings"] .stg-toggle--on .stg-toggle__thumb {
+  transform: translateX(18px);
+}
+
+/* ── Select ──────────────────────────────────────────────────────────────── */
+
+[data-app="settings"] .stg-select {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  background: rgba(255, 255, 255, 0.65);
+  border: 1px solid rgba(90, 107, 122, 0.22);
+  border-radius: 8px;
+  padding: 5px 10px;
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+[data-app="settings"] .stg-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+@media (max-width: 720px) {
+  [data-app="settings"] .stg-row {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  [data-app="settings"] .stg-slider { width: 100%; }
+}

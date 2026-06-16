@@ -651,11 +651,11 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "playlist-track",
   },
   settings: {
-    accent: "#5878C0",
-    accentHover: "#4868A8",
-    accentGlow: "rgba(88,120,192,0.28)",
-    accentDim: "rgba(88,120,192,0.10)",
-    ambient: ["rgba(80,110,185,0.08)", "rgba(120,165,235,0.07)"],
+    accent: "#5A6B7A",
+    accentHover: "#4A5A68",
+    accentGlow: "rgba(90,107,122,0.20)",
+    accentDim: "rgba(90,107,122,0.08)",
+    ambient: ["rgba(85,100,115,0.05)", "rgba(100,120,140,0.04)"],
     motif: "gear",
   },
   calculator: {
