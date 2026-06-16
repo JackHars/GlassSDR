@@ -1,0 +1,281 @@
+/* ── Recon — blue-slate · spectrum-sweep heatmap motif ──────────────────────── */
+
+[data-app="recon"] .app-screen__title {
+  background: linear-gradient(135deg, #5870A0, #7090C0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Controls */
+.recon__controls {
+  margin-bottom: 10px;
+}
+
+.recon__param-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.recon__field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.recon__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.42);
+}
+
+.recon__input {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  width: 100px;
+  padding: 5px 8px;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(88, 112, 160, 0.22);
+  background: rgba(255, 255, 255, 0.30);
+  color: inherit;
+  -moz-appearance: textfield;
+  transition: border-color 0.14s, box-shadow 0.14s;
+}
+
+.recon__input::-webkit-outer-spin-button,
+.recon__input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.recon__input:focus {
+  outline: none;
+  border-color: var(--accent, #5870A0);
+  box-shadow: 0 0 0 2.5px rgba(88, 112, 160, 0.20);
+}
+
+.recon__input--sm { width: 68px; }
+
+.recon__actions {
+  display: flex;
+  gap: 6px;
+  align-self: flex-end;
+}
+
+.recon__btn {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(88, 112, 160, 0.25);
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.recon__btn--start { color: #34A85A; border-color: rgba(52,168,90,0.35); }
+.recon__btn--start:hover:not(:disabled) { background: rgba(52,168,90,0.13); border-color: rgba(52,168,90,0.60); }
+.recon__btn--stop { color: #C84020; border-color: rgba(200,64,32,0.35); }
+.recon__btn--stop:hover:not(:disabled) { background: rgba(200,64,32,0.11); border-color: rgba(200,64,32,0.55); }
+.recon__btn--clear { color: rgba(0,0,0,0.48); }
+.recon__btn--clear:hover { background: rgba(88,112,160,0.12); color: #5870A0; }
+.recon__btn--off { opacity: 0.38; cursor: default; }
+
+/* Heatmap panel */
+.recon__heatmap-panel {
+  margin-bottom: 10px;
+}
+
+.recon__heatmap-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.recon__heatmap-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  border-radius: 3px;
+  overflow: hidden;
+  background: rgba(14, 18, 32, 0.90);
+  padding: 2px;
+}
+
+.recon__heatmap-row {
+  display: flex;
+  gap: 1px;
+  flex: 1;
+}
+
+.recon__heatmap-cell {
+  flex: 1;
+  height: 9px;
+  border-radius: 0.5px;
+  transition: background 0.3s;
+}
+
+.recon__heatmap-axis {
+  display: flex;
+  justify-content: space-between;
+  padding: 0 2px;
+}
+
+.recon__axis-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(88, 112, 160, 0.55);
+}
+
+.recon__time-label {
+  position: absolute;
+  right: -2px;
+  top: 2px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: calc(100% - 20px);
+  pointer-events: none;
+}
+
+.recon__time-label span {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: rgba(88, 112, 160, 0.40);
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+/* Legend */
+.recon__legend {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: 4px;
+}
+
+.recon__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.recon__legend-item--info {
+  color: rgba(88, 112, 160, 0.55);
+  font-family: var(--font-mono);
+  font-size: 9px;
+}
+
+.recon__legend-swatch {
+  width: 14px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.recon__legend-swatch--noise { background: rgba(14,18,32,0.90); border: 1px solid rgba(88,112,160,0.25); }
+.recon__legend-swatch--weak  { background: rgba(70,80,130,0.80); }
+.recon__legend-swatch--strong { background: rgba(210,160,40,0.90); }
+
+.recon__legend-sep { color: rgba(88,112,160,0.25); }
+
+/* Hits panel */
+.recon__hits-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.recon__empty {
+  padding: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(88, 112, 160, 0.48);
+  font-style: italic;
+}
+
+.recon__hits-list {
+  overflow-y: auto;
+  max-height: 180px;
+}
+
+.recon__hits-hdr {
+  display: grid;
+  grid-template-columns: 150px 80px 50px 1fr;
+  gap: 8px;
+  padding: 5px 14px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(88, 112, 160, 0.55);
+  border-bottom: 1px solid rgba(88, 112, 160, 0.14);
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(6px);
+}
+
+.recon__hdr-bar { opacity: 0.8; }
+
+.recon__hit-row {
+  display: grid;
+  grid-template-columns: 150px 80px 50px 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 14px;
+  border-bottom: 1px solid rgba(88, 112, 160, 0.07);
+  transition: background 0.08s;
+}
+
+.recon__hit-row:hover { background: rgba(88, 112, 160, 0.06); }
+
+.recon__hit-freq {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent, #5870A0);
+  letter-spacing: 0.04em;
+}
+
+.recon__hit-pwr {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.recon__hit-pwr--strong { color: #34A85A; }
+
+.recon__hit-count {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(88, 112, 160, 0.60);
+  text-align: center;
+}
+
+.recon__hit-bar-wrap {
+  height: 5px;
+  background: rgba(88, 112, 160, 0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.recon__hit-bar {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(88,112,160,0.50), rgba(200,160,40,0.85));
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+@media (max-width: 720px) {
+  .recon__param-row { flex-direction: column; align-items: flex-start; }
+  .recon__hits-hdr,
+  .recon__hit-row { grid-template-columns: 130px 70px 40px 1fr; }
+}
