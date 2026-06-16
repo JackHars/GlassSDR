@@ -1,0 +1,275 @@
+/* ── RFM69 TX — teal/amber · module-pinout motif ────────────────────────────── */
+
+[data-app="rfm69_tx"] .app-screen__title {
+  background: linear-gradient(135deg, #C07028, #E09040);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-app="rfm69_tx"] .app-screen__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 14px,
+    rgba(192, 112, 40, 0.07) 14px,
+    rgba(192, 112, 40, 0.07) 28px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ISM band row */
+.rfm-tx__band-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.rfm-tx__band-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 9px 6px;
+  border-radius: var(--glass-radius-sm, 8px);
+  border: 1.5px solid rgba(192, 112, 40, 0.20);
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+
+.rfm-tx__band-btn:hover {
+  background: rgba(192, 112, 40, 0.10);
+  border-color: rgba(192, 112, 40, 0.40);
+}
+
+.rfm-tx__band-btn--sel {
+  background: rgba(192, 112, 40, 0.14);
+  border-color: #C07028;
+  box-shadow: 0 0 0 2px rgba(192, 112, 40, 0.18);
+}
+
+.rfm-tx__band-freq {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent, #C07028);
+  letter-spacing: 0.03em;
+}
+
+.rfm-tx__band-region {
+  font-size: 9px;
+  color: rgba(0, 0, 0, 0.42);
+  letter-spacing: 0.04em;
+}
+
+/* Body layout */
+.rfm-tx__layout {
+  display: flex;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.rfm-tx__config-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.rfm-tx__pinout-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Config fields */
+.rfm-tx__field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rfm-tx__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.rfm-tx__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.44);
+}
+
+.rfm-tx__field-sub {
+  font-size: 10px;
+  color: rgba(192, 112, 40, 0.55);
+  font-family: var(--font-mono);
+}
+
+.rfm-tx__input-wrap {
+  display: flex;
+  align-items: center;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(192, 112, 40, 0.22);
+  background: rgba(255, 255, 255, 0.30);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+  width: fit-content;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.rfm-tx__input-wrap:focus-within {
+  border-color: var(--accent, #C07028);
+  box-shadow: 0 0 0 2.5px var(--accent-glow, rgba(192, 112, 40, 0.18));
+}
+
+.rfm-tx__input-prefix {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 5px 6px;
+  color: rgba(192, 112, 40, 0.55);
+  background: rgba(192, 112, 40, 0.07);
+  border-right: 1px solid rgba(192, 112, 40, 0.14);
+  user-select: none;
+}
+
+.rfm-tx__input {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  width: 52px;
+  padding: 5px 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-transform: uppercase;
+}
+
+.rfm-tx__input:focus { outline: none; }
+
+/* Packet info */
+.rfm-tx__packet-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(192, 112, 40, 0.06);
+  border: 1px solid rgba(192, 112, 40, 0.12);
+}
+
+.rfm-tx__pkt-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.rfm-tx__pkt-row--freq {
+  padding-top: 4px;
+  border-top: 1px solid rgba(192, 112, 40, 0.10);
+  margin-top: 2px;
+}
+
+.rfm-tx__pkt-key {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.38);
+  min-width: 64px;
+  flex-shrink: 0;
+}
+
+.rfm-tx__pkt-key--decoded {
+  font-style: italic;
+  font-size: 11px;
+  text-transform: none;
+  letter-spacing: 0;
+  color: rgba(192, 112, 40, 0.55);
+  min-width: unset;
+}
+
+.rfm-tx__pkt-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent, #C07028);
+  letter-spacing: 0.04em;
+  word-break: break-all;
+}
+
+.rfm-tx__pkt-val--plain {
+  color: rgba(0, 0, 0, 0.55);
+  font-weight: 500;
+}
+
+.rfm-tx__pkt-val--accent {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.rfm-tx__slider {
+  width: 100%;
+  accent-color: #C07028;
+  cursor: pointer;
+}
+
+/* Module pinout SVG */
+.rfm-tx__pinout-svg {
+  width: 100%;
+  max-width: 220px;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.rfm-tx__mod-name {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  fill: rgba(192, 112, 40, 0.75);
+  letter-spacing: 0.08em;
+}
+
+.rfm-tx__mod-sub {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  fill: rgba(192, 112, 40, 0.50);
+  letter-spacing: 0.04em;
+}
+
+.rfm-tx__pin-label {
+  font-family: var(--font-mono);
+  font-size: 5.5px;
+  fill: rgba(192, 112, 40, 0.50);
+  font-weight: 500;
+}
+
+.rfm-tx__pin-label--hi {
+  fill: rgba(192, 112, 40, 0.85);
+  font-weight: 700;
+}
+
+@media (max-width: 720px) {
+  .rfm-tx__layout {
+    flex-direction: column;
+  }
+
+  .rfm-tx__band-row {
+    flex-wrap: wrap;
+  }
+}
