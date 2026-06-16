@@ -1,0 +1,272 @@
+/* ── Flipper TX — magenta/pink · dolphin-playful-but-cautious ───────────────── */
+
+[data-app="flipper_tx"] .app-screen__title {
+  background: linear-gradient(135deg, #C05888, #E07AAA);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-app="flipper_tx"] .app-screen__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 14px,
+    rgba(192, 88, 136, 0.07) 14px,
+    rgba(192, 88, 136, 0.07) 28px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Drop panel */
+.flipper-tx__drop-panel {
+  margin-bottom: 10px;
+}
+
+/* Dropzone */
+.flipper-tx__dropzone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 80px;
+  border-radius: 8px;
+  border: 2px dashed rgba(192, 88, 136, 0.28);
+  background: rgba(192, 88, 136, 0.05);
+  cursor: pointer;
+  padding: 16px;
+  transition: border-color 0.15s, background 0.15s;
+  text-align: center;
+}
+
+.flipper-tx__dropzone:hover {
+  border-color: rgba(192, 88, 136, 0.55);
+  background: rgba(192, 88, 136, 0.09);
+}
+
+.flipper-tx__dropzone--drag {
+  border-color: #C05888;
+  background: rgba(192, 88, 136, 0.14);
+  border-style: solid;
+}
+
+.flipper-tx__dropzone--loaded {
+  min-height: auto;
+  border-style: solid;
+  border-color: rgba(192, 88, 136, 0.40);
+  background: rgba(192, 88, 136, 0.08);
+  flex-direction: row;
+  padding: 10px 14px;
+}
+
+.flipper-tx__file-input-hidden {
+  display: none;
+}
+
+.flipper-tx__drop-icon {
+  font-size: 28px;
+  line-height: 1;
+  filter: saturate(0.8);
+}
+
+.flipper-tx__drop-primary {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.60);
+}
+
+.flipper-tx__drop-primary code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent, #C05888);
+  background: rgba(192, 88, 136, 0.10);
+  padding: 1px 5px;
+  border-radius: 3px;
+}
+
+.flipper-tx__drop-secondary {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+/* Loaded state row */
+.flipper-tx__loaded-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.flipper-tx__loaded-icon {
+  font-size: 16px;
+  color: var(--accent, #C05888);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.flipper-tx__loaded-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.65);
+  font-family: var(--font-mono);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flipper-tx__clear-btn {
+  font-size: 16px;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: rgba(192, 88, 136, 0.55);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.12s, background 0.12s;
+}
+
+.flipper-tx__clear-btn:hover {
+  color: #C05888;
+  background: rgba(192, 88, 136, 0.12);
+}
+
+/* Summary */
+.flipper-tx__summary-panel {
+  margin-bottom: 10px;
+}
+
+.flipper-tx__summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  margin-bottom: 10px;
+}
+
+.flipper-tx__summary-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.flipper-tx__summary-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: rgba(192, 88, 136, 0.50);
+}
+
+.flipper-tx__summary-val {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent, #C05888);
+  letter-spacing: 0.04em;
+}
+
+/* Waveform */
+.flipper-tx__wave-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.flipper-tx__wave-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(192, 88, 136, 0.50);
+}
+
+.flipper-tx__wave-svg {
+  width: 100%;
+  height: 36px;
+  display: block;
+  background: rgba(10, 6, 16, 0.35);
+  border-radius: 4px;
+}
+
+/* Example panel */
+.flipper-tx__example-panel {
+  margin-bottom: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.flipper-tx__example-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 6px;
+}
+
+.flipper-tx__example-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(192, 88, 136, 0.55);
+}
+
+.flipper-tx__example-load {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(192, 88, 136, 0.25);
+  background: rgba(192, 88, 136, 0.08);
+  color: var(--accent, #C05888);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.flipper-tx__example-load:hover {
+  background: rgba(192, 88, 136, 0.15);
+  border-color: rgba(192, 88, 136, 0.45);
+}
+
+.flipper-tx__example-pre {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(192, 88, 136, 0.65);
+  background: rgba(10, 6, 16, 0.25);
+  border-radius: 5px;
+  padding: 8px 10px;
+  margin: 0;
+  overflow-x: auto;
+  white-space: pre;
+  line-height: 1.5;
+}
+
+/* Gain row */
+.flipper-tx__gain-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 10px;
+}
+
+.flipper-tx__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.44);
+}
+
+.flipper-tx__slider {
+  width: 100%;
+  accent-color: #C05888;
+  cursor: pointer;
+}
