@@ -617,12 +617,12 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "iq-playback",
   },
   sdr_benchmark: {
-    accent: "#7888B0",
-    accentHover: "#6878A0",
-    accentGlow: "rgba(120,136,176,0.28)",
-    accentDim: "rgba(120,136,176,0.10)",
-    ambient: ["rgba(110,130,175,0.08)", "rgba(155,170,215,0.07)"],
-    motif: "benchmark-bars",
+    accent: "#4CAF7A",
+    accentHover: "#3A9F6A",
+    accentGlow: "rgba(76,175,122,0.26)",
+    accentDim: "rgba(76,175,122,0.10)",
+    ambient: ["rgba(55,145,95,0.07)", "rgba(75,165,110,0.06)"],
+    motif: "speedometer",
   },
 
   // ── Tools (calm blue, paper-like) ───────────────────────────────────────
