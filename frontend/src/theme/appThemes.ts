@@ -699,12 +699,12 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "morse-code",
   },
   band_plan: {
-    accent: "#2870B8",
-    accentHover: "#1A60A0",
-    accentGlow: "rgba(40,112,184,0.28)",
-    accentDim: "rgba(40,112,184,0.10)",
-    ambient: ["rgba(35,100,180,0.08)", "rgba(80,160,235,0.07)"],
-    motif: "freq-band",
+    accent: "#1A6ECC",
+    accentHover: "#1560BB",
+    accentGlow: "rgba(26,110,204,0.26)",
+    accentDim: "rgba(26,110,204,0.10)",
+    ambient: ["rgba(25,100,195,0.08)", "rgba(60,150,230,0.07)"],
+    motif: "spectrum-ruler",
   },
   antenna_calc: {
     accent: "#3898C0",

@@ -1,0 +1,184 @@
+/* ── Band Plan · reference blue · spectrum-ruler motif ───────────────────── */
+
+[data-app="band_plan"] .bp-view-tabs {
+  display: flex;
+  gap: 4px;
+  background: rgba(26, 110, 204, 0.07);
+  border: 1px solid rgba(26, 110, 204, 0.18);
+  border-radius: 20px;
+  padding: 3px;
+}
+
+[data-app="band_plan"] .bp-view-tab {
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  border-radius: 16px;
+  padding: 5px 14px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+}
+
+[data-app="band_plan"] .bp-view-tab:hover {
+  background: rgba(26, 110, 204, 0.1);
+  color: var(--text-primary);
+}
+
+[data-app="band_plan"] .bp-view-tab--on {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 4px var(--accent-glow);
+}
+
+[data-app="band_plan"] .bp-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow: hidden;
+}
+
+[data-app="band_plan"] .bp-ruler-wrap {
+  padding: 12px 14px 8px;
+}
+
+[data-app="band_plan"] .bp-ruler-svg {
+  display: block;
+  width: 100%;
+  height: 90px;
+  border-radius: 6px;
+  cursor: default;
+}
+
+/* Detail card */
+[data-app="band_plan"] .bp-category-badge {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  border-radius: 10px;
+  padding: 2px 8px;
+  border: 1px solid currentColor;
+}
+
+[data-app="band_plan"] .bp-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+[data-app="band_plan"] .bp-detail__freq {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.3px;
+}
+
+[data-app="band_plan"] .bp-detail__unit {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+[data-app="band_plan"] .bp-detail__bw {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+[data-app="band_plan"] .bp-detail__use {
+  font-size: 13.5px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+[data-app="band_plan"] .bp-hint {
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+  font-style: italic;
+  text-align: center;
+  padding: 6px 0;
+}
+
+/* Band list */
+[data-app="band_plan"] .bp-band-list {
+  overflow-y: auto;
+  height: 100%;
+  padding: 4px 0 8px;
+}
+
+[data-app="band_plan"] .bp-band-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+[data-app="band_plan"] .bp-band-row:last-child { border-bottom: none; }
+
+[data-app="band_plan"] .bp-band-row:hover { background: rgba(26, 110, 204, 0.04); }
+
+[data-app="band_plan"] .bp-band-row--sel {
+  background: rgba(26, 110, 204, 0.07) !important;
+  border-left: 3px solid var(--accent);
+  padding-left: 11px;
+}
+
+[data-app="band_plan"] .bp-band-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+[data-app="band_plan"] .bp-band-name {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  min-width: 52px;
+  flex-shrink: 0;
+}
+
+[data-app="band_plan"] .bp-band-freq {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--accent);
+  min-width: 160px;
+  flex-shrink: 0;
+}
+
+[data-app="band_plan"] .bp-band-cat {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  min-width: 72px;
+  flex-shrink: 0;
+}
+
+[data-app="band_plan"] .bp-band-use {
+  font-size: 12.5px;
+  color: var(--text-secondary);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  [data-app="band_plan"] .bp-band-cat,
+  [data-app="band_plan"] .bp-band-use { display: none; }
+}
