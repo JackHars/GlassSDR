@@ -31,7 +31,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 - [x] apt_rx · [x] hrpt_rx · [x] lrpt_rx · [x] dab_rx
 
 ### Transmit
-- [x] pocsag_tx · [x] rtty_tx · [ ] sstv_tx · [ ] afsk_tx · [ ] morse_tx · [ ] soundboard_tx · [ ] flex_tx · [ ] sig_gen · [ ] spectrum_painter
+- [x] pocsag_tx · [x] rtty_tx · [x] sstv_tx · [x] afsk_tx · [x] morse_tx · [x] soundboard_tx · [x] flex_tx · [x] sig_gen · [x] spectrum_painter
 
 ### Testing (hazard)
 - [ ] adsb_tx · [ ] gps_sim · [ ] mdc1200_tx · [ ] replay_tx · [ ] ook_editor_tx · [ ] freq_hopper · [ ] btle_tx · [ ] nrf24_tx · [ ] rfm69_tx · [ ] flipper_tx · [ ] keyfob_tx · [ ] lge_tx
