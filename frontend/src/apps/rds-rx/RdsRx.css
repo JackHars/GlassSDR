@@ -1,0 +1,205 @@
+/* ── RDS Decoder — broadcast indigo/magenta, car-radio faceplate ─────────── */
+
+[data-app="rds_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #7B40D8, #D060C0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Car-radio faceplate ──────────────────────────────────────────────────── */
+
+.rds-faceplate {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 24px;
+  background: rgba(255, 255, 255, 0.60);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: var(--glass-radius);
+  box-shadow: var(--shadow-md), var(--shadow-inset-top);
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Dot-matrix motif: faint grid background */
+.rds-faceplate::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(123,64,216,0.08) 1px, transparent 1px);
+  background-size: 12px 12px;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+.rds-faceplate > * { position: relative; z-index: 1; }
+
+/* Station name (PS) in large segment-style mono */
+.rds-ps-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.rds-ps-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-tertiary);
+}
+
+.rds-ps-name {
+  font-size: clamp(36px, 8vw, 64px);
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 6px;
+  text-transform: uppercase;
+  color: var(--accent);
+  text-shadow: 0 0 20px var(--accent-glow), 0 0 6px var(--accent-glow);
+  transition: all 400ms cubic-bezier(0.16, 1, 0.3, 1);
+  text-align: center;
+  line-height: 1;
+}
+
+.rds-ps-name--empty {
+  color: var(--text-tertiary);
+  text-shadow: none;
+  font-size: 40px;
+  letter-spacing: 8px;
+}
+
+/* Status lamps row */
+.rds-lamps {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.rds-lamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  transition: all var(--spring-smooth);
+}
+
+.rds-lamp--off {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--text-tertiary);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.rds-lamp--on {
+  background: var(--accent-dim);
+  color: var(--accent);
+  border: 1px solid var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+/* RadioText scrolling area */
+.rds-rt-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.04);
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.rds-rt-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--text-tertiary);
+}
+
+.rds-rt-text {
+  font-size: 15px;
+  color: var(--text-primary);
+  min-height: 22px;
+  line-height: 1.4;
+  animation: rds-rt-in 500ms var(--ease-out-expo) both;
+}
+
+@keyframes rds-rt-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rds-rt-empty {
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* Metadata row */
+.rds-meta-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.rds-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.rds-meta-key {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.rds-meta-value {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.rds-meta-value--accent {
+  color: var(--accent);
+}
+
+/* Searching state */
+.rds-searching {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  flex: 1;
+}
+
+.rds-searching-icon {
+  font-size: 32px;
+  animation: empty-pulse 2.5s ease-in-out infinite;
+}
+
+.rds-searching-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.rds-searching-sub {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
