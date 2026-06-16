@@ -22,7 +22,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 - [x] nfm_audio · [x] wfm_rx · [x] am_rx · [x] usb_rx+lsb_rx (one component) · [x] cw_rx · [x] rds_rx · [x] adsb_rx · [x] adsb_rx_ext
 
 ### Digital
-- [x] aprs_rx · [x] ais_rx · [x] acars_rx · [x] pocsag_rx · [x] flex_rx · [x] afsk_rx · [ ] dmr_rx · [ ] dpmr_rx · [ ] p25_rx · [ ] nxdn_rx · [ ] tetra_rx · [ ] pager_aggregator
+- [x] aprs_rx · [x] ais_rx · [x] acars_rx · [x] pocsag_rx · [x] flex_rx · [x] afsk_rx · [x] dmr_rx · [ ] dpmr_rx · [ ] p25_rx · [ ] nxdn_rx · [ ] tetra_rx · [ ] pager_aggregator
 
 ### Sensors
 - [ ] ert_rx · [ ] weather_rx · [ ] sonde_rx · [ ] sonde_rx_ext · [ ] tpms_rx · [ ] two_tone_rx · [ ] dsc_rx · [ ] epirb_rx · [ ] ctcss_dcs
