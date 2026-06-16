@@ -9,7 +9,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 - [x] A2. `AppScreen` scaffold — applies theme + `data-app`, header/status/body/footer
 - [x] A3. Extend `glass.css` — per-app accent token wiring + ambient mesh tint hook
 - [x] A4. Kit: `GlassPanel` / `GlassCard`
-- [ ] A5. Kit: `StatReadout` + `Gauge` (needle/arc, peak-hold)
+- [x] A5. Kit: `StatReadout` + `Gauge` (needle/arc, peak-hold)
 - [ ] A6. Kit: `DecoderFeed` + `FieldInspector` (virtualized, flash-in, expand)
 - [ ] A7. Kit: `EntityMap` (generalize `AircraftMap`) + detail card
 - [ ] A8. Kit: `ProgressiveImage` (top-down line paint, scanline motif, save)

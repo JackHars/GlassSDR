@@ -1,0 +1,109 @@
+/* ── StatReadout ─────────────────────────────────────────────────────────── */
+
+.stat-readout {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.stat-readout__label {
+  font-size: 10.5px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+  color: var(--text-secondary);
+}
+
+.stat-readout__value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  line-height: 1;
+}
+
+.stat-readout__value {
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+  transition: color var(--spring-smooth);
+}
+
+.stat-readout__value--mono {
+  font-family: var(--font-mono);
+  letter-spacing: -0.3px;
+}
+
+.stat-readout--sm .stat-readout__value { font-size: 20px; }
+.stat-readout--md .stat-readout__value { font-size: 28px; }
+.stat-readout--lg .stat-readout__value { font-size: 38px; }
+
+[data-empty] .stat-readout__value {
+  color: var(--text-tertiary);
+  font-size: inherit;
+  font-family: var(--font-sans);
+}
+
+.stat-readout__unit {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.1px;
+  padding-bottom: 2px;
+}
+
+.stat-readout__trend {
+  font-size: 9px;
+  padding-bottom: 2px;
+}
+
+.stat-readout__trend--up   { color: var(--success); }
+.stat-readout__trend--down { color: var(--danger); }
+.stat-readout__trend--flat { color: var(--text-tertiary); }
+
+.stat-readout__peak {
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  letter-spacing: 0.1px;
+  opacity: 0.75;
+}
+
+/* ── Gauge ───────────────────────────────────────────────────────────────── */
+
+.gauge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.gauge__value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  line-height: 1;
+}
+
+.gauge__value {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.gauge__unit {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.gauge__label {
+  font-size: 10.5px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+  color: var(--text-secondary);
+  margin-top: 1px;
+}
