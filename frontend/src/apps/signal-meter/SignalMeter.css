@@ -1,0 +1,223 @@
+/* ── Signal Meter — instrument green · backlit S-meter motif ─────────────────── */
+
+[data-app="signal_meter"] .app-screen__title {
+  background: linear-gradient(135deg, #28B860, #40D880);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Controls */
+.smeter__controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.smeter__field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.smeter__field--gain {
+  flex: 1;
+  min-width: 120px;
+}
+
+.smeter__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.42);
+}
+
+.smeter__input {
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 600;
+  width: 110px;
+  padding: 5px 8px;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(40, 184, 96, 0.22);
+  background: rgba(255, 255, 255, 0.30);
+  color: inherit;
+  -moz-appearance: textfield;
+  transition: border-color 0.14s, box-shadow 0.14s;
+}
+
+.smeter__input::-webkit-outer-spin-button,
+.smeter__input::-webkit-inner-spin-button { -webkit-appearance: none; }
+
+.smeter__input:focus {
+  outline: none;
+  border-color: var(--accent, #28B860);
+  box-shadow: 0 0 0 2.5px rgba(40, 184, 96, 0.20);
+}
+
+.smeter__slider {
+  width: 100%;
+  accent-color: #28B860;
+  cursor: pointer;
+}
+
+.smeter__actions {
+  display: flex;
+  gap: 6px;
+  align-self: flex-end;
+}
+
+.smeter__btn {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(40, 184, 96, 0.25);
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.smeter__btn--start { color: #28B860; border-color: rgba(40,184,96,0.40); }
+.smeter__btn--start:hover:not(:disabled) { background: rgba(40,184,96,0.14); border-color: rgba(40,184,96,0.65); }
+.smeter__btn--stop { color: #C84020; border-color: rgba(200,64,32,0.35); }
+.smeter__btn--stop:hover:not(:disabled) { background: rgba(200,64,32,0.11); border-color: rgba(200,64,32,0.55); }
+.smeter__btn--clear { color: rgba(0,0,0,0.48); }
+.smeter__btn--clear:hover { background: rgba(40,184,96,0.12); color: #28B860; }
+.smeter__btn--off { opacity: 0.38; cursor: default; }
+
+/* Gauge panel */
+.smeter__gauge-panel {
+  margin-bottom: 10px;
+}
+
+.smeter__gauge-layout {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.smeter__gauge-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+/* S-unit scale beneath the gauge */
+.smeter__s-scale {
+  display: flex;
+  justify-content: space-between;
+  width: 200px;
+  padding: 0 4px;
+}
+
+.smeter__s-tick {
+  font-family: var(--font-mono);
+  font-size: 7.5px;
+  font-weight: 600;
+  color: rgba(40, 184, 96, 0.60);
+  letter-spacing: 0.02em;
+}
+
+/* Readouts */
+.smeter__readouts {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 160px;
+}
+
+.smeter__s-unit-display {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.smeter__s-unit-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(40, 184, 96, 0.50);
+}
+
+.smeter__s-unit-value {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--accent, #28B860);
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+}
+
+.smeter__peak-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(40, 184, 96, 0.14);
+}
+
+.smeter__peak-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(40, 184, 96, 0.48);
+}
+
+.smeter__peak-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(40, 184, 96, 0.75);
+}
+
+.smeter__peak-s {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(40, 184, 96, 0.55);
+}
+
+/* History strip */
+.smeter__hist-panel {
+  margin-bottom: 10px;
+}
+
+.smeter__hist-svg {
+  width: 100%;
+  height: 52px;
+  display: block;
+  border-radius: 3px;
+  margin-bottom: 4px;
+}
+
+.smeter__hist-empty {
+  padding: 20px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(40, 184, 96, 0.45);
+  font-style: italic;
+}
+
+.smeter__hist-axis {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(40, 184, 96, 0.48);
+  padding: 0 2px;
+}
+
+@media (max-width: 720px) {
+  .smeter__controls { flex-direction: column; align-items: flex-start; }
+  .smeter__gauge-layout { flex-direction: column; }
+}
