@@ -28,7 +28,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 - [x] ert_rx · [x] weather_rx · [x] sonde_rx · [x] sonde_rx_ext · [x] tpms_rx · [x] two_tone_rx · [x] dsc_rx · [x] epirb_rx · [x] ctcss_dcs
 
 ### Satellite
-- [ ] apt_rx · [ ] hrpt_rx · [ ] lrpt_rx · [ ] dab_rx
+- [x] apt_rx · [ ] hrpt_rx · [ ] lrpt_rx · [ ] dab_rx
 
 ### Transmit
 - [ ] pocsag_tx · [ ] rtty_tx · [ ] sstv_tx · [ ] afsk_tx · [ ] morse_tx · [ ] soundboard_tx · [ ] flex_tx · [ ] sig_gen · [ ] spectrum_painter

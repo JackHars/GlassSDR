@@ -1,0 +1,40 @@
+/* ── Satellite Imaging Receivers — shared cosmic indigo/cyan identity ─────── */
+
+[data-app="apt_rx"]  .app-screen__title { background: linear-gradient(135deg, #6028E8, #30B0F0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+[data-app="hrpt_rx"] .app-screen__title { background: linear-gradient(135deg, #4818D8, #3000E0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+[data-app="lrpt_rx"] .app-screen__title { background: linear-gradient(135deg, #1840C8, #40A0F0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* ── Pass progress panel ──────────────────────────────────────────────────── */
+
+.satimg-pass-panel { background: rgba(255,255,255,0.60); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.75); border-radius: var(--glass-radius); box-shadow: var(--shadow-md), var(--shadow-inset-top); padding: 20px; display: flex; flex-direction: column; gap: 14px; }
+
+.satimg-line-count { font-size: 48px; font-family: var(--font-mono); font-weight: 700; color: var(--accent); letter-spacing: -2px; line-height: 1; }
+.satimg-line-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary); }
+
+/* Progress bar */
+.satimg-progress-track { height: 8px; background: rgba(0,0,0,0.06); border-radius: 4px; overflow: hidden; }
+.satimg-progress-fill { height: 100%; background: var(--accent); border-radius: 4px; transition: width 150ms ease; box-shadow: 0 0 6px var(--accent-glow); }
+
+/* Scanline grid — visual representation of received lines */
+.satimg-scanline-grid { display: flex; flex-wrap: wrap; gap: 2px; padding: 8px; background: rgba(0,0,0,0.04); border-radius: 8px; overflow: hidden; max-height: 120px; }
+.satimg-scanline { height: 3px; background: var(--accent); border-radius: 1px; transition: opacity 200ms ease; }
+.satimg-scanline.ch-a { opacity: 0.9; }
+.satimg-scanline.ch-b { opacity: 0.55; }
+
+/* Scanline motif */
+.satimg-scanline-motif { background-image: repeating-linear-gradient(0deg, transparent 0, transparent 4px, rgba(96,40,232,0.04) 4px, rgba(96,40,232,0.04) 5px); position: absolute; inset: 0; pointer-events: none; border-radius: inherit; }
+
+/* Channel badges */
+.satimg-channels { display: flex; gap: 6px; }
+.satimg-channel { padding: 3px 10px; border-radius: 6px; font-size: 11px; font-weight: 700; background: var(--accent-dim); border: 1px solid rgba(96,40,232,0.2); color: var(--accent); font-family: var(--font-mono); }
+
+/* Stats row */
+.satimg-stats { display: flex; gap: 14px; }
+.satimg-stat { display: flex; flex-direction: column; gap: 1px; }
+.satimg-stat-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); }
+.satimg-stat-value { font-size: 15px; font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+
+/* Waiting state */
+.satimg-waiting { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; flex: 1; padding: 32px; }
+.satimg-waiting-icon { font-size: 36px; opacity: 0.4; animation: empty-pulse 3s ease-in-out infinite; }
+.satimg-waiting-text { font-size: 13.5px; font-weight: 550; color: var(--text-secondary); text-align: center; }
