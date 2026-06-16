@@ -723,11 +723,11 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "remote-grid",
   },
   recordings: {
-    accent: "#5068B0",
-    accentHover: "#4058A0",
-    accentGlow: "rgba(80,104,176,0.28)",
-    accentDim: "rgba(80,104,176,0.10)",
-    ambient: ["rgba(72,95,170,0.08)", "rgba(115,155,220,0.07)"],
+    accent: "#C4463A",
+    accentHover: "#B03530",
+    accentGlow: "rgba(196,70,58,0.25)",
+    accentDim: "rgba(196,70,58,0.10)",
+    ambient: ["rgba(180,60,50,0.07)", "rgba(210,90,80,0.06)"],
     motif: "recording-reel",
   },
 };
