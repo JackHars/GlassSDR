@@ -707,11 +707,11 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "spectrum-ruler",
   },
   antenna_calc: {
-    accent: "#3898C0",
-    accentHover: "#2880A8",
-    accentGlow: "rgba(56,152,192,0.28)",
-    accentDim: "rgba(56,152,192,0.10)",
-    ambient: ["rgba(50,140,185,0.08)", "rgba(90,200,240,0.07)"],
+    accent: "#0EA5CE",
+    accentHover: "#0990BA",
+    accentGlow: "rgba(14,165,206,0.26)",
+    accentDim: "rgba(14,165,206,0.10)",
+    ambient: ["rgba(12,150,190,0.08)", "rgba(20,190,230,0.07)"],
     motif: "antenna-diagram",
   },
   remote_control: {
