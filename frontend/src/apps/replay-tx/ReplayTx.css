@@ -1,0 +1,288 @@
+/* ── Replay TX — hazard violet/orange · tape-transport motif ─────────────────── */
+
+[data-app="replay_tx"] .app-screen__title {
+  background: linear-gradient(135deg, #C85000, #E07020);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-app="replay_tx"] .app-screen__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 14px,
+    rgba(200, 80, 0, 0.07) 14px,
+    rgba(200, 80, 0, 0.07) 28px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* File picker */
+.replay-tx__file-panel {
+  margin-bottom: 10px;
+}
+
+.replay-tx__file-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.replay-tx__file-icon {
+  font-size: 16px;
+  color: var(--accent, #C85000);
+  opacity: 0.75;
+  flex-shrink: 0;
+}
+
+.replay-tx__file-input {
+  flex: 1;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  padding: 5px 8px;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(200, 80, 0, 0.22);
+  background: rgba(255, 255, 255, 0.30);
+  backdrop-filter: blur(4px);
+  color: inherit;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.replay-tx__file-input:focus {
+  outline: none;
+  border-color: var(--accent, #C85000);
+  box-shadow: 0 0 0 2.5px var(--accent-glow, rgba(200, 80, 0, 0.18));
+}
+
+.replay-tx__file-clear {
+  font-size: 16px;
+  line-height: 1;
+  background: none;
+  border: none;
+  color: rgba(200, 80, 0, 0.55);
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+  transition: color 0.12s, background 0.12s;
+}
+
+.replay-tx__file-clear:hover {
+  color: #C85000;
+  background: rgba(200, 80, 0, 0.10);
+}
+
+/* Body layout */
+.replay-tx__layout {
+  display: flex;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.replay-tx__transport-panel {
+  flex: 1.6;
+  min-width: 0;
+}
+
+.replay-tx__config-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Transport */
+.replay-tx__transport {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Reels SVG */
+.replay-tx__reels-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+@keyframes replay-reel-spin {
+  from { transform-origin: center; transform: rotate(0deg); }
+  to   { transform-origin: center; transform: rotate(360deg); }
+}
+
+@keyframes replay-reel-spin-rev {
+  from { transform-origin: center; transform: rotate(0deg); }
+  to   { transform-origin: center; transform: rotate(-360deg); }
+}
+
+/* Reel spokes spin when active — applied via CSS class */
+.replay-tx__spoke--spin {
+  animation: replay-reel-spin 1.8s linear infinite;
+  transform-origin: 32px 32px;
+}
+
+.replay-tx__spoke--spin-rev {
+  animation: replay-reel-spin-rev 1.8s linear infinite;
+  transform-origin: 168px 32px;
+}
+
+/* IQ waveform */
+.replay-tx__waveform {
+  position: relative;
+  background: rgba(10, 18, 30, 0.38);
+  border-radius: 4px;
+  overflow: hidden;
+  padding: 4px 0;
+}
+
+.replay-tx__wave-svg {
+  width: 100%;
+  height: 52px;
+  display: block;
+}
+
+.replay-tx__wave-labels {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.replay-tx__wave-ch {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  color: rgba(200, 80, 0, 0.75);
+  letter-spacing: 0.08em;
+}
+
+.replay-tx__wave-ch--q {
+  color: rgba(200, 80, 0, 0.50);
+}
+
+.replay-tx__empty {
+  text-align: center;
+  font-size: 11px;
+  color: rgba(200, 80, 0, 0.45);
+  padding: 8px 0 4px;
+  font-style: italic;
+}
+
+/* Config params */
+.replay-tx__field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.replay-tx__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.replay-tx__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.44);
+}
+
+.replay-tx__field-sub {
+  font-size: 10px;
+  color: rgba(200, 80, 0, 0.58);
+  font-family: var(--font-mono);
+}
+
+.replay-tx__input-wrap {
+  display: flex;
+  align-items: center;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(200, 80, 0, 0.22);
+  background: rgba(255, 255, 255, 0.30);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.replay-tx__input-wrap:focus-within {
+  border-color: var(--accent, #C85000);
+  box-shadow: 0 0 0 2.5px var(--accent-glow, rgba(200, 80, 0, 0.18));
+}
+
+.replay-tx__input {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+  padding: 5px 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  min-width: 0;
+  -moz-appearance: textfield;
+}
+
+.replay-tx__input::-webkit-outer-spin-button,
+.replay-tx__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.replay-tx__input:focus {
+  outline: none;
+}
+
+.replay-tx__input-suffix {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  padding: 0 8px;
+  color: rgba(200, 80, 0, 0.55);
+  background: rgba(200, 80, 0, 0.06);
+  border-left: 1px solid rgba(200, 80, 0, 0.14);
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  user-select: none;
+}
+
+.replay-tx__format-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(200, 80, 0, 0.12);
+}
+
+.replay-tx__format-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+.replay-tx__format-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent, #C85000);
+  letter-spacing: 0.04em;
+}
+
+.replay-tx__format-sep {
+  color: rgba(200, 80, 0, 0.25);
+}
+
+@media (max-width: 720px) {
+  .replay-tx__layout {
+    flex-direction: column;
+  }
+}
