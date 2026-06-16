@@ -1,0 +1,304 @@
+/* ── Frequency Hopper — hazard amber · zigzag-hop motif ─────────────────────── */
+
+[data-app="freq_hopper"] .app-screen__title {
+  background: linear-gradient(135deg, #C06000, #E08020);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-app="freq_hopper"] .app-screen__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 14px,
+    rgba(192, 96, 0, 0.07) 14px,
+    rgba(192, 96, 0, 0.07) 28px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Body */
+.hop-tx__layout {
+  display: flex;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.hop-tx__seq-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.hop-tx__map-panel {
+  flex: 1.2;
+  min-width: 0;
+}
+
+/* Hop sequence list */
+.hop-tx__seq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+  margin-bottom: 8px;
+}
+
+.hop-tx__hop-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 6px;
+  border-radius: 6px;
+  background: rgba(192, 96, 0, 0.05);
+  border: 1px solid rgba(192, 96, 0, 0.14);
+  transition: background 0.1s, border-color 0.1s;
+}
+
+.hop-tx__hop-row:hover {
+  background: rgba(192, 96, 0, 0.09);
+  border-color: rgba(192, 96, 0, 0.25);
+}
+
+.hop-tx__hop-num {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(192, 96, 0, 0.65);
+  min-width: 20px;
+  text-align: right;
+}
+
+.hop-tx__hz-wrap {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.hop-tx__hz-input {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  width: 100%;
+  padding: 3px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(192, 96, 0, 0.18);
+  background: rgba(255, 255, 255, 0.30);
+  color: inherit;
+  transition: border-color 0.12s, box-shadow 0.12s;
+  -moz-appearance: textfield;
+  box-sizing: border-box;
+}
+
+.hop-tx__hz-input::-webkit-outer-spin-button,
+.hop-tx__hz-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.hop-tx__hz-input:focus {
+  outline: none;
+  border-color: var(--accent, #C06000);
+  box-shadow: 0 0 0 2px var(--accent-glow, rgba(192, 96, 0, 0.18));
+}
+
+.hop-tx__hz-mhz {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(192, 96, 0, 0.55);
+  letter-spacing: 0.03em;
+  padding-left: 6px;
+}
+
+.hop-tx__hop-actions {
+  display: flex;
+  gap: 2px;
+}
+
+.hop-tx__order-btn,
+.hop-tx__remove-btn {
+  font-size: 11px;
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(192, 96, 0, 0.18);
+  background: rgba(255, 255, 255, 0.20);
+  color: rgba(192, 96, 0, 0.60);
+  cursor: pointer;
+  line-height: 1;
+  transition: background 0.1s, color 0.1s;
+}
+
+.hop-tx__order-btn:hover:not(:disabled),
+.hop-tx__remove-btn:hover:not(:disabled) {
+  background: rgba(192, 96, 0, 0.14);
+  color: #C06000;
+}
+
+.hop-tx__order-btn:disabled,
+.hop-tx__remove-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.hop-tx__remove-btn {
+  font-size: 14px;
+  padding: 1px 5px;
+}
+
+/* Add-hop row */
+.hop-tx__add-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-wrap: wrap;
+  padding-top: 6px;
+  border-top: 1px solid rgba(192, 96, 0, 0.12);
+  margin-bottom: 10px;
+}
+
+.hop-tx__add-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(192, 96, 0, 0.50);
+  margin-right: 2px;
+}
+
+.hop-tx__add-btn {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  border-radius: 5px;
+  border: 1px solid rgba(192, 96, 0, 0.20);
+  background: rgba(255, 255, 255, 0.20);
+  color: rgba(0, 0, 0, 0.50);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.hop-tx__add-btn:hover {
+  background: rgba(192, 96, 0, 0.12);
+  border-color: rgba(192, 96, 0, 0.40);
+  color: #C06000;
+}
+
+.hop-tx__add-btn--custom {
+  border-style: dashed;
+}
+
+/* Gain */
+.hop-tx__gain-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hop-tx__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.44);
+}
+
+.hop-tx__slider {
+  width: 100%;
+  accent-color: #C06000;
+  cursor: pointer;
+}
+
+/* Spectrum map */
+.hop-tx__map-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: rgba(10, 18, 30, 0.35);
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.hop-tx__axis-label {
+  font-family: var(--font-mono);
+  font-size: 5.5px;
+  fill: rgba(192, 96, 0, 0.50);
+}
+
+.hop-tx__pin-num {
+  font-family: var(--font-mono);
+  font-size: 6px;
+  font-weight: 700;
+  fill: rgba(255, 180, 80, 0.90);
+}
+
+.hop-tx__pin-freq {
+  font-family: var(--font-mono);
+  font-size: 5.5px;
+  fill: rgba(192, 96, 0, 0.65);
+}
+
+.hop-tx__fhss-mark {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  fill: rgba(192, 96, 0, 0.05);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.hop-tx__map-empty {
+  font-size: 12px;
+  color: rgba(192, 96, 0, 0.45);
+  text-align: center;
+  padding: 24px 12px;
+  font-style: italic;
+}
+
+/* Stats row */
+.hop-tx__map-stats {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.hop-tx__map-stat {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.hop-tx__stat-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(192, 96, 0, 0.50);
+}
+
+.hop-tx__stat-val {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: #C06000;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 720px) {
+  .hop-tx__layout {
+    flex-direction: column;
+  }
+}
