@@ -1,0 +1,95 @@
+/* ── POCSAG Receiver — paging pink/rose identity ──────────────────────────── */
+
+[data-app="pocsag_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #E0407A, #F07090);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Perforated-paper motif ───────────────────────────────────────────────── */
+
+.pocsag-feed-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* Left and right perforated edges */
+.pocsag-feed-wrap::before,
+.pocsag-feed-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  z-index: 5;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(224, 64, 122, 0.18) 40%, transparent 40%);
+  background-size: 14px 20px;
+  background-repeat: repeat-y;
+}
+
+.pocsag-feed-wrap::before { left: 0; }
+.pocsag-feed-wrap::after  { right: 0; }
+
+/* The actual decoder feed sits inside */
+.pocsag-inner-feed {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0 14px; /* clear the perforated edges */
+}
+
+/* ── Stats strip ──────────────────────────────────────────────────────────── */
+
+.pocsag-stats {
+  display: flex;
+  gap: 14px;
+  padding: 7px 12px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--glass-radius-sm);
+  flex-shrink: 0;
+}
+
+.pocsag-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.pocsag-stat-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.pocsag-stat-value {
+  font-size: 15px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ── Function type badges ─────────────────────────────────────────────────── */
+
+.pocsag-fn {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.pocsag-fn--0 { background: rgba(224,64,122,0.10); color: #C04070; }
+.pocsag-fn--1 { background: rgba(224,64,122,0.10); color: #C04070; }
+.pocsag-fn--2 { background: rgba(224,64,122,0.15); color: var(--accent); }
+.pocsag-fn--3 { background: rgba(224,64,122,0.05); color: var(--text-tertiary); }
