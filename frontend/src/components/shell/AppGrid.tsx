@@ -197,7 +197,7 @@ const ICON_PATHS = {
   // Morse Trainer: book / learning
   morse_trainer: "M18 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V4a2 2 0 00-2-2zM6 4h5v8l-2.5-1.5L6 12V4z",
   recordings: "M12 2a3 3 0 00-3 3v6a3 3 0 006 0V5a3 3 0 00-3-3zm5 9a5 5 0 11-10 0H5a7 7 0 006 6.92V21h2v-3.08A7 7 0 0019 11h-2z",
-} as const;
+};
 
 // Category → app definitions with descriptions and usage info
 const APP_CATEGORIES = [
