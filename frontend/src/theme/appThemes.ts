@@ -609,11 +609,11 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "packet-decode",
   },
   iq_player: {
-    accent: "#2898C8",
-    accentHover: "#2080B0",
-    accentGlow: "rgba(40,152,200,0.28)",
-    accentDim: "rgba(40,152,200,0.10)",
-    ambient: ["rgba(30,140,195,0.08)", "rgba(80,225,250,0.07)"],
+    accent: "#00B4CC",
+    accentHover: "#009AB2",
+    accentGlow: "rgba(0,180,204,0.28)",
+    accentDim: "rgba(0,180,204,0.10)",
+    ambient: ["rgba(0,165,195,0.08)", "rgba(0,210,230,0.07)"],
     motif: "iq-playback",
   },
   sdr_benchmark: {
