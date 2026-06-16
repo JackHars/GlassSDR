@@ -1,0 +1,153 @@
+/* ── GlassPanel & GlassCard — surface primitives ─────────────────────────── */
+
+/* ── GlassPanel ──────────────────────────────────────────────────────────── */
+
+.glass-panel-kit {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius);
+  box-shadow: var(--shadow-sm), var(--shadow-inset-top);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: box-shadow var(--spring-smooth);
+}
+
+/* Size variants */
+.glass-panel-kit--sm  { border-radius: var(--glass-radius-sm); }
+.glass-panel-kit--md  { border-radius: var(--glass-radius); }
+.glass-panel-kit--lg  { border-radius: var(--glass-radius-lg); }
+.glass-panel-kit--fill { flex: 1 1 auto; min-height: 0; }
+
+/* Padding variants (applied to __body) */
+.glass-panel-kit--pad-none  .glass-panel-kit__body { padding: 0; }
+.glass-panel-kit--pad-sm    .glass-panel-kit__body { padding: 10px 12px; }
+.glass-panel-kit--pad-md    .glass-panel-kit__body { padding: 14px 16px; }
+.glass-panel-kit--pad-lg    .glass-panel-kit__body { padding: 20px 22px; }
+
+/* Accent variant: left-border tint with the per-app accent */
+.glass-panel-kit--accent {
+  border-left: 3px solid var(--accent);
+  box-shadow: var(--shadow-sm), var(--shadow-inset-top), -2px 0 12px var(--accent-dim);
+}
+
+.glass-panel-kit__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 16px 0;
+  flex-shrink: 0;
+}
+
+.glass-panel-kit__title {
+  font-size: 11px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+  color: var(--text-secondary);
+}
+
+.glass-panel-kit__title-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.glass-panel-kit__body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── GlassCard ───────────────────────────────────────────────────────────── */
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.60);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius-sm);
+  box-shadow: var(--shadow-xs), var(--shadow-inset-top);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  transition: all var(--spring-snappy);
+}
+
+.glass-card--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.glass-card--clickable:hover {
+  background: var(--glass-bg-hover);
+  box-shadow: var(--shadow-sm), var(--shadow-inset-top);
+  transform: translateY(-1px);
+}
+
+.glass-card--clickable:active {
+  transform: scale(0.985);
+  box-shadow: var(--shadow-xs);
+  transition: all 80ms ease;
+}
+
+.glass-card--selected {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-sm), var(--shadow-inset-top), 0 0 0 2px var(--accent-dim);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.glass-card--accent {
+  border-top: 2px solid var(--accent);
+}
+
+.glass-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px 6px;
+  flex-shrink: 0;
+}
+
+.glass-card__header-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.glass-card__title {
+  font-size: 12.5px;
+  font-weight: 650;
+  color: var(--text-primary);
+  letter-spacing: -0.1px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.glass-card__subtitle {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  display: block;
+}
+
+.glass-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.glass-card__body {
+  padding: 0 12px 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
