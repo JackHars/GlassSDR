@@ -25,6 +25,10 @@
   --success-dim: rgba(52, 199, 89, 0.10);
   --warning: #FF9500;
 
+  /* ── Per-app ambient tint tokens (overridden by AppScreen inline vars) ── */
+  --ambient-1: transparent;
+  --ambient-2: transparent;
+
   /* ── Text ── */
   --text-primary: rgba(0, 0, 0, 0.88);
   --text-secondary: rgba(0, 0, 0, 0.52);
@@ -1489,3 +1493,50 @@ body {
 .app-list-item:nth-child(9) { animation-delay: 200ms; }
 .app-list-item:nth-child(10) { animation-delay: 225ms; }
 .app-list-item:nth-child(n+11) { animation-delay: 250ms; }
+
+/* ═══════════════════════════════════════
+   PER-APP ACCENT WIRING
+   When AppScreen sets --accent (and siblings) as inline CSS vars on the
+   [data-app] root, every var(--accent) reference inside that subtree
+   inherits the per-app colour automatically. These rules make derived
+   accent states (focus rings, button glows, etc.) also respond.
+   ═══════════════════════════════════════ */
+
+/* Re-derive shadow-glow from the per-app accent-glow inside any app screen */
+[data-app] {
+  --shadow-glow: 0 4px 20px var(--accent-glow);
+}
+
+/* Focus rings inside app screens use the per-app accent */
+[data-app] input:focus,
+[data-app] select:focus,
+[data-app] textarea:focus,
+[data-app] button:focus-visible {
+  outline: none;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow-sm) !important;
+}
+
+/* Primary glass buttons inside app screens tint to the per-app accent */
+[data-app] .glass-btn.primary {
+  background: var(--accent);
+  border-color: var(--accent-hover);
+  box-shadow: var(--shadow-sm), var(--shadow-glow);
+}
+
+[data-app] .glass-btn.primary:hover {
+  background: var(--accent-hover);
+  box-shadow: var(--shadow-md), 0 4px 24px var(--accent-glow);
+}
+
+/* Range slider thumbs tint to the per-app accent on hover */
+[data-app] input[type="range"]::-webkit-slider-thumb:hover {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2), 0 0 0 3px var(--accent-dim) !important;
+}
+
+/* Checkboxes in an app screen use the per-app accent */
+[data-app] input[type="checkbox"]:checked {
+  background: var(--accent) !important;
+  border-color: var(--accent-hover) !important;
+  box-shadow: var(--shadow-sm), 0 0 8px var(--accent-glow) !important;
+}

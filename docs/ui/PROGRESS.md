@@ -7,7 +7,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 
 - [x] A1. `theme/appThemes.ts` — typed AppId→theme registry (accent, ambient, motif)
 - [x] A2. `AppScreen` scaffold — applies theme + `data-app`, header/status/body/footer
-- [ ] A3. Extend `glass.css` — per-app accent token wiring + ambient mesh tint hook
+- [x] A3. Extend `glass.css` — per-app accent token wiring + ambient mesh tint hook
 - [ ] A4. Kit: `GlassPanel` / `GlassCard`
 - [ ] A5. Kit: `StatReadout` + `Gauge` (needle/arc, peak-hold)
 - [ ] A6. Kit: `DecoderFeed` + `FieldInspector` (virtualized, flash-in, expand)
