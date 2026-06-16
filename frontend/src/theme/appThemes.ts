@@ -593,12 +593,12 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "capture-reel",
   },
   rf_characterize: {
-    accent: "#6090A8",
-    accentHover: "#5080A0",
-    accentGlow: "rgba(96,144,168,0.28)",
-    accentDim: "rgba(96,144,168,0.10)",
-    ambient: ["rgba(88,135,165,0.08)", "rgba(130,190,220,0.07)"],
-    motif: "impulse-response",
+    accent: "#52A884",
+    accentHover: "#3E9872",
+    accentGlow: "rgba(82,168,132,0.26)",
+    accentDim: "rgba(82,168,132,0.10)",
+    ambient: ["rgba(55,130,100,0.07)", "rgba(70,155,120,0.06)"],
+    motif: "ruler-measure",
   },
   protocol_analyzer: {
     accent: "#7080B0",
