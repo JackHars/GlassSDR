@@ -40,7 +40,7 @@ Single source of truth for the UI ralph-loop. Tick a box **only after** the gate
 - [x] scanner · [x] recon · [x] looking_glass · [x] ook_analyzer · [x] ook_decoders · [x] sub_ghz_capture · [x] signal_meter · [x] freq_counter · [x] btle_rx · [x] btle_comm · [x] nrf24_rx · [x] encoder_suite · [x] decoder_suite · [x] capture_manager · [x] rf_characterize · [x] protocol_analyzer · [x] iq_player · [x] sdr_benchmark
 
 ### Tools
-- [x] freq_manager · [x] playlist · [x] settings · [ ] calculator · [ ] notepad · [ ] band_plan · [ ] antenna_calc · [ ] remote_control · [ ] morse_trainer · [ ] recordings
+- [x] freq_manager · [x] playlist · [x] settings · [x] calculator · [ ] notepad · [ ] band_plan · [ ] antenna_calc · [ ] remote_control · [ ] morse_trainer · [ ] recordings
 
 ---
 

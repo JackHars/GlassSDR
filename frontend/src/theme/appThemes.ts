@@ -659,11 +659,11 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "gear",
   },
   calculator: {
-    accent: "#3080D0",
-    accentHover: "#2870B8",
-    accentGlow: "rgba(48,128,208,0.28)",
-    accentDim: "rgba(48,128,208,0.10)",
-    ambient: ["rgba(40,115,200,0.08)", "rgba(90,170,250,0.07)"],
+    accent: "#7C4DB8",
+    accentHover: "#6B3DA8",
+    accentGlow: "rgba(124,77,184,0.26)",
+    accentDim: "rgba(124,77,184,0.10)",
+    ambient: ["rgba(110,65,200,0.08)", "rgba(150,100,230,0.06)"],
     motif: "keypad",
   },
   notepad: {
