@@ -715,11 +715,11 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "antenna-diagram",
   },
   remote_control: {
-    accent: "#4868C0",
-    accentHover: "#3858A8",
-    accentGlow: "rgba(72,104,192,0.28)",
-    accentDim: "rgba(72,104,192,0.10)",
-    ambient: ["rgba(65,95,185,0.08)", "rgba(100,150,230,0.07)"],
+    accent: "#6C52C4",
+    accentHover: "#5C42B4",
+    accentGlow: "rgba(108,82,196,0.26)",
+    accentDim: "rgba(108,82,196,0.10)",
+    ambient: ["rgba(95,70,200,0.08)", "rgba(130,100,230,0.07)"],
     motif: "remote-grid",
   },
   recordings: {
