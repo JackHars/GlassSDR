@@ -1,132 +1,290 @@
 import { useState, useMemo } from "react";
-import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
+import { AppScreen, type AppStatus } from "../../components/kit/AppScreen";
+import { GlassPanel } from "../../components/kit/GlassPanel";
+import { FrequencyInput } from "../../components/FrequencyInput";
+import "./FreqManager.css";
 
-interface FreqEntry { freq: string; desc: string; mode: string; }
-
-function parseEntry(line: string): FreqEntry | null {
-  const parts: Record<string, string> = {};
-  for (const seg of line.split(",")) {
-    const [k, v] = seg.split("=");
-    if (k && v !== undefined) parts[k.trim()] = v.trim();
-  }
-  if (!parts["f"]) return null;
-  return { freq: parts["f"] ?? "", desc: parts["d"] ?? "", mode: parts["m"] ?? "" };
+interface FreqEntry {
+  id: string;
+  freqHz: number;
+  mode: string;
+  desc: string;
+  group: string;
+  bwHz?: number;
 }
 
-const LS_KEY = "mayhem_freqman";
+const MODES = ["AM", "NFM", "WFM", "USB", "LSB", "CW", "POCSAG", "AIS", "ADS-B", "APRS", "Other"];
+
+const LS_KEY = "mayhem_freqman_v2";
+const LS_KEY_LEGACY = "mayhem_freqman";
 
 function loadEntries(): FreqEntry[] {
-  try { return JSON.parse(localStorage.getItem(LS_KEY) ?? "[]"); } catch { return []; }
+  try {
+    const v2 = localStorage.getItem(LS_KEY);
+    if (v2) return JSON.parse(v2);
+    // Migrate legacy entries
+    const legacy = localStorage.getItem(LS_KEY_LEGACY);
+    if (!legacy) return [];
+    const old = JSON.parse(legacy) as { freq: string; desc: string; mode: string }[];
+    return old.map((e, i) => ({
+      id: `legacy-${i}`,
+      freqHz: parseFloat(e.freq) || 0,
+      mode: e.mode || "NFM",
+      desc: e.desc || "",
+      group: "",
+    }));
+  } catch { return []; }
 }
 
-export function FreqManagerApp() {
-  const [entries, setEntries] = useState<FreqEntry[]>(loadEntries);
-  const [filter, setFilter] = useState("");
-  const [newFreq, setNewFreq] = useState("");
-  const [newDesc, setNewDesc] = useState("");
-  const [newMode, setNewMode] = useState("AM");
-  const [raw, setRaw] = useState("");
-  const [importOpen, setImportOpen] = useState(false);
+function saveEntries(entries: FreqEntry[]): void {
+  localStorage.setItem(LS_KEY, JSON.stringify(entries));
+}
 
-  const save = (list: FreqEntry[]) => {
-    setEntries(list);
-    localStorage.setItem(LS_KEY, JSON.stringify(list));
-  };
-  const addEntry = () => {
-    if (!newFreq) return;
-    save([...entries, { freq: newFreq, desc: newDesc, mode: newMode }]);
-    setNewFreq(""); setNewDesc("");
-  };
-  const importRaw = () => {
-    const parsed = raw.split("\n").map(parseEntry).filter(Boolean) as FreqEntry[];
-    save([...entries, ...parsed]);
-    setRaw("");
-    setImportOpen(false);
-  };
-  const remove = (i: number) => save(entries.filter((_, idx) => idx !== i));
+function fmtHz(hz: number): string {
+  if (hz >= 1e9) return `${(hz / 1e9).toFixed(4)} GHz`;
+  if (hz >= 1e6) return `${(hz / 1e6).toFixed(4)} MHz`;
+  if (hz >= 1e3) return `${(hz / 1e3).toFixed(2)} kHz`;
+  return `${hz} Hz`;
+}
 
-  const filtered = useMemo(
-    () => entries.filter((e) => !filter || e.freq.includes(filter) || e.desc.toLowerCase().includes(filter.toLowerCase())),
-    [entries, filter]
+function uid(): string {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+const MODE_COLORS: Record<string, string> = {
+  AM: "rgba(240,160,58,0.9)",
+  NFM: "rgba(56,112,200,0.9)",
+  WFM: "rgba(96,64,208,0.9)",
+  USB: "rgba(200,140,50,0.9)",
+  LSB: "rgba(180,120,40,0.9)",
+  CW: "rgba(240,160,58,0.9)",
+  POCSAG: "rgba(220,80,140,0.9)",
+  AIS: "rgba(30,140,195,0.9)",
+  "ADS-B": "rgba(30,180,100,0.9)",
+  APRS: "rgba(200,120,50,0.9)",
+  Other: "rgba(130,120,200,0.9)",
+};
+
+function getModeColor(mode: string): string {
+  return MODE_COLORS[mode] ?? "rgba(130,130,130,0.9)";
+}
+
+// ── Frequency Card ────────────────────────────────────────────────────────────
+
+interface FreqCardProps {
+  entry: FreqEntry;
+  onDelete: (id: string) => void;
+}
+
+function FreqCard({ entry, onDelete }: FreqCardProps) {
+  const modeColor = getModeColor(entry.mode);
+  return (
+    <div className="fmgr-card">
+      <div className="fmgr-card__mode-stripe" style={{ background: modeColor }} />
+      <div className="fmgr-card__body">
+        <div className="fmgr-card__freq">{fmtHz(entry.freqHz)}</div>
+        <div className="fmgr-card__meta">
+          <span className="fmgr-card__mode-badge" style={{ background: modeColor.replace("0.9)", "0.12)"), color: modeColor.replace("0.9)", "1)").replace("rgba", "rgb") }}>
+            {entry.mode}
+          </span>
+          {entry.group && <span className="fmgr-card__group">{entry.group}</span>}
+          {entry.desc && <span className="fmgr-card__desc">{entry.desc}</span>}
+        </div>
+        {entry.bwHz && (
+          <div className="fmgr-card__bw">BW {fmtHz(entry.bwHz)}</div>
+        )}
+      </div>
+      <button
+        className="fmgr-card__del"
+        onClick={() => onDelete(entry.id)}
+        title="Delete"
+      >
+        ×
+      </button>
+    </div>
   );
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
+
+export function FreqManagerApp() {
+  const [entries, setEntries]   = useState<FreqEntry[]>(loadEntries);
+  const [filter, setFilter]     = useState("");
+  const [groupFilter, setGroupFilter] = useState("all");
+  const [showAdd, setShowAdd]   = useState(false);
+
+  // Add-form state
+  const [newFreqHz, setNewFreqHz] = useState(162_550_000);
+  const [newMode, setNewMode]     = useState("NFM");
+  const [newDesc, setNewDesc]     = useState("");
+  const [newGroup, setNewGroup]   = useState("");
+
+  const persist = (list: FreqEntry[]) => {
+    setEntries(list);
+    saveEntries(list);
+  };
+
+  const addEntry = () => {
+    if (!newFreqHz) return;
+    const entry: FreqEntry = { id: uid(), freqHz: newFreqHz, mode: newMode, desc: newDesc, group: newGroup };
+    persist([...entries, entry]);
+    setNewDesc(""); setNewGroup(""); setShowAdd(false);
+  };
+
+  const deleteEntry = (id: string) => persist(entries.filter((e) => e.id !== id));
+
+  const groups = useMemo(() => {
+    const gs = Array.from(new Set(entries.map((e) => e.group).filter(Boolean)));
+    return gs.sort();
+  }, [entries]);
+
+  const filtered = useMemo(() => {
+    let list = entries;
+    if (groupFilter !== "all") list = list.filter((e) => e.group === groupFilter);
+    if (filter) {
+      const q = filter.toLowerCase();
+      list = list.filter(
+        (e) =>
+          fmtHz(e.freqHz).toLowerCase().includes(q) ||
+          e.desc.toLowerCase().includes(q) ||
+          e.mode.toLowerCase().includes(q) ||
+          e.group.toLowerCase().includes(q)
+      );
+    }
+    return list.sort((a, b) => a.freqHz - b.freqHz);
+  }, [entries, filter, groupFilter]);
+
+  const appStatus: AppStatus = "idle";
+  const statusText = filter
+    ? `${filtered.length} of ${entries.length} shown`
+    : `${entries.length} saved`;
 
   return (
-    <AppShell
+    <AppScreen
+      appId="freq_manager"
       title="Frequency Manager"
-      status={<span>{entries.length} saved · {filtered.length} shown</span>}
-      controls={
-        <ControlRow
-          actions={
-            <button className="glass-btn" onClick={() => setImportOpen((o) => !o)}>
-              {importOpen ? "Hide import" : "Import freqman"}
-            </button>
-          }
+      subtitle="Memory Bank"
+      status={appStatus}
+      statusText={statusText}
+      actions={
+        <button
+          className={`fmgr-btn-add${showAdd ? " fmgr-btn-add--active" : ""}`}
+          onClick={() => setShowAdd((v) => !v)}
         >
-          <ControlField label="Search" size="lg">
-            <input placeholder="freq or description" value={filter} onChange={(e) => setFilter(e.target.value)} />
-          </ControlField>
-        </ControlRow>
+          {showAdd ? "✕ Cancel" : "+ Add"}
+        </button>
+      }
+      controls={
+        <div className="fmgr-controls">
+          <input
+            className="fmgr-search"
+            type="text"
+            placeholder="Search frequency, description, mode…"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+          />
+          {groups.length > 0 && (
+            <div className="fmgr-group-tabs">
+              <button
+                className={`fmgr-group-tab${groupFilter === "all" ? " fmgr-group-tab--on" : ""}`}
+                onClick={() => setGroupFilter("all")}
+              >
+                All
+              </button>
+              {groups.map((g) => (
+                <button
+                  key={g}
+                  className={`fmgr-group-tab${groupFilter === g ? " fmgr-group-tab--on" : ""}`}
+                  onClick={() => setGroupFilter(g)}
+                >
+                  {g}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
       }
     >
-      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", gap: 12, minHeight: 0 }}>
-        <div style={{ padding: 12, background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", borderRadius: 12, backdropFilter: "blur(16px)", display: "flex", gap: 8, flexWrap: "wrap", alignItems: "flex-end" }}>
-          <ControlField label="Frequency (Hz)" size="md">
-            <input placeholder="162550000" value={newFreq} onChange={(e) => setNewFreq(e.target.value)} />
-          </ControlField>
-          <ControlField label="Mode" size="sm">
-            <select value={newMode} onChange={(e) => setNewMode(e.target.value)}>
-              {["AM","NFM","WFM","USB","LSB","CW"].map((m) => <option key={m}>{m}</option>)}
-            </select>
-          </ControlField>
-          <ControlField label="Description" size="grow">
-            <input placeholder="NOAA Weather Radio" value={newDesc} onChange={(e) => setNewDesc(e.target.value)} />
-          </ControlField>
-          <button className="glass-btn primary" onClick={addEntry} disabled={!newFreq}>Add</button>
-        </div>
-
-        {importOpen && (
-          <div style={{ padding: 12, background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", borderRadius: 12, backdropFilter: "blur(16px)", display: "flex", flexDirection: "column", gap: 8 }}>
-            <span style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--text-secondary)" }}>Import freqman text</span>
-            <textarea value={raw} onChange={(e) => setRaw(e.target.value)} rows={4}
-              placeholder="f=162550000,d=NOAA Weather,m=NFM"
-              style={{ fontFamily: "var(--font-mono)", resize: "vertical" }} />
-            <button className="glass-btn primary" onClick={importRaw} style={{ alignSelf: "flex-start" }}>Import</button>
-          </div>
+      <div className="fmgr-layout">
+        {/* Add form */}
+        {showAdd && (
+          <GlassPanel title="Add Frequency" accent pad="md" style={{ flexShrink: 0 }}>
+            <div className="fmgr-add-form">
+              <div className="fmgr-add-form__row">
+                <div className="fmgr-add-field">
+                  <label className="fmgr-add-label">Frequency</label>
+                  <FrequencyInput hz={newFreqHz} onChange={setNewFreqHz} autoUnit />
+                </div>
+                <div className="fmgr-add-field">
+                  <label className="fmgr-add-label">Mode</label>
+                  <select
+                    className="fmgr-add-select"
+                    value={newMode}
+                    onChange={(e) => setNewMode(e.target.value)}
+                  >
+                    {MODES.map((m) => <option key={m}>{m}</option>)}
+                  </select>
+                </div>
+                <div className="fmgr-add-field fmgr-add-field--grow">
+                  <label className="fmgr-add-label">Description</label>
+                  <input
+                    className="fmgr-add-input"
+                    type="text"
+                    placeholder="NOAA Weather Radio"
+                    value={newDesc}
+                    onChange={(e) => setNewDesc(e.target.value)}
+                  />
+                </div>
+                <div className="fmgr-add-field">
+                  <label className="fmgr-add-label">Group</label>
+                  <input
+                    className="fmgr-add-input fmgr-add-input--sm"
+                    type="text"
+                    placeholder="Weather"
+                    value={newGroup}
+                    onChange={(e) => setNewGroup(e.target.value)}
+                  />
+                </div>
+                <button
+                  className="fmgr-add-btn"
+                  onClick={addEntry}
+                  disabled={!newFreqHz}
+                >
+                  Save
+                </button>
+              </div>
+            </div>
+          </GlassPanel>
         )}
 
-        <div className="app-shell__grow" style={{ overflow: "auto", borderRadius: 12, background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", backdropFilter: "blur(16px)", minHeight: 200 }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-            <thead>
-              <tr style={{ position: "sticky", top: 0, background: "rgba(255,255,255,0.85)", textAlign: "left", backdropFilter: "blur(8px)" }}>
-                <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Frequency (Hz)</th>
-                <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Mode</th>
-                <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Description</th>
-                <th style={{ padding: "8px 12px", width: 60 }} />
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((e, i) => (
-                <tr key={i} style={{ borderBottom: "1px solid rgba(0,0,0,0.04)" }}>
-                  <td style={{ padding: "6px 12px", fontFamily: "var(--font-mono)" }}>{e.freq}</td>
-                  <td style={{ padding: "6px 12px", color: "var(--accent)" }}>{e.mode}</td>
-                  <td style={{ padding: "6px 12px" }}>{e.desc}</td>
-                  <td style={{ padding: "6px 12px", textAlign: "center" }}>
-                    <button onClick={() => remove(entries.indexOf(e))}
-                      style={{ background: "transparent", border: "1px solid rgba(255,80,80,0.4)", color: "#ff8080", borderRadius: 4, cursor: "pointer", fontSize: 11, padding: "1px 6px" }}>
-                      ✕
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={4} style={{ padding: 32, textAlign: "center", color: "var(--text-tertiary)" }}>
-                  {entries.length === 0 ? "No entries yet — add a frequency above." : "No matches for the current filter."}
-                </td></tr>
-              )}
-            </tbody>
-          </table>
+        {/* Frequency list */}
+        <div className="fmgr-list">
+          {filtered.length === 0 ? (
+            <div className="fmgr-empty">
+              <div className="fmgr-empty__icon">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <rect x="6" y="4" width="36" height="40" rx="5" stroke="var(--accent)" strokeWidth="1.5" strokeOpacity="0.5" strokeDasharray="4 3" />
+                  <line x1="12" y1="16" x2="36" y2="16" stroke="var(--accent)" strokeWidth="1" strokeOpacity="0.3" />
+                  <line x1="12" y1="24" x2="36" y2="24" stroke="var(--accent)" strokeWidth="1" strokeOpacity="0.3" />
+                  <line x1="12" y1="32" x2="24" y2="32" stroke="var(--accent)" strokeWidth="1" strokeOpacity="0.3" />
+                </svg>
+              </div>
+              <div className="fmgr-empty__title">
+                {entries.length === 0 ? "No frequencies saved" : "No matches"}
+              </div>
+              <div className="fmgr-empty__sub">
+                {entries.length === 0
+                  ? "Press + Add to save your first frequency memory."
+                  : "Try adjusting the search or group filter."}
+              </div>
+            </div>
+          ) : (
+            filtered.map((entry) => (
+              <FreqCard key={entry.id} entry={entry} onDelete={deleteEntry} />
+            ))
+          )}
         </div>
       </div>
-    </AppShell>
+    </AppScreen>
   );
 }
