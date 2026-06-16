@@ -1,0 +1,81 @@
+/* ── ACARS Receiver — aviation teal identity ──────────────────────────────── */
+
+[data-app="acars_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #1A9E70, #30B8A0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Aircraft grid (unique registrations seen) ────────────────────────────── */
+
+.acars-aircraft-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: var(--glass-radius-sm);
+  box-shadow: var(--shadow-xs), var(--shadow-inset-top);
+  flex-shrink: 0;
+  min-height: 44px;
+}
+
+.acars-aircraft-chip {
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  background: var(--accent-dim);
+  border: 1px solid rgba(26, 158, 112, 0.2);
+  color: var(--accent);
+  letter-spacing: 0.3px;
+  animation: fadeIn 250ms var(--ease-out-expo) both;
+}
+
+.acars-aircraft-grid__empty {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-style: italic;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Message text (full text in inspector) ────────────────────────────────── */
+
+.acars-msg-text {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  word-break: break-all;
+  line-height: 1.6;
+  padding: 8px 0 0;
+  white-space: pre-wrap;
+}
+
+/* Aircraft-grid motif: small faint grid lines in the ambient */
+[data-app="acars_rx"] .app-screen__ambient::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(26, 158, 112, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26, 158, 112, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* ── Stats ────────────────────────────────────────────────────────────────── */
+
+.acars-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
