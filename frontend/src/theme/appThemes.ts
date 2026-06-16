@@ -643,11 +643,11 @@ const themes: Record<AllAppId, AppTheme> = {
     motif: "folder",
   },
   playlist: {
-    accent: "#2878B8",
-    accentHover: "#2068A0",
-    accentGlow: "rgba(40,120,184,0.28)",
-    accentDim: "rgba(40,120,184,0.10)",
-    ambient: ["rgba(35,110,180,0.08)", "rgba(80,170,235,0.07)"],
+    accent: "#34A862",
+    accentHover: "#2B9055",
+    accentGlow: "rgba(52,168,98,0.26)",
+    accentDim: "rgba(52,168,98,0.10)",
+    ambient: ["rgba(45,150,85,0.08)", "rgba(65,180,100,0.07)"],
     motif: "playlist-track",
   },
   settings: {
