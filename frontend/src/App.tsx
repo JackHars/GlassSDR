@@ -222,6 +222,21 @@ export default function App() {
             <button className="tl-btn tl-maximize" onClick={() => getCurrentWindow().toggleMaximize()} />
           </div>
           <span className="logo">GlassSDR</span>
+          {activeApp && (
+            <button className="back-btn" onClick={handleBack}>
+              <Icon name="arrowLeft" size={13} /> Home
+            </button>
+          )}
+          {!activeApp && browseAll && (
+            <button className="back-btn" onClick={() => setBrowseAll(false)}>
+              <Icon name="arrowLeft" size={13} /> Dashboard
+            </button>
+          )}
+          {activeApp && (
+            <span className="top-bar__breadcrumb">
+              {activeApp.replace(/_/g, " ")}
+            </span>
+          )}
           <div style={{ flex: 1 }} />
           <button
             className="theme-toggle"
@@ -248,21 +263,6 @@ export default function App() {
                 ))}
               </select>
             </div>
-          )}
-          {activeApp && (
-            <>
-              <button className="back-btn" onClick={handleBack}>
-                <Icon name="arrowLeft" size={14} /> Home
-              </button>
-              <span style={{ fontSize: 12, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", marginLeft: 8 }}>
-                {activeApp}
-              </span>
-            </>
-          )}
-          {!activeApp && browseAll && (
-            <button className="back-btn" onClick={() => setBrowseAll(false)}>
-              <Icon name="arrowLeft" size={14} /> Dashboard
-            </button>
           )}
         </div>
 

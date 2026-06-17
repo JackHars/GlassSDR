@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback, useLayoutEffect } from "react";
 import { listApps, listUsbDevices, listRecordings, startApp, stopApp, type UsbDevice } from "../../ipc/commands";
 import { onSpectrum, onAudio, onAppStatus } from "../../ipc/events";
 import type { SpectrumFrame } from "../../ipc/types/SpectrumFrame";
@@ -152,7 +152,6 @@ export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
         <div className="dash-hero-right">
           <div className={`dash-hackrf-pill ${hackrf ? "connected" : "disconnected"}`}>
             <span className="dash-hackrf-dot" />
-            <Icon name="antenna" size={14} />
             <span>{hackrf ? "HackRF Connected" : "No HackRF"}</span>
           </div>
         </div>
@@ -170,14 +169,14 @@ export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
               </span>
             )}
           </div>
-          <MiniWaterfall frame={frame} active={isRunning} />
-          {!isRunning && (
-            <div className="dash-spectrum-empty">
-              <Icon name="antenna" size={36} />
-              <span>Launch an app to see live RF</span>
-              <span className="dash-spectrum-empty-sub">Quick-launch below — spectrum & audio stream here instantly</span>
-            </div>
-          )}
+          <MiniWaterfall frame={frame} active={isRunning}>
+            {!isRunning && (
+              <div className="dash-spectrum-empty">
+                <span>Launch an app to see live RF</span>
+                <span className="dash-spectrum-empty-sub">Quick-launch below — spectrum & audio stream here instantly</span>
+              </div>
+            )}
+          </MiniWaterfall>
         </div>
 
         {/* Active app panel */}
@@ -207,7 +206,6 @@ export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
             </div>
           ) : (
             <div className="dash-active-empty">
-              <Icon name="radio" size={28} />
               <span>No app running</span>
               <span className="dash-active-empty-sub">Tap a tile below to start</span>
             </div>
@@ -261,10 +259,8 @@ export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
                 disabled={isLaunching}
               >
                 <span className="dash-tile-icon"><Icon name={app.icon} size={22} /></span>
-                <span className="dash-tile-name">{app.name}</span>
-                <span className="dash-tile-state">
-                  {isLaunching ? "…" : isActive ? "ON" : ""}
-                </span>
+                <TileName name={app.name} />
+                {isLaunching && <span className="dash-tile-state">…</span>}
               </button>
             );
           })}
@@ -278,12 +274,12 @@ export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
                 style={{ "--tile-color": meta.color } as React.CSSProperties}
                 title={meta.name}
               >
-                <span className="dash-tile-pin-badge"><Icon name="pin" size={10} /></span>
-                <span className="dash-tile-icon"><Icon name={meta.icon} size={22} /></span>
-                <span className="dash-tile-name">{meta.name}</span>
-                <span className="dash-tile-state">
-                  {isActive ? "ON" : ""}
+                <span className="dash-tile-icon">
+                  <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                    <path d={meta.icon} />
+                  </svg>
                 </span>
+                <TileName name={meta.name} />
               </button>
             );
           })}
@@ -293,8 +289,37 @@ export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
   );
 }
 
+/* ── Tile name with marquee scroll on overflow ── */
+function TileName({ name }: { name: string }) {
+  const textRef = useRef<HTMLSpanElement>(null);
+  const boxRef = useRef<HTMLSpanElement>(null);
+  const [overflowing, setOverflowing] = useState(false);
+
+  useLayoutEffect(() => {
+    const check = () => {
+      const text = textRef.current;
+      const box = boxRef.current;
+      if (!text || !box) return;
+      setOverflowing(text.scrollWidth > box.clientWidth + 1);
+    };
+    check();
+    const ro = new ResizeObserver(check);
+    if (textRef.current) ro.observe(textRef.current);
+    if (boxRef.current) ro.observe(boxRef.current);
+    return () => ro.disconnect();
+  }, [name]);
+
+  return (
+    <span className="dash-tile-name-wrap" ref={boxRef}>
+      <span className={`dash-tile-name${overflowing ? " dash-tile-name--scroll" : ""}`} ref={textRef}>
+        {overflowing ? `${name}   ${name}   ` : name}
+      </span>
+    </span>
+  );
+}
+
 /* ── Lightweight mini-waterfall (read-only, no interaction) ── */
-function MiniWaterfall({ frame, active }: { frame: SpectrumFrame | null; active: boolean }) {
+function MiniWaterfall({ frame, active, children }: { frame: SpectrumFrame | null; active: boolean; children?: React.ReactNode }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const lastSeq = useRef(-1);
@@ -334,11 +359,10 @@ function MiniWaterfall({ frame, active }: { frame: SpectrumFrame | null; active:
     ctx.putImageData(row, 0, H - 1);
   }, [frame, w]);
 
-  if (!active) return <div className="dash-mini-waterfall dash-mini-waterfall--idle" ref={containerRef} />;
-
   return (
-    <div className="dash-mini-waterfall" ref={containerRef}>
-      <canvas ref={canvasRef} width={w} height={H} style={{ width: "100%", height: H }} />
+    <div className={`dash-mini-waterfall${active ? "" : " dash-mini-waterfall--idle"}`} ref={containerRef}>
+      {active && <canvas ref={canvasRef} width={w} height={H} style={{ width: "100%", height: H }} />}
+      {children}
     </div>
   );
 }

@@ -4,14 +4,8 @@ import { Icon } from "../kit/Icon";
 
 function SvgIcon({ path }: { path: string }) {
   return (
-    <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
-      <defs>
-        <linearGradient id="ig" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#007AFF" />
-          <stop offset="100%" stopColor="#5856D6" />
-        </linearGradient>
-      </defs>
-      <path d={path} fill="url(#ig)" />
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+      <path d={path} />
     </svg>
   );
 }
@@ -394,14 +388,8 @@ export function AppGrid({ onSelectApp }: AppGridProps) {
             else { setSearchOpen(true); }
           }}
         >
-          <svg viewBox="0 0 24 24" width="16" height="16" fill="none">
-            <defs>
-              <linearGradient id="ig-search" x1="0" y1="0" x2="1" y2="1">
-                <stop offset="0%" stopColor="#007AFF" />
-                <stop offset="100%" stopColor="#5856D6" />
-              </linearGradient>
-            </defs>
-            <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 119.5 5a4.5 4.5 0 010 9z" fill="url(#ig-search)" />
+          <svg viewBox="0 0 24 24" width="15" height="15" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27A6.47 6.47 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0A4.5 4.5 0 119.5 5a4.5 4.5 0 010 9z" />
           </svg>
         </button>
         <div className="toolbar-content">
@@ -448,7 +436,7 @@ export function AppGrid({ onSelectApp }: AppGridProps) {
           <div key={app.id} className="app-list-item" onClick={() => onSelectApp(app.id)}>
             <div
               className="app-list-icon"
-              style={{ background: `linear-gradient(135deg, ${app.color}33, ${app.color}11)`, borderColor: `${app.color}44` }}
+              style={{ color: app.color, borderColor: `${app.color}55` }}
             >
               <SvgIcon path={app.icon} />
             </div>

@@ -1,7 +1,6 @@
-/* ── AppScreen — the bespoke-UI layout scaffold ─────────────────────────────
-   Every Phase B screen wraps in this. It reads --accent / --ambient-* from
-   the theme registry (set by AppScreen.tsx as inline CSS vars) and routes
-   them through the glass system. No !important needed — specificity wins.
+/* ── AppScreen — instrument-panel layout scaffold ──────────────────────────
+   Flat surfaces, hairline rules. A 2px accent edge on the header is the
+   signature element tying each app to its signal color.
    ─────────────────────────────────────────────────────────────────────────── */
 
 .app-screen {
@@ -10,24 +9,14 @@
   flex-direction: column;
   height: 100%;
   min-height: 0;
-  padding: 20px 24px 0;
+  padding: 18px 22px 0;
   box-sizing: border-box;
   overflow: hidden;
 }
 
-/* ── Ambient tint ───────────────────────────────────────────────────────────
-   Two radial-gradient stops added on top of the glass-bg mesh. They use
-   the per-app --ambient-1/2 values from the theme registry.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ── Ambient layer: removed in flat theme. Kept as a no-op for compat. ── */
 .app-screen__ambient {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  background:
-    radial-gradient(farthest-corner at 15% 20%, var(--ambient-1, transparent) 0%, transparent 65%),
-    radial-gradient(farthest-corner at 85% 75%, var(--ambient-2, transparent) 0%, transparent 65%);
-  border-radius: inherit;
+  display: none;
 }
 
 /* All direct children of the screen sit above the ambient layer */
@@ -36,8 +25,9 @@
   z-index: 1;
 }
 
-/* ── Header ─────────────────────────────────────────────────────────────────
-   Title block on the left, status pill + actions on the right.
+/* ── Header ──
+   Title block on the left with a 2px accent left-edge (the signature),
+   status pill + actions on the right.
    ─────────────────────────────────────────────────────────────────────────── */
 .app-screen__header {
   display: flex;
@@ -45,7 +35,9 @@
   justify-content: space-between;
   gap: 16px;
   flex-shrink: 0;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  padding-left: 10px;
+  border-left: 2px solid var(--accent);
 }
 
 .app-screen__title-block {
@@ -56,19 +48,21 @@
 }
 
 .app-screen__title {
-  font-size: 22px;
-  font-weight: 700;
-  letter-spacing: -0.45px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
   color: var(--text-primary);
   margin: 0;
   line-height: 1.2;
+  font-family: var(--font-sans);
 }
 
 .app-screen__subtitle {
-  font-size: 12px;
+  font-size: 11px;
   font-family: var(--font-mono);
-  color: var(--text-secondary);
-  letter-spacing: 0.1px;
+  color: var(--text-tertiary);
+  letter-spacing: 0.2px;
+  text-transform: uppercase;
 }
 
 .app-screen__header-right {
@@ -76,7 +70,7 @@
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
-  margin-top: 4px;
+  margin-top: 2px;
 }
 
 .app-screen__actions {
@@ -85,105 +79,90 @@
   gap: 8px;
 }
 
-/* ── Status pill ────────────────────────────────────────────────────────────
-   A small pill with a coloured dot + label. State drives the dot colour.
+/* ── Status pill ──
+   Small flat pill with a coloured dot + label.
    ─────────────────────────────────────────────────────────────────────────── */
 .app-screen__status-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px 4px 8px;
-  border-radius: 20px;
-  background: var(--surface-1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--surface-2);
-  box-shadow: var(--shadow-xs), var(--shadow-inset-top);
+  padding: 3px 9px 3px 7px;
+  border-radius: 3px;
+  background: var(--surface-2);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--hairline);
+  box-shadow: none;
   white-space: nowrap;
-  transition: all var(--spring-smooth);
+  transition: border-color var(--transition-fast);
 }
 
 .app-screen__status-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   flex-shrink: 0;
-  transition: background var(--spring-smooth), box-shadow var(--spring-smooth);
+  transition: background var(--transition-fast);
 }
 
 .app-screen__status-text {
-  font-size: 11.5px;
+  font-size: 10.5px;
   font-weight: 600;
-  letter-spacing: 0.1px;
+  letter-spacing: 0.5px;
   color: var(--text-secondary) !important;
-  font-family: var(--font-sans) !important;
+  font-family: var(--font-mono) !important;
+  text-transform: uppercase;
 }
 
 /* Idle: neutral gray dot */
 [data-status="idle"] .app-screen__status-dot {
   background: var(--text-tertiary);
-  box-shadow: none;
 }
 
 /* Acquiring: accent dot, slow pulse */
 [data-status="acquiring"] .app-screen__status-dot {
   background: var(--accent);
-  box-shadow: 0 0 0 0 var(--accent-glow);
-  animation: status-pulse 1.4s ease-in-out infinite;
+  animation: status-pulse 1.6s ease-in-out infinite;
 }
 
-/* Live: success green, energetic pulse */
+/* Live: signal mint, steady */
 [data-status="live"] .app-screen__status-dot {
   background: var(--success);
-  box-shadow: 0 0 6px rgba(52, 199, 89, 0.45);
-  animation: status-pulse-live 1.8s ease-in-out infinite;
 }
 
 /* Error: danger red, static */
 [data-status="error"] .app-screen__status-dot {
   background: var(--danger);
-  box-shadow: 0 0 6px rgba(255, 59, 48, 0.4);
 }
 
 /* Empty: tertiary gray */
 [data-status="empty"] .app-screen__status-dot {
   background: var(--text-tertiary);
-  box-shadow: none;
 }
 
 @keyframes status-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 var(--accent-glow); opacity: 1; }
-  50%       { box-shadow: 0 0 0 4px transparent; opacity: 0.7; }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.35; }
 }
 
-@keyframes status-pulse-live {
-  0%, 100% { box-shadow: 0 0 6px rgba(52, 199, 89, 0.45); }
-  50%       { box-shadow: 0 0 12px rgba(52, 199, 89, 0.65); }
-}
-
-/* ── Controls toolbar ───────────────────────────────────────────────────────
-   The area below the header for frequency/mode pickers etc.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ── Controls toolbar ── */
 .app-screen__controls {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
   gap: 12px 16px;
-  padding: 12px 14px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border);
+  padding: 10px 12px;
+  background: var(--surface-1);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border: 1px solid var(--hairline);
   border-radius: var(--glass-radius-sm);
-  box-shadow: var(--shadow-sm), var(--shadow-inset-top);
+  box-shadow: none;
   flex-shrink: 0;
   margin-bottom: 12px;
 }
 
-/* ── Body ───────────────────────────────────────────────────────────────────
-   Main content area. With fillBody (default) it expands to fill remaining
-   vertical space. Without it, content sits at natural height.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ── Body ── */
 .app-screen__body {
   display: flex;
   flex-direction: column;
@@ -196,22 +175,18 @@
   overflow: hidden;
 }
 
-/* ── Footer ─────────────────────────────────────────────────────────────────
-   Audio sink / RecordBar / plumbing widgets.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ── Footer ── */
 .app-screen__footer {
   flex-shrink: 0;
-  padding: 10px 0 14px;
-  border-top: 1px solid var(--surface-border);
+  padding: 10px 0 12px;
+  border-top: 1px solid var(--hairline);
   margin-top: 4px;
 }
 
-/* ── Resize reflow: narrow window ───────────────────────────────────────────
-   At 720px the header collapses: subtitle wraps under title, actions stack.
-   ─────────────────────────────────────────────────────────────────────────── */
+/* ── Resize reflow: narrow window ── */
 @media (max-width: 720px) {
   .app-screen {
-    padding: 16px 16px 0;
+    padding: 14px 14px 0;
   }
 
   .app-screen__header {
@@ -224,6 +199,6 @@
   }
 
   .app-screen__title {
-    font-size: 18px;
+    font-size: 16px;
   }
 }
