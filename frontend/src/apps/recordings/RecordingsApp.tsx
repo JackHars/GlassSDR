@@ -1,43 +1,53 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useCallback } from "react";
 import { deleteRecording, listRecordings } from "../../ipc/commands";
+import { AppScreen } from "../../components/kit/AppScreen";
+import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon } from "../../components/kit/Icon";
 import type { AppId } from "../../ipc/types/AppId";
 import type { RecordingMeta } from "../../ipc/types/RecordingMeta";
 import type { RecordingFormat } from "../../ipc/types/RecordingFormat";
-import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
+import "./Recordings.css";
 
 const FORMAT_LABEL: Record<RecordingFormat, string> = {
-  wav: "Audio (WAV)",
-  jsonl: "Log (JSONL)",
-  iq: "IQ samples",
-  img: "Image (PNG)",
+  wav:  "Audio",
+  jsonl: "Log",
+  iq:   "IQ",
+  img:  "Image",
 };
 
 const FORMAT_COLOR: Record<RecordingFormat, string> = {
-  wav: "#34C759",
+  wav:   "#34C759",
   jsonl: "#0066DD",
-  iq: "#FF9500",
-  img: "#a855f7",
+  iq:    "#C4463A",
+  img:   "#a855f7",
 };
 
 function fmtTimestamp(ms: number): string {
   if (!ms) return "—";
   const d = new Date(ms);
-  return `${d.toLocaleDateString()} ${d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+  return d.toLocaleDateString([], { month: "short", day: "numeric" }) + " " +
+    d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
 function fmtDuration(ms: number): string {
   if (!ms) return "—";
   const s = Math.floor(ms / 1000);
   const m = Math.floor(s / 60);
-  const r = s % 60;
-  return `${m}m ${String(r).padStart(2, "0")}s`;
+  return m > 0 ? `${m}m ${String(s % 60).padStart(2, "0")}s` : `${s}s`;
 }
 
 function fmtSize(n: number): string {
   if (n < 1024) return `${n} B`;
   if (n < 1024 * 1024) return `${(n / 1024).toFixed(1)} KB`;
   if (n < 1024 * 1024 * 1024) return `${(n / (1024 * 1024)).toFixed(1)} MB`;
-  return `${(n / (1024 * 1024 * 1024)).toFixed(1)} GB`;
+  return `${(n / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+}
+
+function fmtHz(hz: number | null): string {
+  if (!hz) return "—";
+  if (hz >= 1e9) return `${(hz / 1e9).toFixed(3)} GHz`;
+  if (hz >= 1e6) return `${(hz / 1e6).toFixed(3)} MHz`;
+  return `${(hz / 1e3).toFixed(1)} kHz`;
 }
 
 function fileName(path: string): string {
@@ -45,156 +55,210 @@ function fileName(path: string): string {
   return i >= 0 ? path.slice(i + 1) : path;
 }
 
-function appPretty(id: AppId): string {
+function appLabel(id: AppId): string {
   return String(id).replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
 
-export function RecordingsApp() {
-  const [items, setItems] = useState<RecordingMeta[]>([]);
-  const [filter, setFilter] = useState<"all" | AppId>("all");
+// App color hints (reuse from theme — pulled from common knowledge)
+const APP_COLORS: Partial<Record<string, string>> = {
+  nfm_audio: "#F0A03A", wfm_rx: "#6040D0", am_rx: "#D09030",
+  adsb_rx: "#22C55E", adsb_rx_ext: "#16A34A", aprs_rx: "#F97316",
+  ais_rx: "#0EA5E9", acars_rx: "#06B6D4", pocsag_rx: "#EC4899",
+  flex_rx: "#E879F9", dmr_rx: "#8B5CF6", p25_rx: "#3B82F6",
+  tetra_rx: "#7C3AED", apt_rx: "#8B5CF6", capture_manager: "#8B5CF6",
+  sub_ghz_capture: "#5878B0", protocol_analyzer: "#4A6FA5",
+  iq_player: "#00B4CC", sdr_benchmark: "#4CAF7A",
+};
 
-  const refresh = () => {
+// ── Recording Row ─────────────────────────────────────────────────────────────
+
+interface RecRowProps {
+  meta: RecordingMeta;
+  onDelete: (path: string) => void;
+}
+
+function RecRow({ meta, onDelete }: RecRowProps) {
+  const fmtColor = FORMAT_COLOR[meta.format];
+  return (
+    <div className="rec-row">
+      <span
+        className="rec-row__fmt"
+        style={{ color: fmtColor, background: fmtColor + "18", borderColor: fmtColor + "40" }}
+      >
+        {FORMAT_LABEL[meta.format]}
+      </span>
+      <span className="rec-row__name" title={meta.path}>{fileName(meta.path)}</span>
+      <span className="rec-row__freq">{fmtHz(meta.center_hz)}</span>
+      <span className="rec-row__time">{fmtTimestamp(meta.started_unix_ms)}</span>
+      <span className="rec-row__dur">{fmtDuration(meta.duration_ms)}</span>
+      <span className="rec-row__size">{fmtSize(meta.size_bytes)}</span>
+      <button className="rec-row__del" onClick={() => onDelete(meta.path)}>×</button>
+    </div>
+  );
+}
+
+// ── App Group ─────────────────────────────────────────────────────────────────
+
+interface AppGroupProps {
+  appId: AppId;
+  items: RecordingMeta[];
+  onDelete: (path: string) => void;
+  defaultOpen?: boolean;
+}
+
+function AppGroup({ appId, items, onDelete, defaultOpen = true }: AppGroupProps) {
+  const [open, setOpen] = useState(defaultOpen);
+  const appColor = APP_COLORS[String(appId)] ?? "#888";
+  const totalSize = items.reduce((a, m) => a + m.size_bytes, 0);
+
+  return (
+    <div className="rec-group">
+      <button
+        className="rec-group__header"
+        onClick={() => setOpen((v) => !v)}
+        style={{ borderLeftColor: appColor }}
+      >
+        <span className="rec-group__chevron">{open ? "▾" : "▸"}</span>
+        <span className="rec-group__app-dot" style={{ background: appColor }} />
+        <span className="rec-group__app-name">{appLabel(appId)}</span>
+        <span className="rec-group__meta">
+          {items.length} recording{items.length !== 1 ? "s" : ""} · {fmtSize(totalSize)}
+        </span>
+      </button>
+
+      {open && (
+        <div className="rec-group__rows">
+          <div className="rec-row rec-row--head">
+            <span>Format</span>
+            <span>File</span>
+            <span>Frequency</span>
+            <span>When</span>
+            <span>Duration</span>
+            <span>Size</span>
+            <span />
+          </div>
+          {items.map((m) => (
+            <RecRow key={m.id} meta={m} onDelete={onDelete} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Main Component ────────────────────────────────────────────────────────────
+
+export function RecordingsApp() {
+  const [items, setItems]         = useState<RecordingMeta[]>([]);
+  const [filter, setFilter]       = useState<"all" | RecordingFormat>("all");
+  const [search, setSearch]       = useState("");
+
+  const refresh = useCallback(() => {
     listRecordings().then(setItems).catch(() => setItems([]));
-  };
+  }, []);
 
   useEffect(() => {
     refresh();
     const t = setInterval(refresh, 5000);
     return () => clearInterval(t);
-  }, []);
+  }, [refresh]);
 
-  const groups = useMemo(() => {
-    const m = new Map<AppId, RecordingMeta[]>();
-    for (const r of items) {
-      if (!m.has(r.app_id)) m.set(r.app_id, []);
-      m.get(r.app_id)!.push(r);
-    }
-    return Array.from(m.entries()).sort((a, b) => appPretty(a[0]).localeCompare(appPretty(b[0])));
-  }, [items]);
+  const handleDelete = async (path: string) => {
+    await deleteRecording(path);
+    refresh();
+  };
 
   const visible = useMemo(() => {
-    if (filter === "all") return groups;
-    return groups.filter(([id]) => id === filter);
-  }, [groups, filter]);
+    let list = items;
+    if (filter !== "all") list = list.filter((m) => m.format === filter);
+    if (search) {
+      const q = search.toLowerCase();
+      list = list.filter((m) =>
+        fileName(m.path).toLowerCase().includes(q) ||
+        String(m.app_id).includes(q)
+      );
+    }
+    return list;
+  }, [items, filter, search]);
+
+  const groups = useMemo(() => {
+    const map = new Map<AppId, RecordingMeta[]>();
+    for (const m of visible) {
+      if (!map.has(m.app_id)) map.set(m.app_id, []);
+      map.get(m.app_id)!.push(m);
+    }
+    return Array.from(map.entries()).sort((a, b) => appLabel(a[0]).localeCompare(appLabel(b[0])));
+  }, [visible]);
 
   const totalSize = items.reduce((acc, m) => acc + m.size_bytes, 0);
 
-  const handleDelete = async (path: string) => {
-    try { await deleteRecording(path); refresh(); } catch { /* ignore */ }
-  };
-
   return (
-    <AppShell
+    <AppScreen
+      appId="recordings"
       title="Recordings"
-      status={<span>{items.length} recordings · {fmtSize(totalSize)} total</span>}
+      subtitle="Archive Library"
+      status="idle"
+      statusText={`${items.length} recordings · ${fmtSize(totalSize)}`}
+      actions={
+        <button className="rec-refresh-btn" onClick={refresh}><Icon name="refresh" size={14} /> Refresh</button>
+      }
       controls={
-        <ControlRow
-          actions={<button className="glass-btn" onClick={refresh}>Refresh</button>}
-        >
-          <ControlField label="Filter by app" size="lg">
-            <select value={filter} onChange={(e) => setFilter(e.target.value as any)}>
-              <option value="all">All apps ({items.length})</option>
-              {groups.map(([id, list]) => (
-                <option key={String(id)} value={String(id)}>
-                  {appPretty(id)} ({list.length})
-                </option>
-              ))}
-            </select>
-          </ControlField>
-        </ControlRow>
+        <div className="rec-controls">
+          <input
+            className="rec-search"
+            type="text"
+            placeholder="Search files or apps…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <div className="rec-format-tabs">
+            {(["all", "wav", "jsonl", "iq", "img"] as const).map((f) => (
+              <button
+                key={f}
+                className={`rec-fmt-tab${filter === f ? " rec-fmt-tab--on" : ""}`}
+                onClick={() => setFilter(f)}
+                style={f !== "all" && filter === f ? { background: FORMAT_COLOR[f as RecordingFormat], color: "#fff", borderColor: FORMAT_COLOR[f as RecordingFormat] } : undefined}
+              >
+                {f === "all" ? "All" : FORMAT_LABEL[f as RecordingFormat]}
+              </button>
+            ))}
+          </div>
+        </div>
       }
     >
-      <div className="app-shell__grow" style={{ overflow: "auto", display: "flex", flexDirection: "column", gap: 16, minHeight: 0 }}>
-        {items.length === 0 && (
-          <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 8, color: "var(--text-tertiary)", padding: 32 }}>
-            <div style={{ fontSize: 40 }}>●</div>
-            <div style={{ fontSize: 15 }}>No recordings yet</div>
-            <div style={{ fontSize: 13 }}>
-              Open any app and tap the red Record button to capture data.
+      <div className="rec-layout">
+        {groups.length === 0 ? (
+          <GlassPanel>
+            <div className="rec-empty">
+              <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                <circle cx="24" cy="24" r="16" stroke="var(--accent)" strokeWidth="1.5" strokeDasharray="5 3.5" strokeOpacity="0.5" />
+                <circle cx="24" cy="24" r="6" stroke="var(--accent)" strokeWidth="1.5" strokeOpacity="0.5" />
+                <circle cx="24" cy="24" r="2.5" fill="var(--accent)" fillOpacity="0.3" />
+              </svg>
+              <div className="rec-empty__title">
+                {items.length === 0 ? "No recordings yet" : "No matches"}
+              </div>
+              <div className="rec-empty__sub">
+                {items.length === 0
+                  ? "Use the Record button in any app to create recordings."
+                  : "Try a different format filter or search term."}
+              </div>
             </div>
+          </GlassPanel>
+        ) : (
+          <div className="rec-groups">
+            {groups.map(([appId, list]) => (
+              <AppGroup
+                key={String(appId)}
+                appId={appId}
+                items={list}
+                onDelete={handleDelete}
+                defaultOpen={groups.length <= 3}
+              />
+            ))}
           </div>
         )}
-
-        {visible.map(([appId, list]) => (
-          <section
-            key={String(appId)}
-            style={{
-              background: "rgba(255,255,255,0.55)",
-              border: "1px solid rgba(255,255,255,0.7)",
-              borderRadius: 12,
-              padding: 14,
-              backdropFilter: "blur(16px)",
-            }}
-          >
-            <div style={{ display: "flex", alignItems: "baseline", justifyContent: "space-between", marginBottom: 10 }}>
-              <h3 style={{ margin: 0, fontSize: 14, color: "var(--text-primary)" }}>{appPretty(appId)}</h3>
-              <span style={{ fontSize: 12, color: "var(--text-secondary)" }}>
-                {list.length} recording{list.length === 1 ? "" : "s"} · {fmtSize(list.reduce((a, m) => a + m.size_bytes, 0))}
-              </span>
-            </div>
-            <div style={{
-              display: "grid",
-              gridTemplateColumns: "1fr 100px 130px 90px 90px 70px",
-              gap: 8,
-              fontSize: 11,
-              fontWeight: 650,
-              textTransform: "uppercase",
-              letterSpacing: 0.4,
-              color: "var(--text-secondary)",
-              padding: "6px 8px",
-              borderBottom: "1px solid rgba(0,0,0,0.06)",
-            }}>
-              <span>File</span>
-              <span>Format</span>
-              <span>When</span>
-              <span>Duration</span>
-              <span>Size</span>
-              <span />
-            </div>
-            {list.map((m) => (
-              <div
-                key={m.id}
-                title={m.path}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 100px 130px 90px 90px 70px",
-                  gap: 8,
-                  padding: "8px",
-                  borderBottom: "1px solid rgba(0,0,0,0.04)",
-                  fontFamily: "var(--font-mono)",
-                  fontSize: 13,
-                  alignItems: "center",
-                }}
-              >
-                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                  {fileName(m.path)}
-                </span>
-                <span style={{ color: FORMAT_COLOR[m.format], fontFamily: "var(--font-sans)", fontSize: 12 }}>
-                  {FORMAT_LABEL[m.format]}
-                </span>
-                <span style={{ color: "var(--text-secondary)" }}>{fmtTimestamp(m.started_unix_ms)}</span>
-                <span>{fmtDuration(m.duration_ms)}</span>
-                <span>{fmtSize(m.size_bytes)}</span>
-                <button
-                  onClick={() => handleDelete(m.path)}
-                  style={{
-                    background: "transparent",
-                    border: "1px solid rgba(255,80,80,0.4)",
-                    color: "#ff8080",
-                    borderRadius: 4,
-                    cursor: "pointer",
-                    fontSize: 11,
-                    padding: "1px 6px",
-                    fontFamily: "var(--font-sans)",
-                  }}
-                >
-                  Delete
-                </button>
-              </div>
-            ))}
-          </section>
-        ))}
       </div>
-    </AppShell>
+    </AppScreen>
   );
 }

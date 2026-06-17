@@ -1,0 +1,56 @@
+/* ── FLEX Pager Receiver — rose/magenta pager identity ────────────────────── */
+
+[data-app="flex_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #D03888, #E060A8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* FLEX uses the same perforated-paper motif as POCSAG, but in rose tones */
+.flex-feed-wrap {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.flex-feed-wrap::before,
+.flex-feed-wrap::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 14px;
+  z-index: 5;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(208, 56, 136, 0.18) 40%, transparent 40%);
+  background-size: 14px 20px;
+  background-repeat: repeat-y;
+}
+
+.flex-feed-wrap::before { left: 0; }
+.flex-feed-wrap::after  { right: 0; }
+
+.flex-inner-feed {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 0 14px;
+}
+
+.flex-stats {
+  display: flex;
+  gap: 14px;
+  padding: 7px 12px;
+  background: var(--surface-1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--glass-radius-sm);
+  flex-shrink: 0;
+}
+
+.flex-stat { display: flex; flex-direction: column; gap: 1px; }
+.flex-stat-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); }
+.flex-stat-value { font-size: 15px; font-family: var(--font-mono); font-weight: 700; color: var(--accent); }

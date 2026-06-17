@@ -1,0 +1,351 @@
+/* ── Morse Trainer · learning amber/gold · telegraph motif ───────────────── */
+
+[data-app="morse_trainer"] .mtr-header-btns {
+  display: flex;
+  gap: 6px;
+}
+
+[data-app="morse_trainer"] .mtr-btn {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 650;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 14px;
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+  background: rgba(208, 144, 48, 0.1);
+  border: 1px solid rgba(208, 144, 48, 0.3);
+  color: var(--text-secondary);
+}
+
+[data-app="morse_trainer"] .mtr-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+[data-app="morse_trainer"] .mtr-btn--play {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px var(--accent-glow), var(--shadow-inset-top);
+}
+
+[data-app="morse_trainer"] .mtr-btn--play:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 14px var(--accent-glow), var(--shadow-inset-top);
+  transform: translateY(-1px);
+}
+
+[data-app="morse_trainer"] .mtr-btn--play:disabled {
+  opacity: 0.5;
+  cursor: default;
+  transform: none;
+}
+
+/* Controls */
+[data-app="morse_trainer"] .mtr-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+[data-app="morse_trainer"] .mtr-ctrl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1;
+  min-width: 120px;
+  max-width: 200px;
+}
+
+[data-app="morse_trainer"] .mtr-ctrl-label {
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+[data-app="morse_trainer"] .mtr-ctrl-slider {
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  background: rgba(208, 144, 48, 0.2);
+  border-radius: 2px;
+  outline: none;
+  cursor: pointer;
+}
+
+[data-app="morse_trainer"] .mtr-ctrl-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 6px var(--accent-glow);
+  cursor: pointer;
+  transition: transform var(--spring-snappy);
+}
+
+[data-app="morse_trainer"] .mtr-ctrl-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+[data-app="morse_trainer"] .mtr-ctrl-pool {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-tertiary);
+  align-self: flex-end;
+  padding-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+/* Layout */
+[data-app="morse_trainer"] .mtr-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Stage */
+[data-app="morse_trainer"] .mtr-stage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+}
+
+/* CW Key */
+[data-app="morse_trainer"] .mtr-key {
+  width: 140px;
+  height: 80px;
+  filter: drop-shadow(0 4px 12px rgba(208, 144, 48, 0.2));
+}
+
+/* Morse glyph */
+[data-app="morse_trainer"] .mtr-glyph {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+  padding: 10px 20px;
+  background: rgba(10, 16, 8, 0.85);
+  border-radius: 12px;
+  border: 1px solid rgba(208, 144, 48, 0.25);
+}
+
+[data-app="morse_trainer"] .mtr-glyph[data-playing] {
+  border-color: rgba(208, 144, 48, 0.55);
+  box-shadow: 0 0 16px rgba(208, 144, 48, 0.15);
+}
+
+[data-app="morse_trainer"] .mtr-sym {
+  display: inline-block;
+  background: #D09030;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+[data-app="morse_trainer"] .mtr-sym--dit {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+[data-app="morse_trainer"] .mtr-sym--dah {
+  width: 32px;
+  height: 10px;
+  border-radius: 5px;
+}
+
+[data-app="morse_trainer"] .mtr-glyph[data-playing] .mtr-sym {
+  animation: mtr-sym-glow 0.15s ease-in-out infinite alternate;
+}
+
+@keyframes mtr-sym-glow {
+  from { opacity: 0.7; }
+  to   { opacity: 1; box-shadow: 0 0 8px rgba(208, 144, 48, 0.6); }
+}
+
+/* Start hint */
+[data-app="morse_trainer"] .mtr-start-hint {
+  font-size: 14px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+[data-app="morse_trainer"] .mtr-start-hint strong { color: var(--accent); }
+
+/* Answer row */
+[data-app="morse_trainer"] .mtr-answer-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-app="morse_trainer"] .mtr-answer-input {
+  font-family: var(--font-mono);
+  font-size: 36px;
+  font-weight: 700;
+  text-align: center;
+  width: 80px;
+  background: var(--surface-2);
+  border: 2px solid rgba(208, 144, 48, 0.3);
+  border-radius: 12px;
+  padding: 8px;
+  color: var(--text-primary);
+  outline: none;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+[data-app="morse_trainer"] .mtr-answer-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+[data-app="morse_trainer"] .mtr-answer-input--correct {
+  border-color: #34C759;
+  background: rgba(52, 199, 89, 0.08);
+  color: #34C759;
+}
+
+[data-app="morse_trainer"] .mtr-answer-input--wrong {
+  border-color: #FF3B30;
+  background: rgba(255, 59, 48, 0.08);
+  color: #FF3B30;
+}
+
+[data-app="morse_trainer"] .mtr-check-btn {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 650;
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 18px;
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 2px 6px var(--accent-glow);
+  transition: all var(--spring-snappy);
+}
+
+[data-app="morse_trainer"] .mtr-check-btn:hover:not(:disabled) {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+
+[data-app="morse_trainer"] .mtr-check-btn:disabled { opacity: 0.4; cursor: default; }
+
+/* Feedback */
+[data-app="morse_trainer"] .mtr-feedback {
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: 0.1px;
+  padding: 8px 20px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+[data-app="morse_trainer"] .mtr-feedback--correct {
+  color: #34C759;
+  background: rgba(52, 199, 89, 0.1);
+  border: 1px solid rgba(52, 199, 89, 0.3);
+}
+
+[data-app="morse_trainer"] .mtr-feedback--wrong {
+  color: #FF3B30;
+  background: rgba(255, 59, 48, 0.08);
+  border: 1px solid rgba(255, 59, 48, 0.25);
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+
+/* Score */
+[data-app="morse_trainer"] .mtr-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+}
+
+[data-app="morse_trainer"] .mtr-score-stat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 0;
+}
+
+[data-app="morse_trainer"] .mtr-score-divider {
+  width: 1px;
+  height: 40px;
+  background: var(--surface-border);
+}
+
+[data-app="morse_trainer"] .mtr-score-val {
+  font-family: var(--font-mono);
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--text-primary);
+  letter-spacing: -0.5px;
+}
+
+[data-app="morse_trainer"] .mtr-score-val--right { color: #34C759; }
+[data-app="morse_trainer"] .mtr-score-val--wrong { color: #FF3B30; }
+
+[data-app="morse_trainer"] .mtr-score-label {
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+/* Characters grid */
+[data-app="morse_trainer"] .mtr-chars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+[data-app="morse_trainer"] .mtr-char {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px;
+  background: rgba(208, 144, 48, 0.06);
+  border: 1px solid rgba(208, 144, 48, 0.14);
+  border-radius: 8px;
+  cursor: default;
+  transition: all var(--spring-snappy);
+  min-width: 40px;
+}
+
+[data-app="morse_trainer"] .mtr-char--active {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+[data-app="morse_trainer"] .mtr-char-letter {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+[data-app="morse_trainer"] .mtr-char-code {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--text-tertiary);
+  letter-spacing: 1px;
+}

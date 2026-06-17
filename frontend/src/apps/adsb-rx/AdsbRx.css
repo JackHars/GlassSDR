@@ -1,0 +1,128 @@
+/* ── ADS-B Receiver — aviation sky→emerald identity ──────────────────────── */
+
+[data-app="adsb_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #0DB88A, #38B0D0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Range-rings motif ────────────────────────────────────────────────────── */
+
+.adsb-map-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: var(--glass-radius-sm);
+  overflow: hidden;
+}
+
+/* Range rings — three concentric circles centered on map (decorative) */
+.adsb-range-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.adsb-range-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(13, 184, 138, 0.12);
+  transform: translate(-50%, -50%);
+  top: 0;
+  left: 0;
+}
+
+.adsb-range-ring:nth-child(1) { width: 120px; height: 120px; }
+.adsb-range-ring:nth-child(2) { width: 240px; height: 240px; border-color: rgba(13,184,138,0.08); }
+.adsb-range-ring:nth-child(3) { width: 360px; height: 360px; border-color: rgba(13,184,138,0.05); }
+
+/* Crosshair center */
+.adsb-range-rings::before,
+.adsb-range-rings::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: translate(-50%, -50%);
+  background: rgba(13, 184, 138, 0.15);
+}
+.adsb-range-rings::before { width: 1px; height: 30px; }
+.adsb-range-rings::after  { width: 30px; height: 1px; }
+
+/* ── Detail card content ──────────────────────────────────────────────────── */
+
+.adsb-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.adsb-detail__callsign {
+  font-size: 18px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 1px;
+}
+
+.adsb-detail__icao {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+  letter-spacing: 0.3px;
+}
+
+.adsb-detail__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 12px;
+}
+
+.adsb-detail__stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.adsb-detail__stat-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.adsb-detail__stat-value {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+/* Vertical rate indicator */
+.adsb-vert-arrow {
+  display: inline-block;
+  margin-right: 2px;
+}
+
+.adsb-vert-arrow--up   { color: var(--success); }
+.adsb-vert-arrow--down { color: var(--danger); }
+.adsb-vert-arrow--flat { color: var(--text-tertiary); }
+
+/* ── Aircraft table row ───────────────────────────────────────────────────── */
+
+.adsb-table-wrap {
+  background: var(--surface-1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--glass-radius-sm);
+  overflow: auto;
+  flex-shrink: 0;
+  max-height: 200px;
+}

@@ -1,0 +1,208 @@
+/* ── WFM Receiver — broadcast indigo identity ────────────────────────────── */
+
+[data-app="wfm_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #6040D0, #D060C0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Broadcast tower waves motif ──────────────────────────────────────────── */
+/* Concentric arcs behind the waterfall, pulsing when running */
+
+.wfm-hero-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: var(--glass-radius-sm);
+}
+
+.wfm-tower-waves {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0;
+  transition: opacity 600ms ease;
+}
+
+.wfm-tower-waves.active {
+  opacity: 1;
+}
+
+.wfm-tower-waves__ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1.5px solid rgba(96, 64, 208, 0.18);
+  transform: translate(-50%, -50%);
+  animation: wfm-ring-pulse 3s ease-out infinite;
+}
+
+.wfm-tower-waves__ring:nth-child(1) { width: 80px;  height: 80px;  animation-delay: 0s; }
+.wfm-tower-waves__ring:nth-child(2) { width: 140px; height: 140px; animation-delay: 0.8s; }
+.wfm-tower-waves__ring:nth-child(3) { width: 200px; height: 200px; animation-delay: 1.6s; }
+
+@keyframes wfm-ring-pulse {
+  0%   { opacity: 0.7; transform: translate(-50%, -50%) scale(0.85); }
+  80%  { opacity: 0; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.1); }
+}
+
+.wfm-hero-wrap > * { position: relative; z-index: 1; }
+
+/* ── Info strip (stereo + RDS) ────────────────────────────────────────────── */
+
+.wfm-info-strip {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.60);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+  flex-shrink: 0;
+  border-radius: 0 0 var(--glass-radius-sm) var(--glass-radius-sm);
+}
+
+/* Stereo / Mono pill */
+.wfm-stereo-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.4px;
+  transition: all var(--spring-smooth);
+  flex-shrink: 0;
+}
+
+.wfm-stereo-pill--stereo {
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+.wfm-stereo-pill--mono {
+  background: var(--track-bg);
+  border: 1px solid var(--surface-border);
+  color: var(--text-tertiary);
+}
+
+.wfm-stereo-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.wfm-stereo-pill--stereo .wfm-stereo-dot {
+  animation: status-pulse 1.8s ease-in-out infinite;
+}
+
+/* RDS placeholder / data */
+.wfm-rds-area {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+.wfm-rds-ps {
+  font-size: 15px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 1px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.wfm-rds-rt {
+  font-size: 12px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.wfm-rds-searching {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+/* Signal strength bar */
+.wfm-signal-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.wfm-signal-label {
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+}
+
+.wfm-signal-track {
+  width: 60px;
+  height: 5px;
+  background: var(--surface-border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.wfm-signal-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 150ms ease;
+  box-shadow: 0 0 4px var(--accent-glow);
+}
+
+/* ── FM band preset chips ─────────────────────────────────────────────────── */
+
+.wfm-presets {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.wfm-preset {
+  padding: 3px 10px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+  white-space: nowrap;
+}
+
+.wfm-preset:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.wfm-preset.active {
+  background: var(--accent);
+  border-color: #4E30B8;
+  color: #fff;
+  box-shadow: 0 2px 6px var(--accent-glow);
+}

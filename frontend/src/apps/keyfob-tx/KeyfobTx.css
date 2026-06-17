@@ -1,0 +1,309 @@
+/* ── Keyfob TX — hazard amber · car-key motif ───────────────────────────────── */
+
+[data-app="keyfob_tx"] .app-screen__title {
+  background: linear-gradient(135deg, #A07030, #C09040);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-app="keyfob_tx"] .app-screen__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 14px,
+    rgba(160, 112, 48, 0.07) 14px,
+    rgba(160, 112, 48, 0.07) 28px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Frequency row */
+.keyfob-tx__freq-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.keyfob-tx__freq-btn {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 7px 16px;
+  border-radius: var(--glass-radius-sm, 8px);
+  border: 1.5px solid rgba(160, 112, 48, 0.22);
+  background: rgba(255, 255, 255, 0.22);
+  color: rgba(0, 0, 0, 0.55);
+  cursor: pointer;
+  letter-spacing: 0.04em;
+  transition: background 0.12s, border-color 0.12s, color 0.12s;
+}
+
+.keyfob-tx__freq-btn:hover {
+  background: rgba(160, 112, 48, 0.12);
+  border-color: rgba(160, 112, 48, 0.42);
+  color: #A07030;
+}
+
+.keyfob-tx__freq-btn--sel {
+  background: rgba(160, 112, 48, 0.16);
+  border-color: #A07030;
+  color: #A07030;
+  box-shadow: 0 0 0 2px rgba(160, 112, 48, 0.18);
+}
+
+.keyfob-tx__protocol {
+  font-size: 11px;
+  color: rgba(160, 112, 48, 0.60);
+  font-family: var(--font-mono);
+  margin-left: 4px;
+}
+
+/* Body layout */
+.keyfob-tx__layout {
+  display: flex;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.keyfob-tx__fob-panel {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.keyfob-tx__params-panel {
+  flex: 1.3;
+  min-width: 0;
+}
+
+/* Fob SVG */
+.keyfob-tx__fob-wrap {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  padding: 8px 0;
+}
+
+.keyfob-tx__fob-svg {
+  width: auto;
+  height: 100%;
+  max-height: 200px;
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(160, 112, 48, 0.20));
+}
+
+.keyfob-tx__logo {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  fill: rgba(160, 112, 48, 0.65);
+  text-transform: uppercase;
+}
+
+.keyfob-tx__btn-label {
+  font-family: var(--font-sans);
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  fill: rgba(160, 112, 48, 0.65);
+  text-transform: uppercase;
+}
+
+.keyfob-tx__btn-label--sel {
+  fill: rgba(230, 190, 110, 0.95);
+}
+
+/* Button legend row */
+.keyfob-tx__btn-legend {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  padding: 6px 0 2px;
+}
+
+.keyfob-tx__legend-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(160, 112, 48, 0.20);
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(0, 0, 0, 0.50);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.keyfob-tx__legend-btn:hover {
+  background: rgba(160, 112, 48, 0.12);
+  border-color: rgba(160, 112, 48, 0.38);
+  color: #A07030;
+}
+
+.keyfob-tx__legend-btn--sel {
+  background: rgba(160, 112, 48, 0.16);
+  border-color: #A07030;
+  color: #A07030;
+}
+
+.keyfob-tx__legend-icon {
+  font-size: 13px;
+}
+
+/* Params */
+.keyfob-tx__field-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.keyfob-tx__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.keyfob-tx__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.44);
+}
+
+.keyfob-tx__input-wrap {
+  display: flex;
+  align-items: center;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(160, 112, 48, 0.22);
+  background: rgba(255, 255, 255, 0.30);
+  backdrop-filter: blur(4px);
+  overflow: hidden;
+  width: fit-content;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.keyfob-tx__input-wrap:focus-within {
+  border-color: var(--accent, #A07030);
+  box-shadow: 0 0 0 2.5px var(--accent-glow, rgba(160, 112, 48, 0.18));
+}
+
+.keyfob-tx__input-prefix {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  padding: 5px 6px;
+  color: rgba(160, 112, 48, 0.55);
+  background: rgba(160, 112, 48, 0.07);
+  border-right: 1px solid rgba(160, 112, 48, 0.14);
+  user-select: none;
+}
+
+.keyfob-tx__input {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  width: 76px;
+  padding: 5px 8px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-transform: uppercase;
+}
+
+.keyfob-tx__input:focus { outline: none; }
+
+/* Code display */
+.keyfob-tx__code-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: rgba(160, 112, 48, 0.07);
+  border: 1px solid rgba(160, 112, 48, 0.14);
+}
+
+.keyfob-tx__code-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(160, 112, 48, 0.50);
+}
+
+.keyfob-tx__code-val {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--accent, #A07030);
+  letter-spacing: 0.08em;
+}
+
+.keyfob-tx__code-breakdown {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(160, 112, 48, 0.50);
+  letter-spacing: 0.04em;
+}
+
+.keyfob-tx__code-nibble {
+  color: var(--accent, #A07030);
+  font-weight: 700;
+}
+
+.keyfob-tx__slider {
+  width: 100%;
+  accent-color: #A07030;
+  cursor: pointer;
+}
+
+/* Info rows */
+.keyfob-tx__info-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(160, 112, 48, 0.12);
+}
+
+.keyfob-tx__info-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.keyfob-tx__info-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.35);
+  min-width: 72px;
+}
+
+.keyfob-tx__info-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(160, 112, 48, 0.70);
+}
+
+@media (max-width: 720px) {
+  .keyfob-tx__layout { flex-direction: column; }
+  .keyfob-tx__fob-svg { max-height: 150px; }
+}

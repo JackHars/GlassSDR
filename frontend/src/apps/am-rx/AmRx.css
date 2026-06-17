@@ -1,0 +1,121 @@
+/* ── AM Receiver — warm gold identity ────────────────────────────────────── */
+
+[data-app="am_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #C8960A, #E8A820);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Carrier scope ────────────────────────────────────────────────────────── */
+
+.am-carrier-scope {
+  background: var(--surface-1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--glass-radius-sm);
+  box-shadow: var(--shadow-xs), var(--shadow-inset-top);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px 10px;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.am-carrier-scope__label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.am-carrier-scope__bar-track {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 4px;
+  overflow: hidden;
+  min-height: 60px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.am-carrier-scope__bar {
+  width: 100%;
+  border-radius: 4px;
+  background: linear-gradient(to top, var(--accent), rgba(200, 150, 10, 0.4));
+  transition: height 80ms ease;
+  box-shadow: 0 0 6px var(--accent-glow);
+}
+
+.am-carrier-scope__db {
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  font-weight: 600;
+  text-align: center;
+}
+
+/* ── Envelope waveform canvas ─────────────────────────────────────────────── */
+
+.am-envelope-canvas {
+  display: block;
+  width: 100%;
+  height: 48px;
+  border-radius: 6px;
+  background: var(--track-bg);
+  border: 1px solid var(--track-bg);
+}
+
+/* ── Band quick-jump chips ────────────────────────────────────────────────── */
+
+.am-band-chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.am-band-chip {
+  padding: 3px 10px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+  white-space: nowrap;
+}
+
+.am-band-chip:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.am-band-chip.active {
+  background: var(--accent);
+  border-color: #AA7E08;
+  color: #fff;
+  box-shadow: 0 2px 6px var(--accent-glow);
+}
+
+/* ── Hero row ─────────────────────────────────────────────────────────────── */
+
+.am-hero-row {
+  display: flex;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+.am-hero-row > .wf-container,
+.am-hero-row > div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}

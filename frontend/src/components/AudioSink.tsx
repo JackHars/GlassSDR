@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { AudioFrame } from "../ipc/types/AudioFrame";
+import { Icon } from "./kit/Icon";
 
 interface Props {
   frame: AudioFrame | null;
@@ -121,7 +122,9 @@ export function AudioSink({ frame }: Props) {
       background: "rgba(255,255,255,0.45)", borderRadius: 10,
       border: "1px solid rgba(255,255,255,0.6)", fontFamily: "var(--font-mono)", fontSize: 12,
     }}>
-      <span style={{ fontSize: 16 }}>{state === "running" ? "🔊" : "🔇"}</span>
+      <span style={{ display: "inline-flex", fontSize: 16, color: state === "running" ? "var(--success)" : "var(--text-tertiary)" }}>
+        <Icon name={state === "running" ? "volumeUp" : "volumeMute"} size={18} />
+      </span>
       <span style={{ color: "var(--text-secondary)", textTransform: "uppercase", letterSpacing: 0.4 }}>
         Audio
       </span>

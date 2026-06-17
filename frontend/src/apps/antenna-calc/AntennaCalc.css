@@ -1,0 +1,148 @@
+/* ── Antenna Calculator · tool cyan · antenna-diagram motif ─────────────── */
+
+[data-app="antenna_calc"] .ant-type-tabs {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+[data-app="antenna_calc"] .ant-type-tab {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(14, 165, 206, 0.07);
+  border: 1px solid rgba(14, 165, 206, 0.2);
+  border-radius: 16px;
+  padding: 4px 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+}
+
+[data-app="antenna_calc"] .ant-type-tab:hover {
+  background: rgba(14, 165, 206, 0.12);
+  color: var(--text-primary);
+}
+
+[data-app="antenna_calc"] .ant-type-tab--on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 4px var(--accent-glow);
+}
+
+[data-app="antenna_calc"] .ant-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+[data-app="antenna_calc"] .ant-ctrl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+[data-app="antenna_calc"] .ant-ctrl-label {
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+[data-app="antenna_calc"] .ant-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* Diagram */
+[data-app="antenna_calc"] .ant-svg {
+  display: block;
+  width: 100%;
+  height: 260px;
+  border-radius: 0 0 var(--glass-radius-sm) var(--glass-radius-sm);
+}
+
+[data-app="antenna_calc"] .ant-diagram-empty {
+  height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  color: var(--text-tertiary);
+  font-style: italic;
+  background: rgba(8, 18, 28, 0.5);
+  border-radius: 0 0 var(--glass-radius-sm) var(--glass-radius-sm);
+}
+
+/* Results table */
+[data-app="antenna_calc"] .ant-results {
+  display: flex;
+  flex-direction: column;
+}
+
+[data-app="antenna_calc"] .ant-results__head {
+  display: grid;
+  grid-template-columns: 1fr 90px 90px 80px;
+  gap: 8px;
+  padding: 7px 14px;
+  border-bottom: 1px solid rgba(14, 165, 206, 0.12);
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+}
+
+[data-app="antenna_calc"] .ant-results__row {
+  display: grid;
+  grid-template-columns: 1fr 90px 90px 80px;
+  gap: 8px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--track-bg);
+  align-items: baseline;
+  transition: background var(--transition-fast);
+}
+
+[data-app="antenna_calc"] .ant-results__row:last-child { border-bottom: none; }
+
+[data-app="antenna_calc"] .ant-results__row:hover {
+  background: rgba(14, 165, 206, 0.04);
+}
+
+[data-app="antenna_calc"] .ant-results__label {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+[data-app="antenna_calc"] .ant-results__val {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--accent);
+  text-align: right;
+}
+
+[data-app="antenna_calc"] .ant-results__val--ft {
+  color: var(--text-secondary);
+}
+
+[data-app="antenna_calc"] .ant-results__empty {
+  padding: 16px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+@media (max-width: 720px) {
+  [data-app="antenna_calc"] .ant-results__head,
+  [data-app="antenna_calc"] .ant-results__row {
+    grid-template-columns: 1fr 90px 90px;
+  }
+  [data-app="antenna_calc"] .ant-results__head > :last-child,
+  [data-app="antenna_calc"] .ant-results__row > :last-child { display: none; }
+}

@@ -1,0 +1,271 @@
+/* ── BLE Scanner — bluetooth blue-indigo · proximity/RSSI motif ──────────────── */
+
+[data-app="btle_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #4860E0, #6880FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Controls */
+.ble-rx__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.ble-rx__chan-btns {
+  display: flex;
+  gap: 6px;
+}
+
+.ble-rx__chan-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 12px;
+  border-radius: var(--glass-radius-sm, 8px);
+  border: 1.5px solid rgba(72, 96, 224, 0.20);
+  background: rgba(255, 255, 255, 0.20);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.ble-rx__chan-btn:hover { background: rgba(72,96,224,0.12); border-color: rgba(72,96,224,0.42); }
+.ble-rx__chan-btn--sel { background: rgba(72,96,224,0.16); border-color: #4860E0; box-shadow: 0 0 0 2px rgba(72,96,224,0.20); }
+
+.ble-rx__chan-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent, #4860E0);
+  letter-spacing: 0.04em;
+}
+
+.ble-rx__chan-mhz {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.ble-rx__sort-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding-left: 8px;
+  border-left: 1px solid rgba(72, 96, 224, 0.18);
+}
+
+.ble-rx__sort-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(72, 96, 224, 0.50);
+  margin-right: 2px;
+}
+
+.ble-rx__sort-btn {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(72, 96, 224, 0.20);
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(0, 0, 0, 0.48);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.ble-rx__sort-btn:hover { background: rgba(72,96,224,0.12); color: #4860E0; }
+.ble-rx__sort-btn--sel { background: rgba(72,96,224,0.16); border-color: #4860E0; color: #4860E0; }
+
+.ble-rx__actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.ble-rx__btn {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(72, 96, 224, 0.25);
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.ble-rx__btn--start { color: #34A85A; border-color: rgba(52,168,90,0.35); }
+.ble-rx__btn--start:hover:not(:disabled) { background: rgba(52,168,90,0.13); border-color: rgba(52,168,90,0.60); }
+.ble-rx__btn--stop { color: #C84020; border-color: rgba(200,64,32,0.35); }
+.ble-rx__btn--stop:hover:not(:disabled) { background: rgba(200,64,32,0.11); border-color: rgba(200,64,32,0.55); }
+.ble-rx__btn--clear { color: rgba(0,0,0,0.48); }
+.ble-rx__btn--clear:hover { background: rgba(72,96,224,0.12); color: #4860E0; }
+.ble-rx__btn--off { opacity: 0.38; cursor: default; }
+
+/* Feed panel */
+.ble-rx__feed-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.ble-rx__empty {
+  padding: 28px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(72, 96, 224, 0.48);
+  font-style: italic;
+}
+
+.ble-rx__device-list {
+  overflow-y: auto;
+  max-height: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* Device card */
+.ble-rx__device-card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(72, 96, 224, 0.08);
+  transition: background 0.08s;
+}
+
+.ble-rx__device-card:hover {
+  background: rgba(72, 96, 224, 0.05);
+}
+
+/* Signal / RSSI bars */
+.ble-rx__card-signal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  min-width: 44px;
+}
+
+.ble-rx__rssi-bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 22px;
+}
+
+.ble-rx__rssi-bar {
+  width: 5px;
+  border-radius: 2px 2px 0 0;
+  background: rgba(72, 96, 224, 0.15);
+  transition: background 0.2s;
+}
+
+.ble-rx__rssi-bar--filled {
+  background: rgba(72, 96, 224, 0.85);
+}
+
+.ble-rx__proximity {
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(72, 96, 224, 0.55);
+}
+
+/* Device info */
+.ble-rx__card-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ble-rx__device-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ble-rx__no-name {
+  color: rgba(0, 0, 0, 0.32);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.ble-rx__device-mac {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--accent, #4860E0);
+  letter-spacing: 0.06em;
+}
+
+.ble-rx__device-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ble-rx__adv-type {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: rgba(72, 96, 224, 0.10);
+  color: rgba(72, 96, 224, 0.75);
+  border: 1px solid rgba(72, 96, 224, 0.18);
+  letter-spacing: 0.04em;
+}
+
+.ble-rx__seen-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(72, 96, 224, 0.55);
+}
+
+.ble-rx__last-seen {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.35);
+}
+
+/* RSSI readout */
+.ble-rx__card-rssi {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1px;
+  min-width: 55px;
+}
+
+.ble-rx__rssi-val {
+  font-family: var(--font-mono);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--accent, #4860E0);
+  line-height: 1;
+}
+
+.ble-rx__rssi-unit {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(72, 96, 224, 0.55);
+}
+
+.ble-rx__rssi-peak {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(72, 96, 224, 0.40);
+}

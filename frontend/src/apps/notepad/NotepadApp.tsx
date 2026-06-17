@@ -1,80 +1,94 @@
-import { useState, useCallback, type ChangeEvent } from "react";
-import { AppShell, ControlRow } from "../../components/AppShell";
+import { useState, useCallback, useRef, type ChangeEvent } from "react";
+import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
+import "./Notepad.css";
 
 const LS_KEY = "mayhem_notepad";
 
-function loadText(): string {
-  return localStorage.getItem(LS_KEY) ?? "";
-}
+function loadText(): string { return localStorage.getItem(LS_KEY) ?? ""; }
 
 export function NotepadApp() {
-  const [text, setText] = useState(loadText);
-  const [saved, setSaved] = useState(false);
+  const [text, setText]     = useState(loadText);
+  const [saved, setSaved]   = useState(false);
+  const textareaRef         = useRef<HTMLTextAreaElement>(null);
+  const saveTimer           = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const handleChange = useCallback((e: ChangeEvent<HTMLTextAreaElement>) => {
     const val = e.target.value;
     setText(val);
     localStorage.setItem(LS_KEY, val);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
     setSaved(true);
-    setTimeout(() => setSaved(false), 800);
+    saveTimer.current = setTimeout(() => setSaved(false), 1200);
   }, []);
 
+  const insertAtCursor = (snippet: string) => {
+    const ta = textareaRef.current;
+    if (!ta) return;
+    const start = ta.selectionStart ?? text.length;
+    const end   = ta.selectionEnd ?? text.length;
+    const before = text.slice(0, start);
+    const after  = text.slice(end);
+    const sep = before.length > 0 && !before.endsWith("\n") ? "\n" : "";
+    const next = `${before}${sep}${snippet}`;
+    const newCursor = next.length;
+    setText(next + after);
+    localStorage.setItem(LS_KEY, next + after);
+    setSaved(true);
+    setTimeout(() => { ta.focus(); ta.setSelectionRange(newCursor, newCursor); }, 0);
+    setTimeout(() => setSaved(false), 1200);
+  };
+
   const insertTimestamp = () => {
-    const ts = new Date().toISOString();
-    setText((prev) => {
-      const next = prev + (prev.endsWith("\n") || prev === "" ? "" : "\n") + `[${ts}] `;
-      localStorage.setItem(LS_KEY, next);
-      return next;
-    });
+    const d = new Date();
+    const ts = `[${d.toISOString().replace("T", " ").slice(0, 19)}] `;
+    insertAtCursor(ts);
+  };
+
+  const insertFreqLine = () => {
+    insertAtCursor("[freq: __________ MHz] ");
   };
 
   const clear = () => {
+    if (text.length > 0 && !window.confirm("Clear all notes?")) return;
     setText("");
     localStorage.removeItem(LS_KEY);
   };
 
+  const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
+  const lineCount = text ? text.split("\n").length : 0;
+
+  const statusText = saved
+    ? "Saved"
+    : `${wordCount} word${wordCount !== 1 ? "s" : ""} · ${lineCount} line${lineCount !== 1 ? "s" : ""}`;
+
   return (
-    <AppShell
+    <AppScreen
+      appId="notepad"
       title="Notepad"
-      status={
-        <span style={{ color: saved ? "#34C759" : "var(--text-secondary)" }}>
-          {saved ? "● Auto-saved" : `${text.length} chars · ${text.split("\n").length} lines`}
-        </span>
-      }
-      controls={
-        <ControlRow
-          actions={
-            <>
-              <button className="glass-btn" onClick={insertTimestamp}>Insert timestamp</button>
-              <button className="glass-btn" onClick={clear} style={{ background: "rgba(255,59,48,0.12)", color: "#FF3B30", border: "1px solid rgba(255,59,48,0.4)" }}>Clear</button>
-            </>
-          }
-        >
-          <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>
-            Notes are auto-saved to local storage as you type.
-          </span>
-        </ControlRow>
+      subtitle="Field Notes"
+      status={saved ? "live" : "idle"}
+      statusText={statusText}
+      actions={
+        <div className="npad-actions">
+          <button className="npad-action-btn" onClick={insertTimestamp} title="Insert current time"><Icon name="timer" size={14} /> Timestamp</button>
+          <button className="npad-action-btn" onClick={insertFreqLine} title="Insert frequency line"><Icon name="radio" size={14} /> Freq</button>
+          <button className="npad-action-btn npad-action-btn--clear" onClick={clear} title="Clear all"><Icon name="close" size={14} /> Clear</button>
+        </div>
       }
     >
-      <textarea
-        className="app-shell__grow"
-        value={text}
-        onChange={handleChange}
-        placeholder="Start typing — log frequencies, observations, anything you want to keep."
-        style={{
-          background: "rgba(255,255,255,0.7)",
-          color: "var(--text-primary)",
-          border: "1px solid rgba(255,255,255,0.7)",
-          borderRadius: 12,
-          padding: 16,
-          fontFamily: "var(--font-mono)",
-          fontSize: 14,
-          resize: "none",
-          lineHeight: 1.5,
-          width: "100%",
-          minHeight: 200,
-        }}
-      />
-    </AppShell>
+      <div className="npad-paper">
+        <textarea
+          ref={textareaRef}
+          className="npad-textarea"
+          value={text}
+          onChange={handleChange}
+          placeholder="Notes, frequencies, observations…"
+          spellCheck
+          autoFocus
+        />
+        {saved && <div className="npad-saved-flash"><Icon name="check" size={12} /> saved</div>}
+      </div>
+    </AppScreen>
   );
 }

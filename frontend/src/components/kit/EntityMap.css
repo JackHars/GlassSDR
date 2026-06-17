@@ -1,0 +1,149 @@
+/* ── EntityMap ───────────────────────────────────────────────────────────── */
+
+.entity-map {
+  position: relative;
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 200px;
+  border-radius: var(--glass-radius-sm);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.entity-map__canvas {
+  flex: 1 1 auto;
+  min-height: 0;
+}
+
+/* MapLibre nav controls — style to match glass */
+.entity-map .maplibregl-ctrl-group {
+  background: rgba(255, 255, 255, 0.80);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-2) !important;
+  box-shadow: var(--shadow-sm) !important;
+  border-radius: 10px !important;
+  overflow: hidden;
+}
+
+.entity-map .maplibregl-ctrl-group button {
+  width: 30px !important;
+  height: 30px !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  font-family: var(--font-sans) !important;
+  font-size: 16px !important;
+  color: var(--text-primary) !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+
+.entity-map .maplibregl-ctrl-group button:hover {
+  background: rgba(0, 0, 0, 0.05) !important;
+  transform: none !important;
+}
+
+.entity-map .maplibregl-ctrl-top-right {
+  top: 10px;
+  right: 10px;
+}
+
+/* Count badge */
+.entity-map__badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 3px 10px;
+  background: var(--surface-elevated);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--surface-elevated);
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 650;
+  font-family: var(--font-mono);
+  color: var(--accent);
+  box-shadow: var(--shadow-xs);
+  pointer-events: none;
+}
+
+/* Empty overlay */
+.entity-map__empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  pointer-events: none;
+}
+
+.entity-map__empty-icon {
+  font-size: 32px;
+  opacity: 0.4;
+}
+
+.entity-map__empty-label {
+  font-size: 13px;
+  font-weight: 550;
+  color: var(--text-secondary);
+}
+
+/* Detail card */
+.entity-map__detail {
+  position: absolute;
+  right: 10px;
+  bottom: 32px;
+  width: 240px;
+  max-height: 60%;
+  overflow-y: auto;
+  background: rgba(255, 255, 255, 0.90);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--surface-elevated);
+  border-radius: var(--glass-radius-sm);
+  box-shadow: var(--shadow-lg);
+  padding: 12px 14px;
+  animation: fadeIn 250ms var(--ease-out-expo) both;
+}
+
+.entity-map__detail-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--surface-border);
+  border: 1px solid var(--surface-border);
+  font-size: 10px;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--spring-snappy);
+  padding: 0;
+  font-family: var(--font-sans);
+  font-weight: 600;
+}
+
+.entity-map__detail-close:hover {
+  background: var(--surface-border);
+  color: var(--text-primary);
+  transform: scale(1.1);
+}
+
+/* MapLibre attribution */
+.entity-map .maplibregl-ctrl-attrib {
+  font-size: 10px !important;
+  background: var(--surface-2) !important;
+  backdrop-filter: blur(8px) !important;
+  border-radius: 4px 0 0 0 !important;
+}

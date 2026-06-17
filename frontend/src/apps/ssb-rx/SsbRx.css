@@ -1,0 +1,145 @@
+/* ── SSB Receiver — HF amber identity, mode-aware ────────────────────────── */
+
+[data-app="usb_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #D07820, #E89840);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-app="lsb_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #B08040, #C89850);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Mode badge ────────────────────────────────────────────────────────────── */
+
+.ssb-mode-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 22px;
+  border-radius: 6px;
+  font-size: 11.5px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.ssb-mode-badge--usb {
+  background: linear-gradient(135deg, rgba(208,120,32,0.15), rgba(208,120,32,0.08));
+  border: 1.5px solid rgba(208,120,32,0.4);
+  color: #D07820;
+}
+
+.ssb-mode-badge--lsb {
+  background: linear-gradient(135deg, rgba(176,128,64,0.15), rgba(176,128,64,0.08));
+  border: 1.5px solid rgba(176,128,64,0.4);
+  color: #B08040;
+}
+
+/* ── S-meter panel ────────────────────────────────────────────────────────── */
+
+.ssb-s-meter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 10px;
+  background: var(--surface-1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--glass-radius-sm);
+  box-shadow: var(--shadow-xs), var(--shadow-inset-top);
+  flex-shrink: 0;
+  min-width: 90px;
+}
+
+.ssb-s-meter__label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+/* S-meter scale (S1-S9+) */
+.ssb-s-scale {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 40px;
+}
+
+.ssb-s-bar {
+  width: 6px;
+  border-radius: 2px 2px 0 0;
+  background: var(--surface-border);
+  transition: background 100ms ease, height 100ms ease;
+  min-height: 4px;
+}
+
+.ssb-s-bar.lit {
+  background: var(--accent);
+  box-shadow: 0 0 3px var(--accent-glow);
+}
+
+.ssb-s-bar.lit.over9 {
+  background: #E83820;
+  box-shadow: 0 0 3px rgba(232,56,32,0.4);
+}
+
+.ssb-s-reading {
+  font-size: 12px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ── Band chips ───────────────────────────────────────────────────────────── */
+
+.ssb-bands {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.ssb-band {
+  padding: 3px 9px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+  white-space: nowrap;
+}
+
+.ssb-band:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.ssb-band.active {
+  background: var(--accent);
+  border-color: var(--accent-hover);
+  color: #fff;
+  box-shadow: 0 2px 6px var(--accent-glow);
+}
+
+/* ── Hero row ─────────────────────────────────────────────────────────────── */
+
+.ssb-hero-row {
+  display: flex;
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+}

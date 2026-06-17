@@ -1,0 +1,318 @@
+/* ── BLE Communicator — deep blue-indigo · GATT-tree motif ──────────────────── */
+
+[data-app="btle_comm"] .app-screen__title {
+  background: linear-gradient(135deg, #3848D8, #5870F8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Controls */
+.bcomm__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.bcomm__chan-row {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.bcomm__chan-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(56, 72, 216, 0.20);
+  background: rgba(255, 255, 255, 0.20);
+  color: rgba(0, 0, 0, 0.50);
+  cursor: pointer;
+  transition: background 0.11s, border-color 0.11s, color 0.11s;
+}
+
+.bcomm__chan-btn:hover { background: rgba(56,72,216,0.12); border-color: rgba(56,72,216,0.42); color: #3848D8; }
+.bcomm__chan-btn--sel { background: rgba(56,72,216,0.16); border-color: #3848D8; color: #3848D8; box-shadow: 0 0 0 2px rgba(56,72,216,0.18); }
+
+.bcomm__passive-note {
+  font-size: 10px;
+  color: rgba(56, 72, 216, 0.48);
+  font-style: italic;
+  margin-left: 6px;
+}
+
+.bcomm__actions {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.bcomm__btn {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(56, 72, 216, 0.25);
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.bcomm__btn--start { color: #34A85A; border-color: rgba(52,168,90,0.35); }
+.bcomm__btn--start:hover:not(:disabled) { background: rgba(52,168,90,0.13); border-color: rgba(52,168,90,0.60); }
+.bcomm__btn--stop { color: #C84020; border-color: rgba(200,64,32,0.35); }
+.bcomm__btn--stop:hover:not(:disabled) { background: rgba(200,64,32,0.11); border-color: rgba(200,64,32,0.55); }
+.bcomm__btn--clear { color: rgba(0,0,0,0.48); }
+.bcomm__btn--clear:hover { background: rgba(56,72,216,0.12); color: #3848D8; }
+.bcomm__btn--off { opacity: 0.38; cursor: default; }
+
+/* Master/detail layout */
+.bcomm__layout {
+  display: flex;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.bcomm__device-panel {
+  flex: 0 0 220px;
+  overflow: hidden;
+}
+
+.bcomm__gatt-panel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Device list */
+.bcomm__empty,
+.bcomm__gatt-empty {
+  padding: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(56, 72, 216, 0.45);
+  font-style: italic;
+}
+
+.bcomm__device-list {
+  overflow-y: auto;
+  max-height: 360px;
+}
+
+.bcomm__device-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-bottom: 1px solid rgba(56, 72, 216, 0.08);
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: background 0.08s;
+}
+
+.bcomm__device-row:hover { background: rgba(56, 72, 216, 0.06); }
+.bcomm__device-row--sel {
+  background: rgba(56, 72, 216, 0.12);
+  border-right: 2px solid #3848D8;
+}
+
+/* RSSI background bar */
+.bcomm__dev-rssi-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  background: rgba(56, 72, 216, 0.06);
+  pointer-events: none;
+}
+
+.bcomm__dev-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+
+.bcomm__dev-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.72);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bcomm__dev-no-name {
+  color: rgba(0, 0, 0, 0.32);
+  font-style: italic;
+  font-weight: 400;
+}
+
+.bcomm__dev-mac {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: rgba(56, 72, 216, 0.55);
+  letter-spacing: 0.04em;
+}
+
+.bcomm__dev-rssi {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(56, 72, 216, 0.70);
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* GATT inspector */
+.bcomm__gatt-content {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+.bcomm__gatt-header {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(56, 72, 216, 0.14);
+}
+
+.bcomm__gatt-device-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.bcomm__gatt-mac {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--accent, #3848D8);
+  letter-spacing: 0.06em;
+}
+
+.bcomm__gatt-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 2px;
+}
+
+.bcomm__meta-badge {
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: rgba(56, 72, 216, 0.10);
+  color: rgba(56, 72, 216, 0.75);
+  border: 1px solid rgba(56, 72, 216, 0.18);
+}
+
+.bcomm__meta-rssi,
+.bcomm__meta-time {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.40);
+}
+
+/* Service tree */
+.bcomm__services-section,
+.bcomm__raw-section {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.bcomm__section-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(56, 72, 216, 0.55);
+}
+
+.bcomm__no-services {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.35);
+  font-style: italic;
+  padding: 4px 0;
+}
+
+.bcomm__service-tree {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bcomm__service-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.bcomm__tree-branch {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(56, 72, 216, 0.40);
+  flex-shrink: 0;
+}
+
+.bcomm__service-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.68);
+}
+
+.bcomm__service-uuid {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(56, 72, 216, 0.60);
+  letter-spacing: 0.04em;
+}
+
+/* Raw hex dump */
+.bcomm__hex-dump {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(56, 72, 216, 0.70);
+  background: rgba(56, 72, 216, 0.05);
+  border: 1px solid rgba(56, 72, 216, 0.12);
+  border-radius: 5px;
+  padding: 8px 10px;
+  margin: 0;
+  white-space: pre-wrap;
+  word-break: break-all;
+  letter-spacing: 0.04em;
+  line-height: 1.7;
+}
+
+.bcomm__connect-note {
+  font-size: 10px;
+  color: rgba(56, 72, 216, 0.42);
+  font-style: italic;
+  padding-top: 4px;
+  border-top: 1px solid rgba(56, 72, 216, 0.10);
+}
+
+@media (max-width: 720px) {
+  .bcomm__layout { flex-direction: column; }
+  .bcomm__device-panel { flex: 0 0 auto; }
+}

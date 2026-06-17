@@ -1,0 +1,270 @@
+/* ── OOK Decoders — purple · decode-stream motif ────────────────────────────── */
+
+[data-app="ook_decoders"] .app-screen__title {
+  background: linear-gradient(135deg, #6858A8, #8878C8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Controls */
+.ook-dc__controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.ook-dc__freq-btns {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.ook-dc__freq-btn {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(104, 88, 168, 0.20);
+  background: rgba(255, 255, 255, 0.20);
+  color: rgba(0, 0, 0, 0.52);
+  cursor: pointer;
+  transition: background 0.11s, border-color 0.11s, color 0.11s;
+}
+
+.ook-dc__freq-btn:hover { background: rgba(104,88,168,0.12); border-color: rgba(104,88,168,0.42); color: #6858A8; }
+.ook-dc__freq-btn--sel { background: rgba(104,88,168,0.16); border-color: #6858A8; color: #6858A8; box-shadow: 0 0 0 2px rgba(104,88,168,0.18); }
+
+.ook-dc__param-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.ook-dc__field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  flex: 1;
+  min-width: 120px;
+}
+
+.ook-dc__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.42);
+}
+
+.ook-dc__slider {
+  width: 100%;
+  accent-color: #6858A8;
+  cursor: pointer;
+}
+
+.ook-dc__actions {
+  display: flex;
+  gap: 6px;
+  align-self: flex-end;
+}
+
+.ook-dc__btn {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(104, 88, 168, 0.25);
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.ook-dc__btn--start { color: #34A85A; border-color: rgba(52,168,90,0.35); }
+.ook-dc__btn--start:hover:not(:disabled) { background: rgba(52,168,90,0.13); border-color: rgba(52,168,90,0.60); }
+.ook-dc__btn--stop { color: #C84020; border-color: rgba(200,64,32,0.35); }
+.ook-dc__btn--stop:hover:not(:disabled) { background: rgba(200,64,32,0.11); border-color: rgba(200,64,32,0.55); }
+.ook-dc__btn--clear { color: rgba(0,0,0,0.48); }
+.ook-dc__btn--clear:hover { background: rgba(104,88,168,0.12); color: #6858A8; }
+.ook-dc__btn--off { opacity: 0.38; cursor: default; }
+
+/* Filter row */
+.ook-dc__filter-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.ook-dc__filter-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(104, 88, 168, 0.50);
+  margin-right: 2px;
+}
+
+.ook-dc__filter-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(104, 88, 168, 0.20);
+  background: rgba(255, 255, 255, 0.18);
+  color: rgba(0, 0, 0, 0.50);
+  cursor: pointer;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+
+.ook-dc__filter-btn:hover { background: rgba(104,88,168,0.12); border-color: rgba(104,88,168,0.38); color: #6858A8; }
+.ook-dc__filter-btn--sel { background: rgba(104,88,168,0.16); border-color: #6858A8; color: #6858A8; }
+
+.ook-dc__proto-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ook-dc__filter-count {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  opacity: 0.70;
+  margin-left: 2px;
+}
+
+/* Feed panel */
+.ook-dc__feed-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 8px;
+  overflow: hidden;
+}
+
+.ook-dc__empty {
+  padding: 28px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(104, 88, 168, 0.48);
+  font-style: italic;
+}
+
+.ook-dc__feed {
+  overflow-y: auto;
+  max-height: 280px;
+}
+
+.ook-dc__feed-hdr {
+  display: grid;
+  grid-template-columns: 100px 1fr 50px 80px;
+  gap: 8px;
+  padding: 5px 14px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(104, 88, 168, 0.55);
+  border-bottom: 1px solid rgba(104, 88, 168, 0.14);
+  position: sticky;
+  top: 0;
+  background: var(--surface-2);
+  backdrop-filter: blur(6px);
+}
+
+.ook-dc__frame-row {
+  display: grid;
+  grid-template-columns: 100px 1fr 50px 80px;
+  gap: 8px;
+  align-items: center;
+  padding: 6px 14px;
+  border-bottom: 1px solid rgba(104, 88, 168, 0.07);
+  transition: background 0.08s;
+}
+
+.ook-dc__frame-row--fresh {
+  animation: ook-dc-flash 0.55s ease-out;
+}
+
+@keyframes ook-dc-flash {
+  from { background: rgba(104, 88, 168, 0.18); }
+  to   { background: transparent; }
+}
+
+.ook-dc__frame-row:hover {
+  background: rgba(104, 88, 168, 0.06);
+}
+
+.ook-dc__proto-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid currentColor;
+  background: color-mix(in srgb, currentColor 10%, transparent);
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.ook-dc__code {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(104, 88, 168, 0.90);
+  letter-spacing: 0.08em;
+}
+
+.ook-dc__hits {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(104, 88, 168, 0.60);
+  text-align: center;
+}
+
+.ook-dc__time {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.38);
+}
+
+/* Stats bar */
+.ook-dc__stats-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.ook-dc__stat-item {
+  display: flex;
+  align-items: baseline;
+  gap: 5px;
+}
+
+.ook-dc__stat-k {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(104, 88, 168, 0.48);
+}
+
+.ook-dc__stat-v {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent, #6858A8);
+}
+
+.ook-dc__stat-sep { color: rgba(104,88,168,0.25); }

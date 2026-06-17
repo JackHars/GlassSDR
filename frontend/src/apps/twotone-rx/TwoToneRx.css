@@ -1,0 +1,20 @@
+/* ── Two-Tone RX — emergency red/orange alarm identity ────────────────────── */
+[data-app="two_tone_rx"] .app-screen__title { background: linear-gradient(135deg, #E83820, #FF6040); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.twotone-alarm-panel { background: rgba(255,255,255,0.60); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: var(--glass-radius); padding: 24px; box-shadow: var(--shadow-md), var(--shadow-inset-top); display: flex; flex-direction: column; align-items: center; gap: 16px; flex-shrink: 0; transition: all var(--spring-smooth); }
+
+.twotone-alarm-panel.active { border-color: var(--accent); box-shadow: var(--shadow-md), 0 0 0 3px var(--accent-dim); animation: live-pulse 0.8s ease-in-out infinite; }
+
+.twotone-alarm-icon { font-size: 40px; transition: all var(--spring-smooth); }
+.twotone-alarm-panel.active .twotone-alarm-icon { animation: empty-pulse 0.6s ease-in-out infinite; }
+
+.twotone-alarm-tones { display: flex; gap: 24px; }
+.twotone-tone { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.twotone-tone-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); }
+.twotone-tone-freq { font-size: 20px; font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+.twotone-tone-unit { font-size: 11px; color: var(--text-tertiary); }
+
+.twotone-stats { display: flex; gap: 14px; padding: 7px 12px; background: rgba(255,255,255,0.55); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: var(--glass-radius-sm); flex-shrink: 0; }
+.twotone-stat { display: flex; flex-direction: column; gap: 1px; }
+.twotone-stat-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); }
+.twotone-stat-value { font-size: 15px; font-family: var(--font-mono); font-weight: 700; color: var(--accent); }

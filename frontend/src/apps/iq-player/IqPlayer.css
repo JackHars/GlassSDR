@@ -1,0 +1,429 @@
+/* ── IQ Player · playback cyan · transport/play motif ────────────────────── */
+
+/* ── Header buttons ──────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-btn {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 650;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 18px;
+  cursor: pointer;
+  letter-spacing: 0.1px;
+  transition: all var(--spring-snappy);
+}
+
+[data-app="iq_player"] .iqp-btn--play {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--accent-glow), var(--shadow-inset-top);
+}
+
+[data-app="iq_player"] .iqp-btn--play:hover:not(:disabled) {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 14px var(--accent-glow), var(--shadow-inset-top);
+  transform: translateY(-1px);
+}
+
+[data-app="iq_player"] .iqp-btn--play:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+[data-app="iq_player"] .iqp-btn--stop {
+  background: rgba(255, 59, 48, 0.88);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3), var(--shadow-inset-top);
+}
+
+[data-app="iq_player"] .iqp-btn--stop:hover {
+  background: rgba(220, 40, 30, 0.95);
+  transform: translateY(-1px);
+}
+
+/* ── Controls ────────────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+[data-app="iq_player"] .iqp-ctrl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+[data-app="iq_player"] .iqp-ctrl-label {
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+[data-app="iq_player"] .iqp-ctrl-input {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: rgba(0, 180, 204, 0.06);
+  border: 1px solid rgba(0, 180, 204, 0.22);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--text-primary);
+  width: 155px;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+[data-app="iq_player"] .iqp-ctrl-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+[data-app="iq_player"] .iqp-ctrl-select {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  background: var(--surface-2);
+  border: 1px solid rgba(0, 180, 204, 0.22);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+[data-app="iq_player"] .iqp-ctrl-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+/* ── Format tabs ─────────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-format-tabs {
+  display: flex;
+  gap: 4px;
+}
+
+[data-app="iq_player"] .iqp-fmt-tab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  padding: 5px 10px;
+  background: rgba(0, 180, 204, 0.05);
+  border: 1px solid rgba(0, 180, 204, 0.18);
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+}
+
+[data-app="iq_player"] .iqp-fmt-tab:hover {
+  background: rgba(0, 180, 204, 0.1);
+  border-color: rgba(0, 180, 204, 0.35);
+}
+
+[data-app="iq_player"] .iqp-fmt-tab--on {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 2px 6px var(--accent-glow);
+}
+
+[data-app="iq_player"] .iqp-fmt-tab__label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.3px;
+}
+
+[data-app="iq_player"] .iqp-fmt-tab--on .iqp-fmt-tab__label {
+  color: #fff;
+}
+
+[data-app="iq_player"] .iqp-fmt-tab__sub {
+  font-size: 9.5px;
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+[data-app="iq_player"] .iqp-fmt-tab--on .iqp-fmt-tab__sub {
+  color: var(--surface-2);
+}
+
+/* ── Body layout ─────────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* ── File picker ─────────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-file-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+[data-app="iq_player"] .iqp-file-input {
+  font-family: var(--font-mono);
+  font-size: 12.5px;
+  background: rgba(0, 180, 204, 0.05);
+  border: 1px solid rgba(0, 180, 204, 0.2);
+  border-radius: 8px;
+  padding: 8px 12px;
+  color: var(--text-primary);
+  width: 100%;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+[data-app="iq_player"] .iqp-file-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+[data-app="iq_player"] .iqp-file-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+[data-app="iq_player"] .iqp-file-badge__name {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--accent);
+  font-weight: 600;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+[data-app="iq_player"] .iqp-file-badge__fmt {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(0, 180, 204, 0.25);
+  border-radius: 10px;
+  padding: 2px 7px;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+/* ── Waterfall idle state ─────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-waterfall-idle {
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(10, 18, 22, 0.85);
+  border-radius: 0 0 var(--glass-radius) var(--glass-radius);
+}
+
+[data-app="iq_player"] .iqp-wf-idle-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+[data-app="iq_player"] .iqp-idle-wave {
+  animation: iqp-wave-drift 4s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+@keyframes iqp-wave-drift {
+  0%, 100% { opacity: 0.5; transform: scaleY(0.9); }
+  50%       { opacity: 0.85; transform: scaleY(1.1); }
+}
+
+[data-app="iq_player"] .iqp-wf-idle-text {
+  font-size: 12px;
+  color: rgba(0, 180, 204, 0.55);
+  font-family: var(--font-mono);
+  letter-spacing: 0.2px;
+}
+
+/* ── Transport bar ───────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-transport {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+/* ── Play/Stop button ────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-transport__play {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  box-shadow: 0 4px 16px var(--accent-glow), 0 1px 4px rgba(0,0,0,0.1);
+  transition: all var(--spring-bounce);
+}
+
+[data-app="iq_player"] .iqp-transport__play:hover {
+  transform: scale(1.08);
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+
+[data-app="iq_player"] .iqp-transport__play:active {
+  transform: scale(0.94);
+  transition: all 80ms ease;
+}
+
+[data-app="iq_player"] .iqp-transport__play--active {
+  background: var(--accent-hover);
+  animation: iqp-play-breathe 2s ease-in-out infinite;
+}
+
+@keyframes iqp-play-breathe {
+  0%, 100% { box-shadow: 0 4px 16px var(--accent-glow); }
+  50%       { box-shadow: 0 8px 28px var(--accent-glow), 0 0 0 4px var(--accent-dim); }
+}
+
+/* ── Rail / scrub ────────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-transport__rail-wrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+[data-app="iq_player"] .iqp-transport__rail {
+  height: 6px;
+  background: rgba(0, 180, 204, 0.14);
+  border-radius: 3px;
+  position: relative;
+  overflow: visible;
+}
+
+[data-app="iq_player"] .iqp-transport__fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 0.8s linear;
+}
+
+[data-app="iq_player"] .iqp-transport__thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 3px rgba(255,255,255,0.9), 0 2px 6px var(--accent-glow);
+  transition: left 0.8s linear;
+}
+
+[data-app="iq_player"] .iqp-transport__time {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+[data-app="iq_player"] .iqp-transport__time > span {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+}
+
+[data-app="iq_player"] .iqp-transport__center {
+  font-size: 11px;
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+/* ── Speed control ───────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-transport__speed {
+  display: flex;
+  gap: 3px;
+  flex-shrink: 0;
+}
+
+[data-app="iq_player"] .iqp-speed-btn {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  background: rgba(0, 180, 204, 0.07);
+  border: 1px solid rgba(0, 180, 204, 0.2);
+  border-radius: 6px;
+  padding: 4px 7px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+}
+
+[data-app="iq_player"] .iqp-speed-btn:hover {
+  background: rgba(0, 180, 204, 0.14);
+  color: var(--text-primary);
+}
+
+[data-app="iq_player"] .iqp-speed-btn--on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  box-shadow: 0 1px 4px var(--accent-glow);
+}
+
+/* ── Live badge ──────────────────────────────────────────────────────────── */
+
+[data-app="iq_player"] .iqp-live-badge {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--accent-dim);
+  border: 1px solid rgba(0, 180, 204, 0.28);
+  border-radius: 10px;
+  padding: 2px 8px;
+  animation: iqp-live-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes iqp-live-pulse {
+  0%, 100% { opacity: 0.85; }
+  50%       { opacity: 1; }
+}
+
+/* ── Narrow reflow ───────────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  [data-app="iq_player"] .iqp-format-tabs {
+    flex-wrap: wrap;
+  }
+
+  [data-app="iq_player"] .iqp-transport {
+    flex-wrap: wrap;
+  }
+
+  [data-app="iq_player"] .iqp-transport__play {
+    width: 40px;
+    height: 40px;
+  }
+}

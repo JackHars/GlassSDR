@@ -1,0 +1,153 @@
+/* ── Notepad · paper amber · lined-paper motif ───────────────────────────── */
+
+/* Header actions */
+[data-app="notepad"] .npad-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-app="notepad"] .npad-action-btn {
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  background: rgba(192, 144, 64, 0.08);
+  border: 1px solid rgba(192, 144, 64, 0.25);
+  border-radius: 16px;
+  padding: 5px 12px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+  white-space: nowrap;
+}
+
+[data-app="notepad"] .npad-action-btn:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: translateY(-1px);
+}
+
+[data-app="notepad"] .npad-action-btn--clear {
+  background: rgba(255, 59, 48, 0.06);
+  border-color: rgba(255, 59, 48, 0.22);
+  color: rgba(255, 59, 48, 0.6);
+}
+
+[data-app="notepad"] .npad-action-btn--clear:hover {
+  background: rgba(255, 59, 48, 0.1);
+  border-color: rgba(255, 59, 48, 0.5);
+  color: rgba(255, 59, 48, 0.9);
+}
+
+/* Paper surface */
+[data-app="notepad"] .npad-paper {
+  position: relative;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--glass-radius);
+
+  /* Warm paper background */
+  background: rgba(255, 252, 244, 0.80);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid rgba(200, 170, 100, 0.3);
+  box-shadow: var(--shadow-md), var(--shadow-inset-top);
+}
+
+/* Ruled lines via CSS - every 26px (matches textarea line height) */
+[data-app="notepad"] .npad-paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 25px,
+    rgba(192, 144, 64, 0.12) 26px,
+    rgba(192, 144, 64, 0.12) 27px
+  );
+  background-position: 0 52px; /* offset so first line appears below a header area */
+  border-radius: inherit;
+}
+
+/* Left margin line */
+[data-app="notepad"] .npad-paper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 52px;
+  width: 1px;
+  background: rgba(192, 144, 64, 0.18);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Textarea */
+[data-app="notepad"] .npad-textarea {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  resize: none;
+  padding: 48px 24px 24px 68px; /* left padding after margin line */
+  font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 26px; /* matches the ruled-line repeat */
+  color: rgba(80, 50, 10, 0.88);
+  caret-color: var(--accent);
+  box-sizing: border-box;
+  letter-spacing: 0.05px;
+}
+
+[data-app="notepad"] .npad-textarea::placeholder {
+  color: rgba(192, 144, 64, 0.4);
+  font-style: italic;
+}
+
+/* Autosave flash */
+[data-app="notepad"] .npad-saved-flash {
+  position: absolute;
+  bottom: 14px;
+  right: 18px;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(255, 252, 244, 0.85);
+  border: 1px solid rgba(192, 144, 64, 0.25);
+  border-radius: 10px;
+  padding: 3px 10px;
+  pointer-events: none;
+  animation: npad-flash-in 0.2s ease, npad-flash-out 0.4s ease 0.8s forwards;
+  z-index: 2;
+}
+
+@keyframes npad-flash-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes npad-flash-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* Narrow reflow */
+@media (max-width: 720px) {
+  [data-app="notepad"] .npad-textarea {
+    padding-left: 20px;
+  }
+  [data-app="notepad"] .npad-paper::after {
+    display: none;
+  }
+  [data-app="notepad"] .npad-actions {
+    flex-wrap: wrap;
+  }
+}

@@ -1,0 +1,136 @@
+/* ── ADS-B Extended — deeper aviation identity ────────────────────────────── */
+
+[data-app="adsb_rx_ext"] .app-screen__title {
+  background: linear-gradient(135deg, #0A7A60, #1890A0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Reuse range-rings motif with slightly different opacity */
+.adsb-ext-map-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: var(--glass-radius-sm);
+  overflow: hidden;
+}
+
+.adsb-ext-rings {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.adsb-ext-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(10, 122, 96, 0.14);
+  transform: translate(-50%, -50%);
+  top: 0; left: 0;
+}
+
+.adsb-ext-ring:nth-child(1) { width: 100px; height: 100px; }
+.adsb-ext-ring:nth-child(2) { width: 200px; height: 200px; border-color: rgba(10,122,96,0.09); }
+.adsb-ext-ring:nth-child(3) { width: 320px; height: 320px; border-color: rgba(10,122,96,0.05); }
+.adsb-ext-ring:nth-child(4) { width: 440px; height: 440px; border-color: rgba(10,122,96,0.03); }
+
+/* ── Altitude ladder ──────────────────────────────────────────────────────── */
+
+.adsb-ext-alt-ladder {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.adsb-ext-alt-ladder__label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.adsb-ext-alt-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.adsb-ext-alt-bar__track {
+  height: 6px;
+  background: var(--surface-border);
+  border-radius: 3px;
+  flex: 1;
+  overflow: hidden;
+}
+
+.adsb-ext-alt-bar__fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+  transition: width 200ms ease;
+}
+
+/* ── Trail history mini chart (altitude timeline) ─────────────────────────── */
+
+.adsb-ext-trail-chart {
+  height: 40px;
+  display: block;
+  width: 100%;
+  border-radius: 4px;
+  margin-top: 4px;
+}
+
+.adsb-ext-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
+}
+
+.adsb-ext-detail__callsign {
+  font-size: 16px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.8px;
+}
+
+.adsb-ext-detail__icao {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+}
+
+.adsb-ext-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 10px;
+}
+
+.adsb-ext-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.adsb-ext-stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.adsb-ext-stat-value {
+  font-size: 12.5px;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}

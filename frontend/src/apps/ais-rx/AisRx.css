@@ -1,0 +1,140 @@
+/* ── AIS Receiver — maritime navy/cyan identity ───────────────────────────── */
+
+[data-app="ais_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #0A7ABE, #20A0D0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Map wrap with sonar sweep ────────────────────────────────────────────── */
+
+.ais-map-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  border-radius: var(--glass-radius-sm);
+  overflow: hidden;
+}
+
+/* Sonar sweep motif — a rotating sector overlay */
+.ais-sonar-sweep {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300px;
+  height: 300px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.ais-sonar-sweep circle {
+  fill: none;
+  stroke: rgba(10, 122, 190, 0.10);
+  stroke-width: 1;
+}
+
+.ais-sonar-sweep .sweep-sector {
+  stroke: none;
+  fill: rgba(10, 122, 190, 0.06);
+  transform-origin: 150px 150px;
+  animation: sonar-rotate 4s linear infinite;
+}
+
+@keyframes sonar-rotate {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* ── Vessel detail card ───────────────────────────────────────────────────── */
+
+.ais-vessel-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.ais-vessel-name {
+  font-size: 15px;
+  font-family: var(--font-mono);
+  font-weight: 800;
+  color: var(--accent);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.ais-vessel-mmsi {
+  font-size: 10.5px;
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+  letter-spacing: 0.3px;
+}
+
+.ais-vessel-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 5px 10px;
+}
+
+.ais-vessel-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ais-vessel-stat-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.ais-vessel-stat-value {
+  font-size: 13px;
+  font-family: var(--font-mono);
+  color: var(--text-primary);
+}
+
+/* ── Vessel count badge ───────────────────────────────────────────────────── */
+
+.ais-stats {
+  display: flex;
+  gap: 14px;
+  padding: 7px 12px;
+  background: var(--surface-1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--glass-radius-sm);
+  flex-shrink: 0;
+}
+
+.ais-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.ais-stat-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-tertiary);
+}
+
+.ais-stat-value {
+  font-size: 15px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Course arrow indicator */
+.ais-course-arrow {
+  display: inline-block;
+  margin-right: 3px;
+  transition: transform 200ms ease;
+}

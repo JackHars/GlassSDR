@@ -3,56 +3,101 @@ import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
 import { RecordBar } from "../../components/RecordBar";
-import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
-import { DecoderTable } from "../../components/DecoderTable";
+import { DecoderFeed } from "../../components/kit/DecoderFeed";
+import type { DecoderColumn } from "../../components/kit/DecoderFeed";
+import { FieldInspector } from "../../components/kit/DecoderFeed";
+import { AppScreen } from "../../components/kit/AppScreen";
+import type { AppStatus } from "../../components/kit/AppScreen";
+import "./FlexRx.css";
 
 interface FlexPageEvent { capcode: number; message: string; cycle: number; frame: number; }
+type Page = FlexPageEvent & { id: number };
+
+const COLUMNS: DecoderColumn<Page>[] = [
+  { key: "capcode", label: "Capcode", width: "90px", mono: true, render: (p) => p.capcode.toString().padStart(9, "0") },
+  { key: "cycle", label: "Cyc", width: "40px", mono: true },
+  { key: "frame", label: "Frm", width: "40px", mono: true },
+  { key: "message", label: "Message" },
+];
+
+let _id = 0;
 
 export function FlexRxApp() {
-  const [freq, setFreq] = useState(931_762_500);
-  const [pages, setPages] = useState<FlexPageEvent[]>([]);
+  const [freqHz, setFreqHz] = useState(931_762_500);
+  const [pages, setPages] = useState<Page[]>([]);
   const [running, setRunning] = useState(false);
 
+  useEffect(() => {
+    const p = listen<FlexPageEvent>("flex_page", (e) =>
+      setPages((prev) => [{ ...e.payload, id: ++_id }, ...prev].slice(0, 300))
+    );
+    return () => { p.then((f) => f()); };
+  }, []);
+
   const handleStart = async () => {
-    await startApp("flex_rx" as AppId, { center_hz: freq, lna_gain_db: 32, vga_gain_db: 20, amp_enabled: false });
+    await startApp("flex_rx" as AppId, { center_hz: freqHz, lna_gain_db: 32, vga_gain_db: 20, amp_enabled: false });
     setRunning(true);
   };
   const handleStop = async () => { await stopApp(); setRunning(false); };
 
-  useEffect(() => {
-    const unlisten = listen<FlexPageEvent>("flex_page", (e) =>
-      setPages((prev) => [e.payload, ...prev].slice(0, 200))
-    );
-    return () => { unlisten.then((f) => f()); };
-  }, []);
+  const appStatus: AppStatus = running ? (pages.length > 0 ? "live" : "acquiring") : "idle";
 
   return (
-    <AppShell
-      title="FLEX Pager Receiver"
-      status={running ? <><span style={{color: "#34C759"}}>●</span> Listening · {pages.length} pages</> : <><span style={{color: "#999"}}>○</span> Idle</>}
+    <AppScreen
+      appId="flex_rx"
+      title="FLEX Pager"
+      subtitle={`${(freqHz / 1e6).toFixed(4)} MHz`}
+      status={appStatus}
+      statusText={running ? (pages.length > 0 ? `${pages.length} pages` : "Listening") : "Idle"}
       controls={
-        <ControlRow
-          actions={
-            <>
-              <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
-              <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
-              <button className="glass-btn" onClick={() => setPages([])}>Clear</button>
-            </>
-          }
-        >
-          <ControlField label="Frequency (Hz)" size="lg">
-            <input type="number" value={freq} onChange={(e) => setFreq(Number(e.target.value))} />
-          </ControlField>
-        </ControlRow>
+        <div style={{ display: "flex", flexWrap: "wrap", alignItems: "flex-end", gap: "12px 16px", width: "100%" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <label className="app-shell__field-label">Frequency (Hz)</label>
+            <input type="number" value={freqHz} style={{ width: 140 }} onChange={(e) => setFreqHz(+e.target.value)} />
+          </div>
+          <div style={{ marginLeft: "auto", display: "flex", gap: 8, alignSelf: "flex-end" }}>
+            <button className="glass-btn primary" onClick={handleStart} disabled={running}>Start</button>
+            <button className="glass-btn" onClick={handleStop} disabled={!running}>Stop</button>
+            <button className="glass-btn" onClick={() => setPages([])}>Clear</button>
+          </div>
+        </div>
       }
-      footer={<RecordBar appId={"flex_rx" as any} format="jsonl" centerHz={freq} />}
+      footer={<RecordBar appId={"flex_rx" as Parameters<typeof RecordBar>[0]["appId"]} format="jsonl" centerHz={freqHz} />}
     >
-      <DecoderTable
-        headers={["Capcode", "Cycle", "Frame", "Message"]}
-        rows={pages}
-        renderRow={(p) => [p.capcode, p.cycle, p.frame, <span style={{ color: "var(--text-secondary)" }}>{p.message}</span>]}
-        emptyMessage="No pages yet — common FLEX bands include 929 MHz."
-      />
-    </AppShell>
+      <div style={{ display: "flex", flexDirection: "column", gap: 8, flex: "1 1 auto", minHeight: 0 }}>
+        <div className="flex-stats">
+          <div className="flex-stat">
+            <span className="flex-stat-label">Pages</span>
+            <span className="flex-stat-value">{pages.length}</span>
+          </div>
+          <div className="flex-stat">
+            <span className="flex-stat-label">Protocol</span>
+            <span className="flex-stat-value">FLEX</span>
+          </div>
+        </div>
+        <div className="flex-feed-wrap">
+          <div className="flex-inner-feed">
+            <DecoderFeed
+              items={pages}
+              columns={COLUMNS}
+              filterFn={(p, q) => p.capcode.toString().includes(q) || p.message.toLowerCase().includes(q)}
+              emptyLabel="Waiting for FLEX pages…"
+              emptyIcon="pager"
+              renderInspector={(p) => (
+                <FieldInspector
+                  title={`Capcode ${p.capcode.toString().padStart(9, "0")}`}
+                  fields={[
+                    { label: "Capcode", value: p.capcode.toString().padStart(9, "0"), mono: true, accent: true },
+                    { label: "Cycle", value: p.cycle, mono: true },
+                    { label: "Frame", value: p.frame, mono: true },
+                    { label: "Message", value: p.message || "(no text)" },
+                  ]}
+                />
+              )}
+            />
+          </div>
+        </div>
+      </div>
+    </AppScreen>
   );
 }

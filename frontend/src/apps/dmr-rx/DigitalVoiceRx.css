@@ -1,0 +1,139 @@
+/* ── Digital Voice Receiver — shared inner component CSS ──────────────────── */
+
+/* Per-app title gradients */
+[data-app="dmr_rx"]   .app-screen__title { background: linear-gradient(135deg, #6060D0, #8080E8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+[data-app="dpmr_rx"]  .app-screen__title { background: linear-gradient(135deg, #4878D8, #68A0F0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+[data-app="p25_rx"]   .app-screen__title { background: linear-gradient(135deg, #2880C0, #50A8E8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+[data-app="nxdn_rx"]  .app-screen__title { background: linear-gradient(135deg, #8040C8, #A060E8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+[data-app="tetra_rx"] .app-screen__title { background: linear-gradient(135deg, #3848C8, #5870E8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+/* ── Protocol badge ───────────────────────────────────────────────────────── */
+
+.dv-protocol-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  color: var(--accent);
+}
+
+/* ── Active call indicator ────────────────────────────────────────────────── */
+
+.dv-active-call {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 12px 14px;
+  background: var(--accent-dim);
+  border: 1px solid var(--accent);
+  border-radius: var(--glass-radius-sm);
+  flex-shrink: 0;
+  animation: fadeIn 250ms var(--ease-out-expo) both;
+}
+
+.dv-active-call__header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dv-active-call__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+  animation: status-pulse-live 1s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.dv-active-call__label {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--accent);
+}
+
+.dv-active-call__info {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dv-active-call__field {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.dv-active-call__field-label {
+  font-size: 9px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--text-tertiary);
+}
+
+.dv-active-call__field-value {
+  font-size: 14px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ── Stats strip ──────────────────────────────────────────────────────────── */
+
+.dv-stats {
+  display: flex;
+  gap: 14px;
+  padding: 7px 12px;
+  background: var(--surface-1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-2);
+  border-radius: var(--glass-radius-sm);
+  flex-shrink: 0;
+}
+
+.dv-stat { display: flex; flex-direction: column; gap: 1px; }
+.dv-stat-label { font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-tertiary); }
+.dv-stat-value { font-size: 15px; font-family: var(--font-mono); font-weight: 700; color: var(--accent); }
+
+/* Call type badge */
+.dv-call-type {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--accent-dim);
+  border: 1px solid rgba(96, 96, 208, 0.2);
+  color: var(--accent);
+}
+
+/* DMR burst motif: horizontal burst marks */
+[data-app="dmr_rx"] .app-screen__ambient::after,
+[data-app="dpmr_rx"] .app-screen__ambient::after,
+[data-app="p25_rx"] .app-screen__ambient::after,
+[data-app="nxdn_rx"] .app-screen__ambient::after,
+[data-app="tetra_rx"] .app-screen__ambient::after {
+  content: "";
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 18px,
+    rgba(96, 96, 208, 0.04) 18px,
+    rgba(96, 96, 208, 0.04) 19px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}

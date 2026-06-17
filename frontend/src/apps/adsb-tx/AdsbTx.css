@@ -1,0 +1,207 @@
+/* ── ADS-B TX — hazard amber over aviation ──────────────────────────────────── */
+
+/* Hazard diagonal stripe motif on the app header */
+[data-app="adsb_tx"] .app-screen__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 14px,
+    rgba(192, 120, 0, 0.07) 14px,
+    rgba(192, 120, 0, 0.07) 28px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+[data-app="adsb_tx"] .app-screen__title {
+  background: linear-gradient(135deg, #C07800, #E09828);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Two-column body layout */
+.adsb-tx__layout {
+  display: flex;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.adsb-tx__params-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.adsb-tx__preview-panel {
+  flex: 1.1;
+  min-width: 0;
+}
+
+/* Parameter field grid */
+.adsb-tx__field-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+}
+
+.adsb-tx__field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.adsb-tx__field--full {
+  grid-column: 1 / -1;
+}
+
+.adsb-tx__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.adsb-tx__input-wrap {
+  position: relative;
+}
+
+.adsb-tx__input {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  width: 100%;
+  padding: 5px 28px 5px 8px;
+  border-radius: var(--glass-radius-sm, 6px);
+  border: 1px solid rgba(192, 120, 0, 0.22);
+  background: rgba(255, 255, 255, 0.32);
+  backdrop-filter: blur(4px);
+  color: inherit;
+  box-sizing: border-box;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  -moz-appearance: textfield;
+}
+
+.adsb-tx__input::-webkit-outer-spin-button,
+.adsb-tx__input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
+
+.adsb-tx__input:focus {
+  outline: none;
+  border-color: var(--accent, #C07800);
+  box-shadow: 0 0 0 2.5px var(--accent-glow, rgba(192, 120, 0, 0.2));
+}
+
+.adsb-tx__input-hint {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: rgba(192, 120, 0, 0.5);
+  pointer-events: none;
+  letter-spacing: 0.04em;
+}
+
+.adsb-tx__slider {
+  width: 100%;
+  accent-color: #C07800;
+  cursor: pointer;
+  margin-top: 2px;
+}
+
+/* SVG Map */
+.adsb-tx__map-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.adsb-tx__map-svg {
+  width: 100%;
+  height: auto;
+  border-radius: 4px;
+  overflow: hidden;
+  display: block;
+}
+
+/* SVG text labels */
+.adsb-tx__map-label {
+  font-family: var(--font-mono);
+  font-size: 5px;
+  fill: rgba(192, 120, 0, 0.5);
+  user-select: none;
+}
+
+/* Aircraft marker animations */
+.adsb-tx__pulse-ring {
+  fill: rgba(192, 120, 0, 0.12);
+  animation: adsb-tx-pulse 2.4s ease-out infinite;
+}
+
+@keyframes adsb-tx-pulse {
+  0% { r: 7; opacity: 0.7; }
+  70% { r: 13; opacity: 0; }
+  100% { r: 13; opacity: 0; }
+}
+
+.adsb-tx__icao-label {
+  font-family: var(--font-mono);
+  font-size: 6px;
+  fill: rgba(255, 200, 80, 0.9);
+  letter-spacing: 0.06em;
+  user-select: none;
+  dominant-baseline: middle;
+}
+
+/* Coordinate strip */
+.adsb-tx__coord-strip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+}
+
+.adsb-tx__coord-item {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.adsb-tx__coord-key {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(192, 120, 0, 0.5);
+}
+
+.adsb-tx__coord-val {
+  font-size: 11px;
+  color: #C07800;
+  letter-spacing: 0.04em;
+}
+
+.adsb-tx__coord-dot {
+  color: rgba(192, 120, 0, 0.28);
+  font-size: 11px;
+}
+
+/* Narrow layout reflow */
+@media (max-width: 720px) {
+  .adsb-tx__layout {
+    flex-direction: column;
+  }
+
+  .adsb-tx__field-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}

@@ -1,0 +1,106 @@
+/* ── Composer — message/payload editor for TX apps ───────────────────────── */
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Field rows */
+.composer__fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 16px;
+}
+
+.composer__field {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 80px;
+}
+
+.composer__field-label {
+  font-size: 10.5px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-secondary);
+  display: block;
+}
+
+.composer__field-control {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Mode tabs */
+.composer__mode-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 3px;
+  background: var(--track-bg);
+  border-radius: 9px;
+  border: 1px solid var(--surface-border);
+  align-self: flex-start;
+}
+
+.composer__mode-tab {
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-sans);
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+}
+
+.composer__mode-tab:hover {
+  color: var(--text-primary);
+  background: var(--surface-2);
+}
+
+.composer__mode-tab--active {
+  background: var(--surface-elevated);
+  color: var(--accent);
+  box-shadow: var(--shadow-xs);
+}
+
+/* Main editor slot */
+.composer__editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/* Encoded preview */
+.composer__preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  background: var(--track-bg);
+  border: 1px solid var(--surface-border);
+  border-radius: 8px;
+}
+
+.composer__preview-label {
+  font-size: 10px;
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.55px;
+  color: var(--text-tertiary);
+}
+
+.composer__preview-content {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-secondary);
+  word-break: break-all;
+  line-height: 1.6;
+}

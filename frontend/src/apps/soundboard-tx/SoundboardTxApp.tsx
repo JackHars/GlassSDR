@@ -1,10 +1,7 @@
-import { useState, useEffect } from "react";
-import { useStore } from "../../store";
-import { armTx, disarmTx, startApp } from "../../ipc/commands";
-import { onTxStatus } from "../../ipc/events";
-import { LegalBanner } from "../../components/LegalBanner";
+import { useState } from "react";
 import { RecordBar } from "../../components/RecordBar";
-import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
+import { AppScreen } from "../../components/kit/AppScreen";
+import { ArmConsole } from "../../components/kit/ArmConsole";
 
 const CLIPS = [
   { id: "default", label: "Test Tone (1 kHz)" },
@@ -13,82 +10,40 @@ const CLIPS = [
 ];
 
 export function SoundboardTxApp() {
-  const { legalAccepted, armed, txStatus, setArmed, setTxStatus } = useStore();
-  const [showLegal, setShowLegal] = useState(false);
   const [clipId, setClipId] = useState("default");
-  const [frequency, setFrequency] = useState("");
+  const [frequency, setFrequency] = useState("146520000");
   const [vgaGain, setVgaGain] = useState(20);
-  const [ampEnabled, setAmpEnabled] = useState(false);
-
-  useEffect(() => {
-    const p = onTxStatus((status) => setTxStatus(status));
-    return () => { p.then((fn) => fn()); };
-  }, [setTxStatus]);
-
-  const handleArm = async () => {
-    if (!legalAccepted) { setShowLegal(true); return; }
-    await armTx(); setArmed(true);
-  };
-  const handleDisarm = async () => { await disarmTx(); setArmed(false); };
-  const handleTransmit = async () => {
-    if (!armed) return;
-    await startApp("soundboard_tx" as any, {
-      clip_id: clipId,
-      center_hz: parseFloat(frequency) || 0,
-      vga_gain_db: vgaGain, amp_enabled: ampEnabled,
-    });
-    setArmed(false);
-  };
 
   return (
-    <AppShell
-      title="Audio Transmitter"
-      status={
-        armed ? <><span style={{color: "#FF9500"}}>●</span> Armed</>
-        : txStatus?.kind === "transmitting" ? <><span style={{color: "#FF3B30"}}>●</span> Transmitting{txStatus.progress_pct !== undefined ? ` ${txStatus.progress_pct}%` : ""}</>
-        : <><span style={{color: "#999"}}>○</span> Idle</>
-      }
-      controls={
-        <ControlRow
-          actions={
-            !armed
-              ? <button className="glass-btn" onClick={handleArm} style={{ background: "#FF9500", color: "#fff" }}>ARM TX</button>
-              : <>
-                  <button className="glass-btn" onClick={handleDisarm}>Disarm</button>
-                  <button className="glass-btn" onClick={handleTransmit} style={{ background: "#FF3B30", color: "#fff", fontWeight: 700 }}>TRANSMIT</button>
-                </>
-          }
-        >
-          <ControlField label="Clip" size="md">
-            <select value={clipId} onChange={(e) => setClipId(e.target.value)}>
-              {CLIPS.map((c) => <option key={c.id} value={c.id}>{c.label}</option>)}
-            </select>
-          </ControlField>
-          <ControlField label="Frequency (Hz)" size="lg">
-            <input type="number" value={frequency} onChange={(e) => setFrequency(e.target.value)} placeholder="e.g. 146520000" />
-          </ControlField>
-          <ControlField label={`TX VGA ${vgaGain} dB`} size="md">
-            <input type="range" min={0} max={47} value={vgaGain} onChange={(e) => setVgaGain(Number(e.target.value))} />
-          </ControlField>
-          <ControlField label="Amp" size="sm">
-            <input type="checkbox" checked={ampEnabled} onChange={(e) => setAmpEnabled(e.target.checked)} />
-          </ControlField>
-        </ControlRow>
-      }
-      footer={<RecordBar appId={"soundboard_tx" as any} format="iq" centerHz={parseFloat(frequency) || undefined} />}
-    >
-      {showLegal && <LegalBanner onAccept={() => setShowLegal(false)} />}
-      <div className="app-shell__grow" style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 12, color: "var(--text-secondary)" }}>
-        <div style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.6 }}>Selected clip</div>
-        <div style={{ fontSize: 28, fontWeight: 600, color: "var(--text-primary)" }}>
-          {CLIPS.find((c) => c.id === clipId)?.label}
-        </div>
-        {txStatus && (
-          <div style={{ marginTop: 12, padding: 12, background: "rgba(0,0,0,0.04)", border: "1px solid rgba(0,0,0,0.06)", borderRadius: 8, fontFamily: "var(--font-mono)", fontSize: 12 }}>
-            Status: {txStatus.kind}{txStatus.progress_pct !== undefined ? ` · ${txStatus.progress_pct}%` : ""}{txStatus.message ? ` · ${txStatus.message}` : ""}
+    <AppScreen appId="soundboard_tx" title="Audio Transmitter" subtitle="Soundboard" status="idle" statusText="Ready">
+      <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: "1 1 auto", minHeight: 0 }}>
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "flex-end" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <label className="app-shell__field-label">Frequency (Hz)</label>
+            <input type="number" value={frequency} style={{ width: 130 }} onChange={(e) => setFrequency(e.target.value)} />
           </div>
-        )}
+          <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+            <label className="app-shell__field-label">VGA {vgaGain} dB</label>
+            <input type="range" min={0} max={47} value={vgaGain} onChange={(e) => setVgaGain(+e.target.value)} />
+          </div>
+        </div>
+        <ArmConsole
+          appId="soundboard_tx"
+          buildParams={() => ({ clip_id: clipId, center_hz: parseFloat(frequency) || 0, vga_gain_db: vgaGain, amp_enabled: false })}
+          warning="own-devices-only"
+        >
+          <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <label className="app-shell__field-label">Audio Clip</label>
+            {CLIPS.map((c) => (
+              <label key={c.id} style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer", padding: "8px 12px", background: clipId === c.id ? "var(--accent-dim)" : "rgba(255,255,255,0.5)", border: `1px solid ${clipId === c.id ? "var(--accent)" : "rgba(0,0,0,0.08)"}`, borderRadius: 8, transition: "all var(--spring-snappy)" }}>
+                <input type="radio" name="clip" value={c.id} checked={clipId === c.id} onChange={() => setClipId(c.id)} style={{ accentColor: "var(--accent)" }} />
+                <span style={{ fontSize: 13, color: clipId === c.id ? "var(--accent)" : "var(--text-primary)" }}>{c.label}</span>
+              </label>
+            ))}
+          </div>
+        </ArmConsole>
       </div>
-    </AppShell>
+      <RecordBar appId={"soundboard_tx" as Parameters<typeof RecordBar>[0]["appId"]} format="iq" centerHz={parseFloat(frequency) || undefined} />
+    </AppScreen>
   );
 }

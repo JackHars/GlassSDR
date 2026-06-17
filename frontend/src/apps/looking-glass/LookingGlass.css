@@ -1,0 +1,198 @@
+/* ── Looking Glass — indigo · panorama-bars motif ───────────────────────────── */
+
+[data-app="looking_glass"] .app-screen__title {
+  background: linear-gradient(135deg, #4060B0, #6080D0);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Header action buttons */
+.lg-tx__header-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.lg-tx__ctrl-btn {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  padding: 5px 12px;
+  border-radius: 6px;
+  border: 1.5px solid rgba(64, 96, 176, 0.25);
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s;
+}
+
+.lg-tx__ctrl-btn--start {
+  color: #34A85A;
+  border-color: rgba(52, 168, 90, 0.35);
+}
+.lg-tx__ctrl-btn--start:hover:not(:disabled) {
+  background: rgba(52, 168, 90, 0.13);
+  border-color: rgba(52, 168, 90, 0.60);
+}
+.lg-tx__ctrl-btn--stop {
+  color: #C84020;
+  border-color: rgba(200, 64, 32, 0.35);
+}
+.lg-tx__ctrl-btn--stop:hover:not(:disabled) {
+  background: rgba(200, 64, 32, 0.11);
+  border-color: rgba(200, 64, 32, 0.55);
+}
+.lg-tx__ctrl-btn--clear {
+  color: rgba(0, 0, 0, 0.48);
+}
+.lg-tx__ctrl-btn--clear:hover {
+  background: rgba(64, 96, 176, 0.12);
+  color: #4060B0;
+}
+.lg-tx__ctrl-btn--off {
+  opacity: 0.38;
+  cursor: default;
+}
+
+/* Panoramic spectrum panel */
+.lg-tx__pano-panel {
+  margin-bottom: 10px;
+}
+
+.lg-tx__pano-svg {
+  width: 100%;
+  height: 108px;
+  display: block;
+  border-radius: 3px;
+  margin-bottom: 4px;
+}
+
+.lg-tx__band-label {
+  font-family: var(--font-mono);
+  font-size: 5.5px;
+  font-weight: 700;
+  fill: rgba(64, 96, 176, 0.60);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.lg-tx__axis-label {
+  font-family: var(--font-mono);
+  font-size: 5px;
+  fill: rgba(64, 96, 176, 0.50);
+}
+
+.lg-tx__panorama-mark {
+  font-family: var(--font-sans);
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.28em;
+  fill: rgba(64, 96, 176, 0.04);
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.lg-tx__scale-note {
+  font-size: 9px;
+  color: rgba(64, 96, 176, 0.45);
+  font-family: var(--font-mono);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+/* Peaks panel */
+.lg-tx__peaks-panel {
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
+.lg-tx__empty {
+  padding: 24px;
+  text-align: center;
+  font-size: 12px;
+  color: rgba(64, 96, 176, 0.48);
+  font-style: italic;
+}
+
+.lg-tx__peaks-list {
+  overflow-y: auto;
+  max-height: 200px;
+}
+
+.lg-tx__peaks-hdr {
+  display: grid;
+  grid-template-columns: 160px 80px 60px 1fr;
+  gap: 8px;
+  padding: 5px 14px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: rgba(64, 96, 176, 0.55);
+  border-bottom: 1px solid rgba(64, 96, 176, 0.14);
+  position: sticky;
+  top: 0;
+  background: var(--surface-2);
+  backdrop-filter: blur(6px);
+}
+
+.lg-tx__hdr-bar { opacity: 0.8; }
+
+.lg-tx__peak-row {
+  display: grid;
+  grid-template-columns: 160px 80px 60px 1fr;
+  gap: 8px;
+  align-items: center;
+  padding: 5px 14px;
+  border-bottom: 1px solid rgba(64, 96, 176, 0.07);
+  transition: background 0.08s;
+}
+
+.lg-tx__peak-row:hover {
+  background: rgba(64, 96, 176, 0.06);
+}
+
+.lg-tx__peak-freq {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent, #4060B0);
+  letter-spacing: 0.04em;
+}
+
+.lg-tx__peak-pwr {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.lg-tx__peak-pwr--strong { color: #34A85A; }
+
+.lg-tx__peak-band {
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(64, 96, 176, 0.65);
+  letter-spacing: 0.05em;
+}
+
+.lg-tx__peak-bar-wrap {
+  height: 5px;
+  background: rgba(64, 96, 176, 0.12);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.lg-tx__peak-bar {
+  height: 100%;
+  background: linear-gradient(90deg, rgba(64,96,176,0.55), rgba(50,190,100,0.80));
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+@media (max-width: 720px) {
+  .lg-tx__peaks-hdr,
+  .lg-tx__peak-row {
+    grid-template-columns: 140px 70px 50px 1fr;
+  }
+}

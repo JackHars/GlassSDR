@@ -5,9 +5,31 @@ import type { AppStatus } from "../ipc/types/AppStatus";
 import type { AircraftState } from "../ipc/types/AircraftState";
 import type { PocsagTxStatus } from "../ipc/events";
 
+export type ThemeMode = "light" | "dark";
+
+const THEME_KEY = "glasssdr-theme";
+
+function readStoredTheme(): ThemeMode {
+  try {
+    const v = localStorage.getItem(THEME_KEY);
+    if (v === "light" || v === "dark") return v;
+  } catch { /* ignore */ }
+  return "dark";
+}
+
+function applyTheme(mode: ThemeMode) {
+  const root = document.documentElement;
+  root.setAttribute("data-theme", mode);
+  try { localStorage.setItem(THEME_KEY, mode); } catch { /* ignore */ }
+}
+
 interface State {
   apps: AppMetadata[];
   setApps: (a: AppMetadata[]) => void;
+
+  theme: ThemeMode;
+  setTheme: (t: ThemeMode) => void;
+  toggleTheme: () => void;
 
   activeApp: AppId | null;
   status: AppStatus;
@@ -26,9 +48,19 @@ interface State {
   setTxStatus: (s: PocsagTxStatus | null) => void;
 }
 
-export const useStore = create<State>((set) => ({
+export const useStore = create<State>((set, get) => ({
   apps: [],
   setApps: (apps) => set({ apps }),
+  theme: typeof window !== "undefined" ? readStoredTheme() : "dark",
+  setTheme: (theme) => {
+    applyTheme(theme);
+    set({ theme });
+  },
+  toggleTheme: () => {
+    const next: ThemeMode = get().theme === "dark" ? "light" : "dark";
+    applyTheme(next);
+    set({ theme: next });
+  },
   activeApp: null,
   status: { kind: "idle" },
   setStatus: (status) => set({ status }),

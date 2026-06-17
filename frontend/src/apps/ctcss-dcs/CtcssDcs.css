@@ -1,0 +1,16 @@
+/* ── CTCSS/DCS Decoder — amber tone-wheel identity ────────────────────────── */
+[data-app="ctcss_dcs"] .app-screen__title { background: linear-gradient(135deg, #C08028, #E0A840); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+
+.ctcss-tone-display { padding: 24px; background: rgba(255,255,255,0.60); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.75); border-radius: var(--glass-radius); box-shadow: var(--shadow-md), var(--shadow-inset-top); display: flex; flex-direction: column; align-items: center; gap: 10px; flex-shrink: 0; }
+
+.ctcss-tone-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-secondary); }
+.ctcss-tone-freq { font-size: 52px; font-family: var(--font-mono); font-weight: 700; letter-spacing: -1px; line-height: 1; transition: all var(--spring-smooth); }
+.ctcss-tone-freq--active { color: var(--accent); text-shadow: 0 0 20px var(--accent-glow); }
+.ctcss-tone-freq--empty  { color: var(--text-tertiary); }
+.ctcss-tone-power { font-size: 13px; font-family: var(--font-mono); color: var(--text-secondary); }
+
+.ctcss-grid-label { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: var(--text-secondary); margin-top: 4px; }
+
+.ctcss-tone-grid { display: flex; flex-wrap: wrap; gap: 5px; }
+.ctcss-tone-chip { padding: 4px 9px; border-radius: 6px; font-size: 11px; font-family: var(--font-mono); background: rgba(255,255,255,0.60); border: 1px solid rgba(0,0,0,0.07); color: var(--text-secondary); transition: all var(--spring-snappy); }
+.ctcss-tone-chip.match { background: var(--accent); border-color: var(--accent-hover); color: #fff; box-shadow: 0 2px 8px var(--accent-glow); }

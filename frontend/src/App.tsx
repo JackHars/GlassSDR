@@ -3,6 +3,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { listApps, listUsbDevices, UsbDevice } from "./ipc/commands";
 import { useStore } from "./store";
 import { AppGrid } from "./components/shell/AppGrid";
+import { Icon } from "./components/kit/Icon";
 import "./styles/glass.css";
 
 // Lazy-load all app components for fast initial render
@@ -132,7 +133,9 @@ function LoadingSpinner() {
   return (
     <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-tertiary)" }}>
       <div style={{ textAlign: "center" }}>
-        <div style={{ fontSize: 32, marginBottom: 8, animation: "spin 1s linear infinite" }}>⚡</div>
+        <div style={{ marginBottom: 8, animation: "spin 1s linear infinite", display: "inline-flex" }}>
+          <Icon name="bolt" size={32} />
+        </div>
         <div style={{ fontSize: 13 }}>Loading...</div>
       </div>
     </div>
@@ -141,6 +144,8 @@ function LoadingSpinner() {
 
 export default function App() {
   const setApps = useStore((s) => s.setApps);
+  const theme = useStore((s) => s.theme);
+  const toggleTheme = useStore((s) => s.toggleTheme);
   const [activeApp, setActiveApp] = useState<string | null>(null);
   const [selectedDevice, setSelectedDevice] = useState("");
   const [usbDevices, setUsbDevices] = useState<UsbDevice[]>([]);
@@ -220,6 +225,14 @@ export default function App() {
           </div>
           <span className="logo">GlassSDR</span>
           <div style={{ flex: 1 }} />
+          <button
+            className="theme-toggle"
+            onClick={toggleTheme}
+            title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
+            aria-label="Toggle theme"
+          >
+            <Icon name={theme === "dark" ? "sun" : "bolt"} size={16} />
+          </button>
           {!activeApp && (
             <div className="device-selector">
               <span className={`device-indicator ${usbDevices.some(d => d.is_hackrf) ? "" : "disconnected"}`} />
@@ -241,7 +254,7 @@ export default function App() {
           {activeApp && (
             <>
               <button className="back-btn" onClick={handleBack}>
-                ← Home
+                <Icon name="arrowLeft" size={14} /> Home
               </button>
               <span style={{ fontSize: 12, color: "var(--text-tertiary)", fontFamily: "var(--font-mono)", marginLeft: 8 }}>
                 {activeApp}

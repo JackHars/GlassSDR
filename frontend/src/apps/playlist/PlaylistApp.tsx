@@ -1,13 +1,16 @@
 import { useState, useRef } from "react";
 import { startApp, stopApp } from "../../ipc/commands";
+import { AppScreen, type AppStatus } from "../../components/kit/AppScreen";
+import { GlassPanel } from "../../components/kit/GlassPanel";
 import type { AppId } from "../../ipc/types/AppId";
-import { AppShell, ControlField, ControlRow } from "../../components/AppShell";
+import "./Playlist.css";
 
 interface Step { appId: string; durationSec: number; }
 
-const APPS: string[] = [
-  "nfm_audio", "wfm_rx", "am_rx", "adsb_rx", "aprs_rx",
-  "ais_rx", "pocsag_rx", "rds_rx", "acars_rx",
+const AVAILABLE_APPS: string[] = [
+  "nfm_audio", "wfm_rx", "am_rx", "usb_rx", "lsb_rx", "cw_rx",
+  "adsb_rx", "aprs_rx", "ais_rx", "pocsag_rx", "flex_rx",
+  "rds_rx", "acars_rx", "dab_rx", "scanner", "recon",
 ];
 
 const LS_KEY = "mayhem_playlist";
@@ -16,101 +19,192 @@ function loadSteps(): Step[] {
   try { return JSON.parse(localStorage.getItem(LS_KEY) ?? "[]"); } catch { return []; }
 }
 
+function fmtDur(s: number): string {
+  if (s < 60) return `${s}s`;
+  return `${Math.floor(s / 60)}m ${s % 60}s`;
+}
+
+function appLabel(id: string): string {
+  return id.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
+
 export function PlaylistApp() {
-  const [steps, setSteps] = useState<Step[]>(loadSteps);
-  const [newApp, setNewApp] = useState(APPS[0]);
+  const [steps, setSteps]   = useState<Step[]>(loadSteps);
+  const [newApp, setNewApp] = useState(AVAILABLE_APPS[0]);
   const [newDur, setNewDur] = useState(30);
   const [playing, setPlaying] = useState(false);
-  const [curIdx, setCurIdx] = useState<number | null>(null);
-  const stopRef = useRef(false);
+  const [curIdx, setCurIdx]  = useState<number | null>(null);
+  const [doneIdx, setDoneIdx] = useState<Set<number>>(new Set());
+  const stopRef              = useRef(false);
 
   const save = (s: Step[]) => { setSteps(s); localStorage.setItem(LS_KEY, JSON.stringify(s)); };
-  const add = () => { save([...steps, { appId: newApp, durationSec: newDur }]); };
-  const remove = (i: number) => save(steps.filter((_, idx) => idx !== i));
+  const addStep = () => { save([...steps, { appId: newApp, durationSec: newDur }]); };
+  const removeStep = (i: number) => save(steps.filter((_, idx) => idx !== i));
+  const moveUp = (i: number) => {
+    if (i === 0) return;
+    const s = [...steps]; [s[i-1], s[i]] = [s[i], s[i-1]]; save(s);
+  };
+  const moveDown = (i: number) => {
+    if (i >= steps.length - 1) return;
+    const s = [...steps]; [s[i], s[i+1]] = [s[i+1], s[i]]; save(s);
+  };
 
-  const play = async () => {
+  const handlePlay = async () => {
     if (playing || steps.length === 0) return;
-    setPlaying(true); stopRef.current = false;
+    setPlaying(true);
+    setDoneIdx(new Set());
+    stopRef.current = false;
+
     for (let i = 0; i < steps.length; i++) {
       if (stopRef.current) break;
       setCurIdx(i);
       const step = steps[i];
-      try { await startApp(step.appId as AppId, {}); } catch { /* app may not need start */ }
+      try { await startApp(step.appId as AppId, {}); } catch { /* no-op */ }
       await new Promise<void>((res) => {
         const t = setTimeout(res, step.durationSec * 1000);
-        const poll = setInterval(() => { if (stopRef.current) { clearTimeout(t); clearInterval(poll); res(); } }, 100);
+        const poll = setInterval(() => {
+          if (stopRef.current) { clearTimeout(t); clearInterval(poll); res(); }
+        }, 100);
       });
-      try { await stopApp(); } catch { /* ignore */ }
+      try { await stopApp(); } catch { /* no-op */ }
+      setDoneIdx((prev) => new Set(prev).add(i));
     }
-    setCurIdx(null); setPlaying(false);
+
+    setCurIdx(null);
+    setPlaying(false);
   };
 
-  const stop = async () => {
+  const handleStop = async () => {
     stopRef.current = true;
-    try { await stopApp(); } catch { /* ignore */ }
+    try { await stopApp(); } catch { /* no-op */ }
+    setCurIdx(null);
+    setPlaying(false);
   };
+
+  const totalDur = steps.reduce((acc, s) => acc + s.durationSec, 0);
+  const progressPct = playing && curIdx !== null
+    ? Math.round((curIdx / steps.length) * 100)
+    : 0;
+
+  const appStatus: AppStatus = playing ? "live" : "idle";
+  const statusText = playing && curIdx !== null
+    ? `Step ${curIdx + 1} / ${steps.length} · ${appLabel(steps[curIdx].appId)}`
+    : `${steps.length} step${steps.length !== 1 ? "s" : ""} · ${fmtDur(totalDur)} total`;
 
   return (
-    <AppShell
+    <AppScreen
+      appId="playlist"
       title="TX Playlist"
-      status={
-        playing && curIdx !== null
-          ? <><span style={{color: "#34C759"}}>●</span> Playing step {curIdx + 1}/{steps.length} · {steps[curIdx].appId}</>
-          : <><span style={{color: "#999"}}>○</span> Idle · {steps.length} step{steps.length === 1 ? "" : "s"}</>
+      subtitle="Sequenced Queue"
+      status={appStatus}
+      statusText={statusText}
+      actions={
+        playing ? (
+          <button className="pl-btn pl-btn--stop" onClick={handleStop}>■ Stop</button>
+        ) : (
+          <button className="pl-btn pl-btn--play" onClick={handlePlay} disabled={steps.length === 0}>
+            ▶ Run
+          </button>
+        )
       }
       controls={
-        <ControlRow
-          actions={
-            <>
-              <button className="glass-btn primary" onClick={play} disabled={playing || steps.length === 0}>▶ Play</button>
-              <button className="glass-btn" onClick={stop} disabled={!playing}>■ Stop</button>
-            </>
-          }
-        >
-          <ControlField label="App" size="md">
-            <select value={newApp} onChange={(e) => setNewApp(e.target.value)}>
-              {APPS.map((a) => <option key={a} value={a}>{a}</option>)}
+        <div className="pl-controls">
+          <div className="pl-ctrl-field">
+            <label className="pl-ctrl-label">App</label>
+            <select
+              className="pl-ctrl-select"
+              value={newApp}
+              onChange={(e) => setNewApp(e.target.value)}
+            >
+              {AVAILABLE_APPS.map((a) => <option key={a} value={a}>{appLabel(a)}</option>)}
             </select>
-          </ControlField>
-          <ControlField label="Duration (s)" size="sm">
-            <input type="number" min={1} max={3600} value={newDur} onChange={(e) => setNewDur(Number(e.target.value))} />
-          </ControlField>
-          <button className="glass-btn" onClick={add}>Add step</button>
-        </ControlRow>
+          </div>
+          <div className="pl-ctrl-field">
+            <label className="pl-ctrl-label">Duration (s)</label>
+            <input
+              className="pl-ctrl-input"
+              type="number"
+              min={1}
+              max={3600}
+              value={newDur}
+              onChange={(e) => setNewDur(Math.max(1, Number(e.target.value)))}
+            />
+          </div>
+          <button className="pl-add-btn" onClick={addStep}>+ Add step</button>
+        </div>
       }
     >
-      <div className="app-shell__grow" style={{ overflow: "auto", borderRadius: 12, background: "rgba(255,255,255,0.55)", border: "1px solid rgba(255,255,255,0.7)", backdropFilter: "blur(16px)", minHeight: 200 }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 13 }}>
-          <thead>
-            <tr style={{ position: "sticky", top: 0, background: "rgba(255,255,255,0.85)", textAlign: "left", backdropFilter: "blur(8px)" }}>
-              <th style={{ padding: "8px 12px", width: 40, fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>#</th>
-              <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>App</th>
-              <th style={{ padding: "8px 12px", fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-secondary)" }}>Duration</th>
-              <th style={{ padding: "8px 12px", width: 60 }} />
-            </tr>
-          </thead>
-          <tbody>
-            {steps.map((s, i) => (
-              <tr key={i} style={{ borderBottom: "1px solid rgba(0,0,0,0.04)", background: curIdx === i ? "rgba(0,122,255,0.08)" : "transparent" }}>
-                <td style={{ padding: "6px 12px", color: "var(--text-tertiary)" }}>{i + 1}</td>
-                <td style={{ padding: "6px 12px", fontFamily: "var(--font-mono)", color: curIdx === i ? "var(--accent)" : "var(--text-primary)" }}>{s.appId}</td>
-                <td style={{ padding: "6px 12px" }}>{s.durationSec}s</td>
-                <td style={{ padding: "6px 12px", textAlign: "center" }}>
-                  <button onClick={() => remove(i)}
-                    style={{ background: "transparent", border: "1px solid rgba(255,80,80,0.4)", color: "#ff8080", borderRadius: 4, cursor: "pointer", fontSize: 11, padding: "1px 6px" }}>
-                    ✕
-                  </button>
-                </td>
-              </tr>
-            ))}
-            {steps.length === 0 && (
-              <tr><td colSpan={4} style={{ padding: 32, textAlign: "center", color: "var(--text-tertiary)" }}>
-                No steps yet — pick an app and duration above and tap Add.
-              </td></tr>
-            )}
-          </tbody>
-        </table>
+      <div className="pl-layout">
+        {/* Progress indicator during playback */}
+        {playing && curIdx !== null && (
+          <div className="pl-progress-wrap">
+            <div className="pl-progress__track">
+              <div className="pl-progress__fill" style={{ width: `${progressPct}%` }} />
+            </div>
+            <span className="pl-progress__label">
+              Running step {curIdx + 1} of {steps.length}
+            </span>
+          </div>
+        )}
+
+        {/* TX caution note */}
+        <div className="pl-caution">
+          Each TX step uses the respective app's arm gate — check before running.
+        </div>
+
+        {/* Step queue */}
+        {steps.length === 0 ? (
+          <div className="pl-empty">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+              <rect x="4" y="10" width="40" height="8" rx="3" stroke="var(--accent)" strokeWidth="1.5" strokeOpacity="0.5" />
+              <rect x="4" y="22" width="30" height="8" rx="3" stroke="var(--accent)" strokeWidth="1.5" strokeOpacity="0.4" />
+              <rect x="4" y="34" width="20" height="8" rx="3" stroke="var(--accent)" strokeWidth="1.5" strokeOpacity="0.3" />
+              <circle cx="40" cy="38" r="7" stroke="var(--accent)" strokeWidth="1.5" strokeOpacity="0.5" />
+              <path d="M38 38L40 40L43 36" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" strokeOpacity="0.5" />
+            </svg>
+            <div className="pl-empty__title">No steps in queue</div>
+            <div className="pl-empty__sub">Add a step above to build your playlist.</div>
+          </div>
+        ) : (
+          <GlassPanel title="Queue" titleRight={<span className="pl-queue-total">{fmtDur(totalDur)} total</span>} size="fill" pad="none">
+            <div className="pl-queue">
+              {steps.map((step, i) => {
+                const isActive = curIdx === i;
+                const isDone = doneIdx.has(i);
+                return (
+                  <div
+                    key={i}
+                    className={`pl-step${isActive ? " pl-step--active" : ""}${isDone ? " pl-step--done" : ""}`}
+                  >
+                    <div className="pl-step__num">
+                      {isDone ? (
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                          <circle cx="8" cy="8" r="7" fill="var(--accent)" fillOpacity="0.2" stroke="var(--accent)" strokeWidth="1.5" />
+                          <path d="M5 8L7 10L11 6" stroke="var(--accent)" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        </svg>
+                      ) : isActive ? (
+                        <span className="pl-step__playing-dot" />
+                      ) : (
+                        <span className="pl-step__idx">{i + 1}</span>
+                      )}
+                    </div>
+                    <div className="pl-step__body">
+                      <span className="pl-step__app">{appLabel(step.appId)}</span>
+                      <span className="pl-step__appid">{step.appId}</span>
+                    </div>
+                    <div className="pl-step__dur">{fmtDur(step.durationSec)}</div>
+                    <div className="pl-step__actions">
+                      <button className="pl-step__move" onClick={() => moveUp(i)} disabled={i === 0 || playing} title="Move up">▴</button>
+                      <button className="pl-step__move" onClick={() => moveDown(i)} disabled={i === steps.length - 1 || playing} title="Move down">▾</button>
+                      <button className="pl-step__del" onClick={() => removeStep(i)} disabled={playing} title="Remove">×</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </GlassPanel>
+        )}
       </div>
-    </AppShell>
+    </AppScreen>
   );
 }

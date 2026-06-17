@@ -1,0 +1,227 @@
+/* ── BLE TX — bluetooth blue + hazard · 2.4 GHz channel strip ───────────────── */
+
+[data-app="btle_tx"] .app-screen__title {
+  background: linear-gradient(135deg, #4860E8, #6880FF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+[data-app="btle_tx"] .app-screen__header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 14px,
+    rgba(72, 96, 232, 0.07) 14px,
+    rgba(72, 96, 232, 0.07) 28px
+  );
+  pointer-events: none;
+  border-radius: inherit;
+}
+
+/* Channel strip */
+.ble-tx__strip-panel {
+  margin-bottom: 10px;
+}
+
+.ble-tx__strip-svg {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: rgba(10, 14, 40, 0.35);
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.ble-tx__band-label {
+  font-family: var(--font-mono);
+  font-size: 6px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  fill: rgba(72, 96, 232, 0.45);
+  text-transform: uppercase;
+}
+
+.ble-tx__ch-label {
+  font-family: var(--font-mono);
+  font-size: 5.5px;
+  fill: rgba(72, 96, 232, 0.75);
+  font-weight: 600;
+}
+
+.ble-tx__ch-label--sel {
+  fill: rgba(120, 148, 255, 0.95);
+  font-size: 6.5px;
+  font-weight: 700;
+}
+
+.ble-tx__axis-label {
+  font-family: var(--font-mono);
+  font-size: 5px;
+  fill: rgba(72, 96, 232, 0.40);
+}
+
+.ble-tx__strip-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.ble-tx__legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.ble-tx__legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.ble-tx__legend-dot--data {
+  background: rgba(72, 96, 232, 0.22);
+  border: 1px solid rgba(72, 96, 232, 0.30);
+}
+
+.ble-tx__legend-dot--adv {
+  background: #4860E8;
+  border: 1px solid rgba(120, 148, 255, 0.8);
+}
+
+/* Body layout */
+.ble-tx__layout {
+  display: flex;
+  gap: 10px;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin-bottom: 10px;
+}
+
+.ble-tx__ch-panel {
+  flex: 1;
+  min-width: 0;
+}
+
+.ble-tx__pdu-panel {
+  flex: 1.2;
+  min-width: 0;
+}
+
+/* Channel buttons */
+.ble-tx__ch-btns {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.ble-tx__ch-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 6px;
+  border-radius: var(--glass-radius-sm, 8px);
+  border: 1.5px solid rgba(72, 96, 232, 0.20);
+  background: rgba(255, 255, 255, 0.22);
+  cursor: pointer;
+  transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
+}
+
+.ble-tx__ch-btn:hover {
+  background: rgba(72, 96, 232, 0.10);
+  border-color: rgba(72, 96, 232, 0.40);
+}
+
+.ble-tx__ch-btn--sel {
+  background: rgba(72, 96, 232, 0.14);
+  border-color: #4860E8;
+  box-shadow: 0 0 0 2px rgba(72, 96, 232, 0.20);
+}
+
+.ble-tx__ch-num {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent, #4860E8);
+  letter-spacing: 0.04em;
+}
+
+.ble-tx__ch-mhz {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(0, 0, 0, 0.50);
+}
+
+/* Gain */
+.ble-tx__gain-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ble-tx__field-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.44);
+}
+
+.ble-tx__slider {
+  width: 100%;
+  accent-color: #4860E8;
+  cursor: pointer;
+}
+
+/* PDU display */
+.ble-tx__pdu-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.ble-tx__pdu-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.ble-tx__pdu-key {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(0, 0, 0, 0.40);
+  min-width: 80px;
+  flex-shrink: 0;
+}
+
+.ble-tx__pdu-val {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.65);
+}
+
+.ble-tx__pdu-val--mono {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.04em;
+}
+
+.ble-tx__pdu-val--accent {
+  color: var(--accent, #4860E8);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .ble-tx__layout {
+    flex-direction: column;
+  }
+}

@@ -1,0 +1,428 @@
+/* ── Capture Manager · archival violet · file-card motif ─────────────────── */
+
+/* ── Header action buttons ───────────────────────────────────────────────── */
+
+[data-app="capture_manager"] .cm-action-record,
+[data-app="capture_manager"] .cm-action-stop {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 650;
+  letter-spacing: 0.1px;
+  border: none;
+  border-radius: 20px;
+  padding: 6px 16px;
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+}
+
+[data-app="capture_manager"] .cm-action-record {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 2px 8px var(--accent-glow), var(--shadow-inset-top);
+}
+
+[data-app="capture_manager"] .cm-action-record:hover {
+  background: var(--accent-hover);
+  box-shadow: 0 4px 14px var(--accent-glow), var(--shadow-inset-top);
+  transform: translateY(-1px);
+}
+
+[data-app="capture_manager"] .cm-action-stop {
+  background: rgba(255, 59, 48, 0.88);
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(255, 59, 48, 0.3), var(--shadow-inset-top);
+}
+
+[data-app="capture_manager"] .cm-action-stop:hover {
+  background: rgba(220, 40, 30, 0.95);
+  transform: translateY(-1px);
+}
+
+/* ── Controls bar ────────────────────────────────────────────────────────── */
+
+[data-app="capture_manager"] .cm-controls {
+  display: flex;
+  align-items: flex-end;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+[data-app="capture_manager"] .cm-ctrl-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+
+[data-app="capture_manager"] .cm-ctrl-field--slider {
+  flex: 1 1 160px;
+  max-width: 280px;
+}
+
+[data-app="capture_manager"] .cm-ctrl-label {
+  font-size: 10.5px;
+  font-weight: 650;
+  letter-spacing: 0.55px;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+[data-app="capture_manager"] .cm-ctrl-input {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--text-primary);
+  width: 160px;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+[data-app="capture_manager"] .cm-ctrl-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+[data-app="capture_manager"] .cm-ctrl-slider {
+  appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(139, 92, 246, 0.2);
+  outline: none;
+  cursor: pointer;
+}
+
+[data-app="capture_manager"] .cm-ctrl-slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 6px var(--accent-glow);
+  cursor: pointer;
+  transition: transform var(--spring-snappy), box-shadow var(--spring-snappy);
+}
+
+[data-app="capture_manager"] .cm-ctrl-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 10px var(--accent-glow);
+}
+
+[data-app="capture_manager"] .cm-ctrl-select {
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  background: var(--surface-2);
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 8px;
+  padding: 6px 10px;
+  color: var(--text-primary);
+  cursor: pointer;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+[data-app="capture_manager"] .cm-ctrl-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-dim);
+}
+
+[data-app="capture_manager"] .cm-ctrl-refresh {
+  font-size: 17px;
+  background: transparent;
+  border: 1px solid rgba(139, 92, 246, 0.22);
+  border-radius: 8px;
+  padding: 5px 10px;
+  color: var(--accent);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+  align-self: flex-end;
+}
+
+[data-app="capture_manager"] .cm-ctrl-refresh:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  transform: rotate(180deg);
+}
+
+/* ── Status bar ──────────────────────────────────────────────────────────── */
+
+[data-app="capture_manager"] .cm-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: rgba(139, 92, 246, 0.08);
+  border: 1px solid rgba(139, 92, 246, 0.2);
+  border-radius: var(--glass-radius-sm);
+  flex-shrink: 0;
+}
+
+[data-app="capture_manager"] .cm-status-bar__dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+[data-app="capture_manager"] .cm-status-bar__dot[data-mode="record"] {
+  background: var(--success);
+  box-shadow: 0 0 6px rgba(52, 199, 89, 0.5);
+  animation: cm-pulse-record 1.4s ease-in-out infinite;
+}
+
+[data-app="capture_manager"] .cm-status-bar__dot[data-mode="replay"] {
+  background: var(--accent);
+  box-shadow: 0 0 6px var(--accent-glow);
+  animation: cm-pulse-replay 1.2s ease-in-out infinite;
+}
+
+@keyframes cm-pulse-record {
+  0%, 100% { box-shadow: 0 0 4px rgba(52, 199, 89, 0.4); }
+  50%       { box-shadow: 0 0 12px rgba(52, 199, 89, 0.7); }
+}
+
+@keyframes cm-pulse-replay {
+  0%, 100% { box-shadow: 0 0 4px var(--accent-glow); transform: scale(1); }
+  50%       { box-shadow: 0 0 12px var(--accent-glow); transform: scale(1.25); }
+}
+
+[data-app="capture_manager"] .cm-status-bar__text {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  letter-spacing: 0.1px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────────────── */
+
+[data-app="capture_manager"] .cm-empty {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px 32px;
+  text-align: center;
+}
+
+[data-app="capture_manager"] .cm-empty__icon {
+  opacity: 0.7;
+  animation: cm-float 3s ease-in-out infinite;
+}
+
+@keyframes cm-float {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(-6px); }
+}
+
+[data-app="capture_manager"] .cm-empty__title {
+  font-size: 17px;
+  font-weight: 650;
+  color: var(--text-primary);
+  letter-spacing: -0.2px;
+}
+
+[data-app="capture_manager"] .cm-empty__sub {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 360px;
+}
+
+[data-app="capture_manager"] .cm-empty__sub strong {
+  color: var(--accent);
+}
+
+/* ── Library grid ────────────────────────────────────────────────────────── */
+
+[data-app="capture_manager"] .cm-library {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 14px;
+  padding: 4px 2px 16px;
+  overflow-y: auto;
+  height: 100%;
+  align-content: start;
+}
+
+/* ── Capture card ────────────────────────────────────────────────────────── */
+
+[data-app="capture_manager"] .cm-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: var(--glass-radius-sm);
+  box-shadow: var(--shadow-sm), var(--shadow-inset-top);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: box-shadow var(--spring-snappy), transform var(--spring-snappy), border-color var(--spring-snappy);
+}
+
+[data-app="capture_manager"] .cm-card:hover {
+  box-shadow: var(--shadow-md), var(--shadow-inset-top);
+  transform: translateY(-2px);
+}
+
+[data-app="capture_manager"] .cm-card--replaying {
+  border-color: var(--accent);
+  box-shadow: var(--shadow-md), var(--shadow-inset-top), 0 0 0 2px var(--accent-dim), 0 0 18px var(--accent-glow);
+}
+
+/* ── Spectrum thumbnail ──────────────────────────────────────────────────── */
+
+[data-app="capture_manager"] .cm-thumb {
+  flex-shrink: 0;
+  height: 44px;
+  overflow: hidden;
+}
+
+[data-app="capture_manager"] .cm-thumb__svg {
+  display: block;
+  width: 100%;
+  height: 44px;
+}
+
+/* ── Card body ───────────────────────────────────────────────────────────── */
+
+[data-app="capture_manager"] .cm-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  padding: 10px 12px 10px;
+}
+
+[data-app="capture_manager"] .cm-card__freq {
+  font-family: var(--font-mono);
+  font-size: 19px;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.4px;
+  margin-bottom: 8px;
+  line-height: 1;
+}
+
+[data-app="capture_manager"] .cm-card__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 8px;
+}
+
+[data-app="capture_manager"] .cm-card__meta-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+[data-app="capture_manager"] .cm-card__meta-label {
+  font-family: var(--font-sans);
+  font-size: 9.5px;
+  font-weight: 650;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
+  width: 28px;
+  flex-shrink: 0;
+}
+
+[data-app="capture_manager"] .cm-card__meta-val {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--text-secondary);
+}
+
+[data-app="capture_manager"] .cm-card__filename {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-tertiary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin-bottom: 10px;
+  letter-spacing: 0.1px;
+}
+
+/* ── Card action buttons ─────────────────────────────────────────────────── */
+
+[data-app="capture_manager"] .cm-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+[data-app="capture_manager"] .cm-btn-replay {
+  flex: 1;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.1px;
+  background: var(--accent-dim);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 8px;
+  color: var(--accent);
+  padding: 6px 10px;
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+}
+
+[data-app="capture_manager"] .cm-btn-replay:hover:not(:disabled) {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+[data-app="capture_manager"] .cm-btn-replay:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+[data-app="capture_manager"] .cm-btn-replay--active {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  animation: cm-replay-pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes cm-replay-pulse {
+  0%, 100% { box-shadow: 0 2px 6px var(--accent-glow); }
+  50%       { box-shadow: 0 4px 16px var(--accent-glow); }
+}
+
+[data-app="capture_manager"] .cm-btn-delete {
+  font-size: 16px;
+  line-height: 1;
+  background: transparent;
+  border: 1px solid rgba(255, 59, 48, 0.25);
+  border-radius: 8px;
+  color: rgba(255, 59, 48, 0.55);
+  padding: 5px 9px;
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+}
+
+[data-app="capture_manager"] .cm-btn-delete:hover {
+  background: rgba(255, 59, 48, 0.1);
+  border-color: rgba(255, 59, 48, 0.6);
+  color: rgba(255, 59, 48, 0.9);
+}
+
+/* ── Narrow-window reflow ────────────────────────────────────────────────── */
+
+@media (max-width: 720px) {
+  [data-app="capture_manager"] .cm-library {
+    grid-template-columns: 1fr;
+  }
+
+  [data-app="capture_manager"] .cm-ctrl-field--slider {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}

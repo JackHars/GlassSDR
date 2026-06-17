@@ -1,0 +1,123 @@
+/* ── CW Receiver — amber/gold high-contrast identity ─────────────────────── */
+
+[data-app="cw_rx"] .app-screen__title {
+  background: linear-gradient(135deg, #E88B00, #FFA820);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Morse envelope timeline ──────────────────────────────────────────────── */
+
+.cw-envelope {
+  background: var(--surface-border);
+  border-radius: 8px;
+  border: 1px solid var(--surface-border);
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+
+.cw-envelope canvas {
+  display: block;
+  width: 100%;
+}
+
+.cw-envelope__label {
+  position: absolute;
+  top: 4px;
+  left: 8px;
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(232, 139, 0, 0.6);
+  pointer-events: none;
+}
+
+/* ── Key indicator ────────────────────────────────────────────────────────── */
+
+.cw-key-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: var(--surface-1);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--surface-2);
+  border-radius: 8px;
+  box-shadow: var(--shadow-xs);
+  flex-shrink: 0;
+}
+
+.cw-key-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  transition: background 40ms ease, box-shadow 40ms ease;
+}
+
+.cw-key-dot.keyed {
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
+}
+
+.cw-key-label {
+  font-size: 11px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  letter-spacing: 0.3px;
+}
+
+/* ── Band chips ───────────────────────────────────────────────────────────── */
+
+.cw-bands {
+  display: flex;
+  gap: 5px;
+}
+
+.cw-band {
+  padding: 3px 9px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+  white-space: nowrap;
+}
+
+.cw-band:hover {
+  background: var(--accent-dim);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.cw-band.active {
+  background: var(--accent);
+  border-color: #CC7800;
+  color: #fff;
+  box-shadow: 0 2px 6px var(--accent-glow);
+}
+
+/* ── Dit/dah motif decoration ─────────────────────────────────────────────── */
+/* Small dit-dah marks in the app ambient background */
+
+[data-app="cw_rx"] .app-screen__ambient::after {
+  content: "· − · − ·";
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 22px;
+  letter-spacing: 8px;
+  color: var(--accent);
+  opacity: 0.05;
+  pointer-events: none;
+  font-weight: 900;
+}
