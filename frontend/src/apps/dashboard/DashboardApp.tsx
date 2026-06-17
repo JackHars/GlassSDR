@@ -120,6 +120,9 @@ export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
   const isRunning = status.kind === "running" || status.kind === "starting";
   const runningAppId = status.kind === "running" || status.kind === "starting" ? status.app : null;
   const totalRecSize = recordings.reduce((s, r) => s + r.size_bytes, 0);
+  const pinnedTiles = pinnedApps
+    .map((id) => ALL_APPS.find((a) => a.id === id))
+    .filter((m): m is NonNullable<typeof m> => m !== undefined);
 
   const handleQuickLaunch = useCallback(async (app: QuickApp) => {
     setLaunching(app.id);
@@ -265,34 +268,27 @@ export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
               </button>
             );
           })}
+          {pinnedTiles.map((meta) => {
+            const isActive = runningAppId === meta.id;
+            return (
+              <button
+                key={meta.id}
+                className={`dash-tile dash-tile--pinned${isActive ? " dash-tile--active" : ""}`}
+                onClick={() => onSelectApp(meta.id)}
+                style={{ "--tile-color": meta.color } as React.CSSProperties}
+                title={meta.name}
+              >
+                <span className="dash-tile-pin-badge"><Icon name="pin" size={10} /></span>
+                <span className="dash-tile-icon"><Icon name={meta.icon} size={22} /></span>
+                <span className="dash-tile-name">{meta.name}</span>
+                <span className="dash-tile-state">
+                  {isActive ? "ON" : ""}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
-
-      {/* ── Pinned apps grid ── */}
-      {pinnedApps.length > 0 && (
-        <div className="dash-pinned">
-          <div className="dash-launch-head">
-            <span className="dash-cell-title"><Icon name="lock" size={14} /> Pinned</span>
-          </div>
-          <div className="dash-pinned-grid">
-            {pinnedApps.map((id) => {
-              const meta = ALL_APPS.find((a) => a.id === id);
-              if (!meta) return null;
-              return (
-                <button
-                  key={id}
-                  className="dash-pinned-tile"
-                  onClick={() => onSelectApp(id)}
-                  style={{ "--tile-color": meta.color } as React.CSSProperties}
-                >
-                  <span className="dash-tile-icon"><Icon name={meta.icon} size={22} /></span>
-                  <span className="dash-tile-name">{meta.name}</span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 }

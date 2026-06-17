@@ -132,13 +132,9 @@ const SPECIAL_APPS: Record<string, (props: any) => JSX.Element> = {
 
 function LoadingSpinner() {
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", height: "100%", color: "var(--text-tertiary)" }}>
-      <div style={{ textAlign: "center" }}>
-        <div style={{ marginBottom: 8, animation: "spin 1s linear infinite", display: "inline-flex" }}>
-          <Icon name="bolt" size={32} />
-        </div>
-        <div style={{ fontSize: 13 }}>Loading...</div>
-      </div>
+    <div className="app-loading">
+      <div className="app-loading-throbber" />
+      <div className="app-loading-text">Loading…</div>
     </div>
   );
 }
@@ -233,7 +229,7 @@ export default function App() {
             title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             aria-label="Toggle theme"
           >
-            <Icon name={theme === "dark" ? "sun" : "bolt"} size={16} />
+            <Icon name={theme === "dark" ? "moon" : "sun"} size={16} />
           </button>
           {!activeApp && browseAll && (
             <div className="device-selector">
@@ -274,13 +270,18 @@ export default function App() {
         <div className="app-content-body">
           {activeApp ? (
             renderApp()
-          ) : browseAll ? (
-            <AppGrid onSelectApp={(id) => { setBrowseAll(false); setActiveApp(id); }} />
           ) : (
-            <DashboardApp
-              onSelectApp={setActiveApp}
-              onBrowseAll={() => setBrowseAll(true)}
-            />
+            <div className="view-stack" data-view={browseAll ? "grid" : "dash"}>
+              <div className="view-pane view-pane--dash">
+                <DashboardApp
+                  onSelectApp={setActiveApp}
+                  onBrowseAll={() => setBrowseAll(true)}
+                />
+              </div>
+              <div className="view-pane view-pane--grid">
+                <AppGrid onSelectApp={(id) => { setBrowseAll(false); setActiveApp(id); }} />
+              </div>
+            </div>
           )}
         </div>
       </div>

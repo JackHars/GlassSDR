@@ -530,49 +530,24 @@
   cursor: wait;
 }
 
-/* ── Pinned apps ── */
-.dash-pinned {
-  flex-shrink: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+/* ── Pinned tile badge ── */
+.dash-tile--pinned {
+  position: relative;
 }
 
-.dash-pinned-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
-  gap: 10px;
-  padding: 2px 4px 4px;
-}
-
-.dash-pinned-tile {
+.dash-tile-pin-badge {
+  position: absolute;
+  top: 5px;
+  right: 6px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  height: 84px;
-  padding: 10px 6px;
-  border-radius: var(--glass-radius-sm);
-  cursor: pointer;
-  border: 1px solid var(--surface-border);
-  background: var(--surface-1);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  transition: all var(--spring-snappy);
-  box-shadow: var(--shadow-xs), var(--shadow-inset-top);
-}
-
-.dash-pinned-tile:hover {
-  background: var(--surface-elevated);
-  border-color: var(--tile-color, var(--accent));
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md), 0 0 0 1px var(--tile-color, var(--accent-glow));
-}
-
-.dash-pinned-tile:active {
-  transform: scale(0.95);
-  transition: all 80ms ease;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 0 6px var(--accent-glow);
 }
 
 /* ── Responsive ── */

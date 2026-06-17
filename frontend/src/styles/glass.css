@@ -344,6 +344,11 @@ body {
   transition: all var(--spring-snappy);
   box-shadow: var(--shadow-xs);
   padding: 0;
+  opacity: 0.55;
+}
+
+.app-list-item:hover .app-list-pin {
+  opacity: 1;
 }
 
 .app-list-pin:hover {
@@ -352,19 +357,22 @@ body {
   background: var(--accent-dim);
   box-shadow: var(--shadow-glow);
   transform: scale(1.1);
+  opacity: 1;
 }
 
 .app-list-pin.pinned {
-  color: var(--accent);
+  color: #fff;
   border-color: var(--accent);
-  background: var(--accent-dim);
+  background: var(--accent);
+  opacity: 1;
+  box-shadow: var(--shadow-sm), 0 0 8px var(--accent-glow);
 }
 
 .app-list-pin.pinned:hover {
-  color: var(--danger);
+  color: #fff;
+  background: var(--danger);
   border-color: var(--danger);
-  background: var(--danger-dim);
-  box-shadow: 0 0 12px rgba(255, 59, 48, 0.2);
+  box-shadow: 0 0 12px rgba(255, 59, 48, 0.4);
 }
 
 .app-list-help {
@@ -742,7 +750,7 @@ body {
   background: var(--surface-elevated);
   color: var(--accent);
   box-shadow: var(--shadow-sm), var(--shadow-glow);
-  transform: rotate(15deg) scale(1.06);
+  transform: scale(1.06);
 }
 .theme-toggle:active {
   transform: scale(0.92);
@@ -1708,4 +1716,82 @@ body {
   background: var(--accent) !important;
   border-color: var(--accent-hover) !important;
   box-shadow: var(--shadow-sm), 0 0 8px var(--accent-glow) !important;
+}
+
+/* ── App loading throbber ── */
+.app-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  height: 100%;
+  color: var(--text-tertiary);
+}
+
+.app-loading-throbber {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--surface-border);
+  border-top-color: var(--accent);
+  animation: throbber-spin 800ms cubic-bezier(0.45, 0.05, 0.55, 0.95) infinite;
+}
+
+@keyframes throbber-spin {
+  to { transform: rotate(360deg); }
+}
+
+.app-loading-text {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+/* ── View stack: dashboard ↔ app grid swipe-up transition ── */
+.view-stack {
+  position: relative;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.view-pane {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  transition:
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 320ms cubic-bezier(0.25, 0.8, 0.25, 1);
+  will-change: transform, opacity;
+}
+
+/* Dashboard pane */
+.view-pane--dash {
+  transform: translateY(0);
+  opacity: 1;
+  z-index: 1;
+}
+
+/* Grid pane — sits below dashboard, hidden off-screen at bottom */
+.view-pane--grid {
+  transform: translateY(100%);
+  opacity: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* When browsing all apps: grid slides up, dashboard recedes */
+.view-stack[data-view="grid"] .view-pane--dash {
+  transform: translateY(-8%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.view-stack[data-view="grid"] .view-pane--grid {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
 }

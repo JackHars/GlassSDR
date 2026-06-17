@@ -462,7 +462,7 @@ export function AppGrid({ onSelectApp }: AppGridProps) {
               title={pinned ? "Unpin from dashboard" : "Pin to dashboard"}
               aria-pressed={pinned}
             >
-              <Icon name={pinned ? "lock" : "lockOpen"} size={13} />
+              <Icon name="pin" size={13} />
             </button>
             <div
               className={`app-list-help ${tooltipId === app.id ? "active" : ""}`}
