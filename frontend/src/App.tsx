@@ -284,6 +284,7 @@ export default function App() {
             </div>
           )}
         </div>
+        <div className="version-label">Version: 1.12</div>
       </div>
     </>
   );
