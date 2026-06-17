@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <img src="docs/assets/glasssdr-screenshot.png" alt="GlassSDR — Transmit apps view" width="720" />
+  <img src="docs/assets/glasssdr-screenshot-v2.png" alt="GlassSDR — Transmit apps view" width="720" />
 </p>
 
 ---
