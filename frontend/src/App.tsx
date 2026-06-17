@@ -3,6 +3,7 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { listApps, listUsbDevices, UsbDevice } from "./ipc/commands";
 import { useStore } from "./store";
 import { AppGrid } from "./components/shell/AppGrid";
+import { DashboardApp } from "./apps/dashboard/DashboardApp";
 import { Icon } from "./components/kit/Icon";
 import "./styles/glass.css";
 
@@ -147,6 +148,7 @@ export default function App() {
   const theme = useStore((s) => s.theme);
   const toggleTheme = useStore((s) => s.toggleTheme);
   const [activeApp, setActiveApp] = useState<string | null>(null);
+  const [browseAll, setBrowseAll] = useState(false);
   const [selectedDevice, setSelectedDevice] = useState("");
   const [usbDevices, setUsbDevices] = useState<UsbDevice[]>([]);
 
@@ -233,7 +235,7 @@ export default function App() {
           >
             <Icon name={theme === "dark" ? "sun" : "bolt"} size={16} />
           </button>
-          {!activeApp && (
+          {!activeApp && browseAll && (
             <div className="device-selector">
               <span className={`device-indicator ${usbDevices.some(d => d.is_hackrf) ? "" : "disconnected"}`} />
               <select
@@ -261,14 +263,24 @@ export default function App() {
               </span>
             </>
           )}
+          {!activeApp && browseAll && (
+            <button className="back-btn" onClick={() => setBrowseAll(false)}>
+              <Icon name="arrowLeft" size={14} /> Dashboard
+            </button>
+          )}
         </div>
 
         {/* Content */}
         <div className="app-content-body">
           {activeApp ? (
             renderApp()
+          ) : browseAll ? (
+            <AppGrid onSelectApp={(id) => { setBrowseAll(false); setActiveApp(id); }} />
           ) : (
-            <AppGrid onSelectApp={setActiveApp} />
+            <DashboardApp
+              onSelectApp={setActiveApp}
+              onBrowseAll={() => setBrowseAll(true)}
+            />
           )}
         </div>
       </div>
