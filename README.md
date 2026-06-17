@@ -1,4 +1,18 @@
 <p align="center">
+  <a href="https://github.com/JackHars/GlassSDR/releases/latest">
+    <img src="https://img.shields.io/badge/⬇%20Download-Latest%20Release-success?style=for-the-badge" alt="Download Latest Release" />
+  </a>
+</p>
+
+<p align="center">
+  <strong>macOS</strong> (Intel · Apple Silicon) &nbsp;&middot;&nbsp;
+  <strong>Linux</strong> (.deb · .rpm · .AppImage) &nbsp;&middot;&nbsp;
+  <strong>Windows</strong> (.exe · .msi)
+</p>
+
+---
+
+<p align="center">
   <img src="docs/assets/glasssdr-banner.svg" alt="GlassSDR" width="600" />
 </p>
 
