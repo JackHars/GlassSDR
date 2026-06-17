@@ -1,4 +1,5 @@
 import { useState, useRef, useCallback, useEffect, ReactNode } from "react";
+import { Icon, type IconName } from "./Icon";
 import "./DecoderFeed.css";
 
 export interface DecoderColumn<T> {
@@ -15,7 +16,7 @@ interface DecoderFeedProps<T extends { id: string | number }> {
   /** Render the expanded inspector content for a row */
   renderInspector?: (row: T) => ReactNode;
   emptyLabel?: string;
-  emptyIcon?: string;
+  emptyIcon?: IconName | string;
   filterFn?: (item: T, query: string) => boolean;
   maxItems?: number;
   className?: string;
@@ -27,7 +28,7 @@ export function DecoderFeed<T extends { id: string | number }>({
   columns,
   renderInspector,
   emptyLabel = "Waiting for signal…",
-  emptyIcon = "📡",
+  emptyIcon = "antenna",
   filterFn,
   maxItems = 500,
   className = "",
@@ -83,14 +84,15 @@ export function DecoderFeed<T extends { id: string | number }>({
             onClick={() => paused ? (setPaused(false)) : pauseAndFreeze()}
             title={paused ? "Resume" : "Pause"}
           >
-            {paused ? "▶ Resume" : "⏸ Pause"}
+            <Icon name={paused ? "play" : "pause"} size={14} />
+            {paused ? "Resume" : "Pause"}
           </button>
           <button
             className="decoder-feed__clear"
             onClick={() => { setFilter(""); setExpandedId(null); }}
             title="Clear filter"
           >
-            ✕
+            <Icon name="close" size={14} />
           </button>
         </div>
       </div>
@@ -101,7 +103,7 @@ export function DecoderFeed<T extends { id: string | number }>({
           <EmptyState icon={emptyIcon} label={emptyLabel} />
         )}
         {!isEmpty && visible.length === 0 && (
-          <EmptyState icon="🔍" label={`No messages match "${filter}"`} />
+          <EmptyState icon="search" label={`No messages match "${filter}"`} />
         )}
         {visible.map((row, idx) => {
           const isNew = !paused && idx === 0;
@@ -126,7 +128,9 @@ export function DecoderFeed<T extends { id: string | number }>({
                   );
                 })}
                 {renderInspector && (
-                  <div className="decoder-feed__chevron">{isExpanded ? "▴" : "▾"}</div>
+                  <div className="decoder-feed__chevron">
+                    <Icon name={isExpanded ? "chevronUp" : "chevronDown"} size={14} />
+                  </div>
                 )}
               </div>
               {isExpanded && renderInspector && (
@@ -214,15 +218,15 @@ export function FieldInspector({ fields, title }: FieldInspectorProps) {
    ────────────────────────────────────────────────────────────────────────── */
 
 interface EmptyStateProps {
-  icon?: string;
+  icon?: IconName | string;
   label: string;
   sublabel?: string;
 }
 
-export function EmptyState({ icon = "📡", label, sublabel }: EmptyStateProps) {
+export function EmptyState({ icon = "antenna", label, sublabel }: EmptyStateProps) {
   return (
     <div className="empty-state">
-      {icon && <span className="empty-state__icon">{icon}</span>}
+      {icon && <span className="empty-state__icon"><Icon name={icon} size={28} /></span>}
       <span className="empty-state__label">{label}</span>
       {sublabel && <span className="empty-state__sublabel">{sublabel}</span>}
     </div>

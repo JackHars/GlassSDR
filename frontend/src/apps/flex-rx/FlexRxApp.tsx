@@ -82,7 +82,7 @@ export function FlexRxApp() {
               columns={COLUMNS}
               filterFn={(p, q) => p.capcode.toString().includes(q) || p.message.toLowerCase().includes(q)}
               emptyLabel="Waiting for FLEX pages…"
-              emptyIcon="📟"
+              emptyIcon="pager"
               renderInspector={(p) => (
                 <FieldInspector
                   title={`Capcode ${p.capcode.toString().padStart(9, "0")}`}

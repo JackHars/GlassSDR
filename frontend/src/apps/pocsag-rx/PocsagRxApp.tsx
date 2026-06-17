@@ -125,7 +125,7 @@ export function PocsagRxApp() {
               columns={COLUMNS}
               filterFn={filterPage}
               emptyLabel="Waiting for pager traffic…"
-              emptyIcon="📟"
+              emptyIcon="pager"
               renderInspector={(p) => (
                 <FieldInspector
                   title={`Capcode ${p.ric.toString().padStart(7, "0")}`}

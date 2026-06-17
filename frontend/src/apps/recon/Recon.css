@@ -219,7 +219,7 @@
   border-bottom: 1px solid rgba(88, 112, 160, 0.14);
   position: sticky;
   top: 0;
-  background: rgba(255, 255, 255, 0.65);
+  background: var(--surface-2);
   backdrop-filter: blur(6px);
 }
 

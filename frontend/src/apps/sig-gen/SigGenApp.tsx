@@ -4,6 +4,7 @@ import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
 import { RecordBar } from "../../components/RecordBar";
 import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import type { AppStatus } from "../../components/kit/AppScreen";
 import "../../components/kit/ArmConsole.css";
 
@@ -59,8 +60,8 @@ export function SigGenApp() {
       footer={<RecordBar appId={"sig_gen" as Parameters<typeof RecordBar>[0]["appId"]} format="iq" centerHz={freqHz} />}
     >
       <div style={{ flex: "1 1 auto", display: "flex", flexDirection: "column", gap: 10, minHeight: 0 }}>
-        <div style={{ padding: "8px 12px", background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.2)", borderRadius: 8, color: "#9A6400", fontSize: 12 }}>
-          ⚠ INDOOR TEST ONLY — only permitted in a shielded environment or Faraday enclosure
+        <div style={{ padding: "8px 12px", display: "flex", alignItems: "center", gap: 8, background: "rgba(255,149,0,0.06)", border: "1px solid rgba(255,149,0,0.2)", borderRadius: 8, color: "#9A6400", fontSize: 12 }}>
+          <Icon name="warning" size={16} /> INDOOR TEST ONLY — only permitted in a shielded environment or Faraday enclosure
         </div>
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 10, background: "rgba(255,255,255,0.55)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.7)", borderRadius: 12 }}>
           <span style={{ fontSize: 11, fontWeight: 650, textTransform: "uppercase", letterSpacing: 0.6, color: "var(--text-secondary)" }}>{waveform} wave</span>

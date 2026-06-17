@@ -197,7 +197,7 @@
   align-items: center;
   gap: 12px;
   padding: 9px 14px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid var(--track-bg);
   transition: background var(--transition-fast);
 }
 

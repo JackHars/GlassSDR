@@ -98,7 +98,7 @@
 .glass-card--selected {
   border-color: var(--accent);
   box-shadow: var(--shadow-sm), var(--shadow-inset-top), 0 0 0 2px var(--accent-dim);
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-elevated);
 }
 
 .glass-card--accent {

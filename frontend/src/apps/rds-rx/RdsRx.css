@@ -17,7 +17,7 @@
   background: rgba(255, 255, 255, 0.60);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid rgba(255, 255, 255, 0.75);
+  border: 1px solid var(--surface-elevated);
   border-radius: var(--glass-radius);
   box-shadow: var(--shadow-md), var(--shadow-inset-top);
   flex: 1 1 auto;
@@ -95,9 +95,9 @@
 }
 
 .rds-lamp--off {
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--track-bg);
   color: var(--text-tertiary);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--surface-border);
 }
 
 .rds-lamp--on {
@@ -113,7 +113,7 @@
   flex-direction: column;
   gap: 4px;
   padding: 12px 16px;
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--track-bg);
   border-radius: 10px;
   border: 1px solid rgba(0, 0, 0, 0.05);
 }

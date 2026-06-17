@@ -231,7 +231,7 @@
   grid-template-columns: 1fr 1fr 1fr 1fr 72px;
   gap: 8px;
   padding: 6px 8px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid var(--track-bg);
   align-items: center;
   transition: background var(--transition-fast);
 }

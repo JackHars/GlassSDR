@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import type { SpectrumFrame } from "../ipc/types/SpectrumFrame";
+import { Icon } from "./kit/Icon";
 
 interface Props {
   width?: number;
@@ -416,7 +417,7 @@ export function Waterfall({
           }}
           title="Click to reset zoom"
         >
-          {zoom.toFixed(1)}× ✕
+          {zoom.toFixed(1)}× <Icon name="close" size={11} />
         </button>
       )}
 

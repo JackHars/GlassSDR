@@ -6,6 +6,7 @@ import { RecordBar } from "../../components/RecordBar";
 import { DecoderFeed } from "../../components/kit/DecoderFeed";
 import type { DecoderColumn } from "../../components/kit/DecoderFeed";
 import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import type { AppStatus } from "../../components/kit/AppScreen";
 import "./EpirbRx.css";
 
@@ -66,7 +67,7 @@ export function EpirbRxApp() {
       <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: "1 1 auto", minHeight: 0 }}>
         <div className="epirb-beacon-stage">
           <div className="epirb-pulse-ring">
-            <div className="epirb-icon">{lastBeacon ? "🆘" : "🛟"}</div>
+            <div className="epirb-icon"><Icon name={lastBeacon ? "sos" : "lifebuoy"} size={32} /></div>
           </div>
           {lastBeacon ? (
             <>
@@ -81,7 +82,7 @@ export function EpirbRxApp() {
           )}
         </div>
         {beacons.length > 0 && (
-          <DecoderFeed items={beacons} columns={COLS} emptyLabel="No beacons" emptyIcon="🛟" />
+          <DecoderFeed items={beacons} columns={COLS} emptyLabel="No beacons" emptyIcon="lifebuoy" />
         )}
       </div>
     </AppScreen>

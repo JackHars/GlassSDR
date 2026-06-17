@@ -3,19 +3,20 @@ import { RecordBar } from "../../components/RecordBar";
 import { AppScreen } from "../../components/kit/AppScreen";
 import { ArmConsole } from "../../components/kit/ArmConsole";
 import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon, type IconName } from "../../components/kit/Icon";
 import "./Mdc1200Tx.css";
 
 interface OpType {
   label: string;
   opcode: number;
-  icon: string;
+  icon: IconName;
   desc: string;
 }
 
 const OP_TYPES: OpType[] = [
-  { label: "PTT-ID",      opcode: 0x01, icon: "◉", desc: "Radio identifies on key-up" },
-  { label: "Emergency",   opcode: 0x00, icon: "⚠", desc: "Emergency alert burst"       },
-  { label: "Call Alert",  opcode: 0x23, icon: "◈", desc: "Dispatcher pages a unit"     },
+  { label: "PTT-ID",      opcode: 0x01, icon: "megaphone", desc: "Radio identifies on key-up" },
+  { label: "Emergency",   opcode: 0x00, icon: "warning", desc: "Emergency alert burst"       },
+  { label: "Call Alert",  opcode: 0x23, icon: "route", desc: "Dispatcher pages a unit"     },
 ];
 
 /** MDC-1200 frame sections for the burst-preview visualization.
@@ -132,7 +133,7 @@ export function Mdc1200TxApp() {
             onClick={() => setSelectedOp(i)}
             aria-pressed={i === selectedOp}
           >
-            <span className="mdc-tx__op-icon">{o.icon}</span>
+            <span className="mdc-tx__op-icon"><Icon name={o.icon} size={16} /></span>
             <span className="mdc-tx__op-label">{o.label}</span>
             <span className="mdc-tx__op-desc">{o.desc}</span>
           </button>

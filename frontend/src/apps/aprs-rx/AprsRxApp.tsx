@@ -143,7 +143,7 @@ export function AprsRxApp() {
             columns={COLUMNS}
             filterFn={filterPacket}
             emptyLabel="Waiting for APRS packets…"
-            emptyIcon="📡"
+            emptyIcon="antenna"
             renderInspector={(p) => <StationDetail p={p} />}
           />
         </div>

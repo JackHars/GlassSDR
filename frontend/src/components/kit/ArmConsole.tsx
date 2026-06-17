@@ -3,6 +3,7 @@ import { useStore } from "../../store";
 import { armTx, disarmTx, startApp } from "../../ipc/commands";
 import { onTxStatus } from "../../ipc/events";
 import { LegalBanner } from "../LegalBanner";
+import { Icon } from "./Icon";
 import type { AppId } from "../../ipc/types/AppId";
 import "./ArmConsole.css";
 
@@ -69,7 +70,7 @@ export function ArmConsole({
       {/* Hazard warning banner */}
       {warning !== "none" && (
         <div className="arm-console__warning">
-          <span className="arm-console__warning-icon">⚠</span>
+          <span className="arm-console__warning-icon"><Icon name="warning" size={16} /></span>
           <span className="arm-console__warning-text">{warningText ?? WARNING_TEXT[warning]}</span>
         </div>
       )}

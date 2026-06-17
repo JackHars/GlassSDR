@@ -8,6 +8,7 @@ import { DecoderFeed } from "../../components/kit/DecoderFeed";
 import type { DecoderColumn } from "../../components/kit/DecoderFeed";
 import { FieldInspector } from "../../components/kit/DecoderFeed";
 import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import type { AppStatus } from "../../components/kit/AppScreen";
 import "./AcarsRx.css";
 
@@ -115,7 +116,7 @@ export function AcarsRxApp() {
           {uniqueRegs.length === 0
             ? <span className="acars-aircraft-grid__empty">Aircraft will appear here as messages arrive</span>
             : uniqueRegs.map((reg) => (
-              <span key={reg} className="acars-aircraft-chip">✈ {reg}</span>
+              <span key={reg} className="acars-aircraft-chip"><Icon name="airplane" size={14} /> {reg}</span>
             ))
           }
         </div>
@@ -126,7 +127,7 @@ export function AcarsRxApp() {
           columns={COLUMNS}
           filterFn={filterMsg}
           emptyLabel="No ACARS messages yet"
-          emptyIcon="✈"
+          emptyIcon="airplane"
           renderInspector={(m) => (
             <FieldInspector
               title={`${m.reg} · Flight ${m.flight}`}

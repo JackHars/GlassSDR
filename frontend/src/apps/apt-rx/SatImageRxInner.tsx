@@ -1,10 +1,11 @@
-/** Shared inner component for satellite imaging 🧩 cluster (APT/HRPT/LRPT). */
+/** Shared inner component for satellite imaging cluster (APT/HRPT/LRPT). */
 import { useEffect, useMemo, useState } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import type { AppId } from "../../ipc/types/AppId";
 import { RecordBar } from "../../components/RecordBar";
 import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import type { AppStatus } from "../../components/kit/AppScreen";
 import type { AllAppId } from "../../theme/appThemes";
 import "./SatImageRx.css";
@@ -81,7 +82,7 @@ export function SatImageRxInner({ appId, title, defaultFreqHz, event, subtitle }
     >
       {total === 0 ? (
         <div className="satimg-waiting">
-          <span className="satimg-waiting-icon">🛰️</span>
+          <span className="satimg-waiting-icon"><Icon name="satellite" size={32} /></span>
           <span className="satimg-waiting-text">Awaiting satellite pass — image builds line by line during overhead transit</span>
         </div>
       ) : (

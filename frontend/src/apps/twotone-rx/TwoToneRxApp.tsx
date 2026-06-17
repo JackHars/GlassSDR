@@ -6,6 +6,7 @@ import { RecordBar } from "../../components/RecordBar";
 import { DecoderFeed } from "../../components/kit/DecoderFeed";
 import type { DecoderColumn } from "../../components/kit/DecoderFeed";
 import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import type { AppStatus } from "../../components/kit/AppScreen";
 import "./TwoToneRx.css";
 
@@ -69,7 +70,7 @@ export function TwoToneRxApp() {
       <div style={{ display: "flex", flexDirection: "column", gap: 10, flex: "1 1 auto", minHeight: 0 }}>
         {/* Alarm visual */}
         <div className={`twotone-alarm-panel${lastAlert ? " active" : ""}`}>
-          <div className="twotone-alarm-icon">{lastAlert ? "🚨" : "🔕"}</div>
+          <div className="twotone-alarm-icon"><Icon name={lastAlert ? "siren" : "bellOff"} size={32} /></div>
           {lastAlert ? (
             <div className="twotone-alarm-tones">
               <div className="twotone-tone">
@@ -91,7 +92,7 @@ export function TwoToneRxApp() {
         <div className="twotone-stats">
           <div className="twotone-stat"><span className="twotone-stat-label">Alerts</span><span className="twotone-stat-value">{alerts.length}</span></div>
         </div>
-        <DecoderFeed items={alerts} columns={COLS} emptyLabel="No alerts yet" emptyIcon="📻" />
+        <DecoderFeed items={alerts} columns={COLS} emptyLabel="No alerts yet" emptyIcon="radio" />
       </div>
     </AppScreen>
   );

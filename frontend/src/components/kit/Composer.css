@@ -40,9 +40,9 @@
   display: flex;
   gap: 4px;
   padding: 3px;
-  background: rgba(0, 0, 0, 0.04);
+  background: var(--track-bg);
   border-radius: 9px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--surface-border);
   align-self: flex-start;
 }
 
@@ -62,11 +62,11 @@
 
 .composer__mode-tab:hover {
   color: var(--text-primary);
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--surface-2);
 }
 
 .composer__mode-tab--active {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--surface-elevated);
   color: var(--accent);
   box-shadow: var(--shadow-xs);
 }
@@ -84,8 +84,8 @@
   flex-direction: column;
   gap: 4px;
   padding: 10px 12px;
-  background: rgba(0, 0, 0, 0.03);
-  border: 1px solid rgba(0, 0, 0, 0.06);
+  background: var(--track-bg);
+  border: 1px solid var(--surface-border);
   border-radius: 8px;
 }
 

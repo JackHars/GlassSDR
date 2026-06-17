@@ -3,6 +3,7 @@ import { startApp, stopApp } from "../../ipc/commands";
 import { listen } from "@tauri-apps/api/event";
 import { RecordBar } from "../../components/RecordBar";
 import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import type { AppStatus } from "../../components/kit/AppScreen";
 import "./RdsRx.css";
 
@@ -106,7 +107,7 @@ export function RdsRxApp() {
       <div className="rds-faceplate">
         {!running && !rds ? (
           <div className="rds-searching">
-            <span className="rds-searching-icon">📻</span>
+            <span className="rds-searching-icon"><Icon name="radio" size={32} /></span>
             <span className="rds-searching-text">Press Start to tune to an FM station</span>
             <span className="rds-searching-sub">88–108 MHz · RDS enabled</span>
           </div>

@@ -2,6 +2,7 @@ import { useState, useCallback } from "react";
 import { startApp, stopApp } from "../../ipc/commands";
 import { AppScreen, type AppStatus } from "../../components/kit/AppScreen";
 import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon } from "../../components/kit/Icon";
 import { RecordBar } from "../../components/RecordBar";
 import type { AppId } from "../../ipc/types/AppId";
 import "./RemoteControl.css";
@@ -111,7 +112,7 @@ export function RemoteControlApp() {
           {serverState !== "stopped" && (
             <div className="rc-ctrl-url">
               <span className="rc-ctrl-url__val">{wsUrl}</span>
-              <button className="rc-ctrl-copy" onClick={copyUrl}>{copied ? "✓" : "Copy"}</button>
+              <button className="rc-ctrl-copy" onClick={copyUrl}>{copied ? <Icon name="check" size={14} /> : "Copy"}</button>
             </div>
           )}
         </div>

@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState, useCallback } from "react";
 import { deleteRecording, listRecordings } from "../../ipc/commands";
 import { AppScreen } from "../../components/kit/AppScreen";
 import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon } from "../../components/kit/Icon";
 import type { AppId } from "../../ipc/types/AppId";
 import type { RecordingMeta } from "../../ipc/types/RecordingMeta";
 import type { RecordingFormat } from "../../ipc/types/RecordingFormat";
@@ -199,7 +200,7 @@ export function RecordingsApp() {
       status="idle"
       statusText={`${items.length} recordings · ${fmtSize(totalSize)}`}
       actions={
-        <button className="rec-refresh-btn" onClick={refresh}>↻ Refresh</button>
+        <button className="rec-refresh-btn" onClick={refresh}><Icon name="refresh" size={14} /> Refresh</button>
       }
       controls={
         <div className="rec-controls">

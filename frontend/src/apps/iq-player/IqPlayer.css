@@ -86,7 +86,7 @@
 [data-app="iq_player"] .iqp-ctrl-select {
   font-family: var(--font-sans);
   font-size: 12.5px;
-  background: rgba(255, 255, 255, 0.6);
+  background: var(--surface-2);
   border: 1px solid rgba(0, 180, 204, 0.22);
   border-radius: 8px;
   padding: 6px 10px;
@@ -151,7 +151,7 @@
 }
 
 [data-app="iq_player"] .iqp-fmt-tab--on .iqp-fmt-tab__sub {
-  color: rgba(255, 255, 255, 0.7);
+  color: var(--surface-2);
 }
 
 /* ── Body layout ─────────────────────────────────────────────────────────── */

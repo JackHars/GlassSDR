@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { AppScreen, type AppStatus } from "../../components/kit/AppScreen";
 import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon } from "../../components/kit/Icon";
 import { listUsbDevices, type UsbDevice } from "../../ipc/commands";
 import "./Settings.css";
 
@@ -112,14 +113,14 @@ export function SettingsApp() {
       statusText={statusText}
       actions={
         <button className="stg-save-btn" onClick={save}>
-          {saved ? "✓ Saved" : "Save"}
+          {saved ? <><Icon name="check" size={14} /> Saved</> : "Save"}
         </button>
       }
     >
       <div className="stg-layout">
         {/* Hardware device section */}
         <GlassPanel title="Connected Devices" titleRight={
-          <button className="stg-refresh" onClick={refreshDevices} title="Refresh">↻</button>
+          <button className="stg-refresh" onClick={refreshDevices} title="Refresh"><Icon name="refresh" size={16} /></button>
         }>
           {devError ? (
             <div className="stg-device-error">Unable to list USB devices</div>

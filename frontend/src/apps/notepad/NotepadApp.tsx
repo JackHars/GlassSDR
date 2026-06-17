@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, type ChangeEvent } from "react";
 import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import "./Notepad.css";
 
 const LS_KEY = "mayhem_notepad";
@@ -70,9 +71,9 @@ export function NotepadApp() {
       statusText={statusText}
       actions={
         <div className="npad-actions">
-          <button className="npad-action-btn" onClick={insertTimestamp} title="Insert current time">⏱ Timestamp</button>
-          <button className="npad-action-btn" onClick={insertFreqLine} title="Insert frequency line">📻 Freq</button>
-          <button className="npad-action-btn npad-action-btn--clear" onClick={clear} title="Clear all">✕ Clear</button>
+          <button className="npad-action-btn" onClick={insertTimestamp} title="Insert current time"><Icon name="timer" size={14} /> Timestamp</button>
+          <button className="npad-action-btn" onClick={insertFreqLine} title="Insert frequency line"><Icon name="radio" size={14} /> Freq</button>
+          <button className="npad-action-btn npad-action-btn--clear" onClick={clear} title="Clear all"><Icon name="close" size={14} /> Clear</button>
         </div>
       }
     >
@@ -86,7 +87,7 @@ export function NotepadApp() {
           spellCheck
           autoFocus
         />
-        {saved && <div className="npad-saved-flash">✓ saved</div>}
+        {saved && <div className="npad-saved-flash"><Icon name="check" size={12} /> saved</div>}
       </div>
     </AppScreen>
   );

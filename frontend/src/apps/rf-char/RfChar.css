@@ -186,7 +186,7 @@
 /* Override StatReadout internal spacing to fit the grid */
 [data-app="rf_characterize"] .rfchar-stat-grid .stat-readout {
   padding: 14px 12px;
-  background: rgba(255, 255, 255, 0.45);
+  background: var(--surface-1);
 }
 
 /* ── Configuration summary ───────────────────────────────────────────────── */
@@ -203,7 +203,7 @@
   justify-content: space-between;
   gap: 12px;
   padding: 3px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.04);
+  border-bottom: 1px solid var(--track-bg);
 }
 
 [data-app="rf_characterize"] .rfchar-config-row:last-child {

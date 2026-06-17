@@ -141,7 +141,7 @@
 [data-app="freq_manager"] .fmgr-add-input {
   font-family: var(--font-sans);
   font-size: 13px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--surface-2);
   border: 1px solid rgba(56, 112, 200, 0.22);
   border-radius: 8px;
   padding: 6px 10px;
@@ -162,7 +162,7 @@
 [data-app="freq_manager"] .fmgr-add-select {
   font-family: var(--font-sans);
   font-size: 13px;
-  background: rgba(255, 255, 255, 0.7);
+  background: var(--surface-2);
   border: 1px solid rgba(56, 112, 200, 0.22);
   border-radius: 8px;
   padding: 6px 10px;

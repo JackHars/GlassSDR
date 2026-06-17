@@ -1,6 +1,7 @@
 import { useState, useMemo } from "react";
 import { AppScreen, type AppStatus } from "../../components/kit/AppScreen";
 import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon } from "../../components/kit/Icon";
 import { FrequencyInput } from "../../components/FrequencyInput";
 import "./FreqManager.css";
 
@@ -171,7 +172,7 @@ export function FreqManagerApp() {
           className={`fmgr-btn-add${showAdd ? " fmgr-btn-add--active" : ""}`}
           onClick={() => setShowAdd((v) => !v)}
         >
-          {showAdd ? "✕ Cancel" : "+ Add"}
+          {showAdd ? <><Icon name="close" size={14} /> Cancel</> : "+ Add"}
         </button>
       }
       controls={

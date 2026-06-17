@@ -125,7 +125,7 @@ export function DigitalVoiceRxInner({ appId, title, protocol, defaultFreqHz, sub
           columns={COLUMNS}
           filterFn={(c, q) => String(c.talkgroup).includes(q) || String(c.source_id).includes(q) || c.call_type.includes(q)}
           emptyLabel={`Scanning for ${protocol} traffic…`}
-          emptyIcon="📻"
+          emptyIcon="radio"
           renderInspector={(c) => (
             <FieldInspector
               title={`TG ${c.talkgroup}`}

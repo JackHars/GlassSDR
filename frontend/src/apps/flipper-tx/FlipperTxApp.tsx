@@ -3,6 +3,7 @@ import { RecordBar } from "../../components/RecordBar";
 import { AppScreen } from "../../components/kit/AppScreen";
 import { ArmConsole } from "../../components/kit/ArmConsole";
 import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon } from "../../components/kit/Icon";
 import "./FlipperTx.css";
 
 interface SubFile {
@@ -160,7 +161,7 @@ export function FlipperTxApp() {
 
           {!parsed ? (
             <>
-              <span className="flipper-tx__drop-icon">🐬</span>
+              <span className="flipper-tx__drop-icon"><Icon name="dolphin" size={32} /></span>
               <span className="flipper-tx__drop-primary">
                 Drop a <code>.sub</code> file here or click to browse
               </span>
@@ -170,7 +171,7 @@ export function FlipperTxApp() {
             </>
           ) : (
             <div className="flipper-tx__loaded-row">
-              <span className="flipper-tx__loaded-icon">✓</span>
+              <span className="flipper-tx__loaded-icon"><Icon name="check" size={16} /></span>
               <span className="flipper-tx__loaded-text">
                 Capture loaded · {(centerHz / 1e6).toFixed(3)} MHz ·{" "}
                 {parsed.rawData.length} pulses

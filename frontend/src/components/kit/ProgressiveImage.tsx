@@ -1,4 +1,5 @@
 import { useRef, useEffect, useState, useCallback } from "react";
+import { Icon } from "./Icon";
 import "./ProgressiveImage.css";
 
 interface ProgressiveImageProps {
@@ -109,7 +110,7 @@ export function ProgressiveImage({
             disabled={isEmpty}
             title="Save PNG"
           >
-            ⬇ Save
+            <Icon name="download" size={14} /> Save
           </button>
         </div>
       </div>
@@ -118,7 +119,7 @@ export function ProgressiveImage({
       <div className="progressive-image__canvas-wrap">
         {isEmpty && (
           <div className="progressive-image__empty">
-            <span className="progressive-image__empty-icon">🛰️</span>
+            <span className="progressive-image__empty-icon"><Icon name="satellite" size={32} /></span>
             <span className="progressive-image__empty-label">Awaiting satellite pass…</span>
           </div>
         )}

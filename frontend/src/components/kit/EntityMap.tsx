@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, ReactNode } from "react";
 import maplibregl, { Map as MlMap, GeoJSONSource } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { Icon } from "./Icon";
 import "./EntityMap.css";
 
 export type EntityKind = "aircraft" | "ship" | "balloon" | "station" | "beacon" | "generic";
@@ -208,7 +209,7 @@ export function EntityMap({
       {/* Empty state overlay */}
       {count === 0 && (
         <div className="entity-map__empty">
-          <span className="entity-map__empty-icon">🗺️</span>
+          <span className="entity-map__empty-icon"><Icon name="map" size={32} /></span>
           <span className="entity-map__empty-label">{emptyLabel}</span>
         </div>
       )}
@@ -216,7 +217,9 @@ export function EntityMap({
       {/* Detail card (selected entity) */}
       {selected && detail && (
         <div className="entity-map__detail">
-          <button className="entity-map__detail-close" onClick={() => onSelect?.(null)}>✕</button>
+          <button className="entity-map__detail-close" onClick={() => onSelect?.(null)}>
+            <Icon name="close" size={14} />
+          </button>
           {detail}
         </div>
       )}

@@ -4,6 +4,7 @@ import { startApp, stopApp, listRecordings, deleteRecording } from "../../ipc/co
 import { LegalBanner } from "../../components/LegalBanner";
 import { useStore } from "../../store";
 import { AppScreen, type AppStatus } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import { RecordBar } from "../../components/RecordBar";
 import type { AppId } from "../../ipc/types/AppId";
 import type { RecordingMeta } from "../../ipc/types/RecordingMeta";
@@ -366,7 +367,7 @@ export function CaptureManagerApp() {
               <option value="freq">By frequency</option>
             </select>
           </div>
-          <button className="cm-ctrl-refresh" onClick={refresh} title="Refresh library">↻</button>
+          <button className="cm-ctrl-refresh" onClick={refresh} title="Refresh library"><Icon name="refresh" size={16} /></button>
         </div>
       }
       footer={<RecordBar appId={"capture_manager" as AppId} format="iq" centerHz={freqHz} />}

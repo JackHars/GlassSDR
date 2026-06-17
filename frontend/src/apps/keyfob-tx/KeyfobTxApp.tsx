@@ -3,6 +3,7 @@ import { RecordBar } from "../../components/RecordBar";
 import { AppScreen } from "../../components/kit/AppScreen";
 import { ArmConsole } from "../../components/kit/ArmConsole";
 import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon, type IconName } from "../../components/kit/Icon";
 import "./KeyfobTx.css";
 
 const FREQS = [
@@ -14,13 +15,13 @@ interface Button {
   id: "lock" | "unlock" | "trunk";
   label: string;
   nibble: number;
-  icon: string;
+  icon: IconName;
 }
 
 const BUTTONS: Button[] = [
-  { id: "lock",   label: "LOCK",   nibble: 0x1, icon: "🔒" },
-  { id: "unlock", label: "UNLOCK", nibble: 0x2, icon: "🔓" },
-  { id: "trunk",  label: "TRUNK",  nibble: 0x4, icon: "⊡" },
+  { id: "lock",   label: "LOCK",   nibble: 0x1, icon: "lock" },
+  { id: "unlock", label: "UNLOCK", nibble: 0x2, icon: "lockOpen" },
+  { id: "trunk",  label: "TRUNK",  nibble: 0x4, icon: "route" },
 ];
 
 /** SVG keyfob body with three pressable buttons. */
@@ -158,7 +159,7 @@ export function KeyfobTxApp() {
                 onClick={() => setActiveBtn(b.id)}
                 aria-pressed={activeBtn === b.id}
               >
-                <span className="keyfob-tx__legend-icon">{b.icon}</span>
+                <span className="keyfob-tx__legend-icon"><Icon name={b.icon} size={16} /></span>
                 {b.label}
               </button>
             ))}

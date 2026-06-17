@@ -94,10 +94,10 @@
   gap: 6px;
   padding: 4px 10px 4px 8px;
   border-radius: 20px;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--surface-1);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--surface-2);
   box-shadow: var(--shadow-xs), var(--shadow-inset-top);
   white-space: nowrap;
   transition: all var(--spring-smooth);
@@ -202,7 +202,7 @@
 .app-screen__footer {
   flex-shrink: 0;
   padding: 10px 0 14px;
-  border-top: 1px solid rgba(0, 0, 0, 0.06);
+  border-top: 1px solid var(--surface-border);
   margin-top: 4px;
 }
 

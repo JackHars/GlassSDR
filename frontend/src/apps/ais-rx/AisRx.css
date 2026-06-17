@@ -103,10 +103,10 @@
   display: flex;
   gap: 14px;
   padding: 7px 12px;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--surface-1);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid var(--surface-2);
   border-radius: var(--glass-radius-sm);
   flex-shrink: 0;
 }

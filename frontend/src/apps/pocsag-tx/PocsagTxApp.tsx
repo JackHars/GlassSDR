@@ -5,6 +5,7 @@ import { onPocsagTxStatus } from "../../ipc/events";
 import { LegalBanner } from "../../components/LegalBanner";
 import { RecordBar } from "../../components/RecordBar";
 import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import type { AppStatus } from "../../components/kit/AppScreen";
 import "./PocsagTx.css";
 import "../../components/kit/ArmConsole.css";
@@ -84,7 +85,7 @@ export function PocsagTxApp() {
       {showLegal && <LegalBanner onAccept={() => setShowLegal(false)} />}
       <div className="arm-console">
         <div className="arm-console__warning">
-          <span className="arm-console__warning-icon">⚠</span>
+          <span className="arm-console__warning-icon"><Icon name="warning" size={16} /></span>
           <span className="arm-console__warning-text">OWN DEVICES ONLY — only target devices you own and are licensed to operate.</span>
         </div>
         <div className="arm-console__body" style={{ display: "flex", flexDirection: "column", gap: 10 }}>

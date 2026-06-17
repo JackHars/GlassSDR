@@ -3,6 +3,7 @@ import { listen } from "@tauri-apps/api/event";
 import { startApp, stopApp } from "../../ipc/commands";
 import { AppScreen, type AppStatus } from "../../components/kit/AppScreen";
 import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon } from "../../components/kit/Icon";
 import { StatReadout } from "../../components/kit/StatReadout";
 import { RecordBar } from "../../components/RecordBar";
 import type { AppId } from "../../ipc/types/AppId";
@@ -245,7 +246,7 @@ export function RfCharApp() {
       <div className="rfchar-layout">
         {/* Indoor-test banner */}
         <div className="rfchar-banner">
-          <span className="rfchar-banner__icon">⚠</span>
+          <span className="rfchar-banner__icon"><Icon name="warning" size={16} /></span>
           <span>
             <strong>INDOOR TEST ONLY</strong> — intentional transmissions; operate only inside a shielded enclosure.
           </span>

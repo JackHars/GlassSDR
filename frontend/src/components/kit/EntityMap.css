@@ -20,7 +20,7 @@
   background: rgba(255, 255, 255, 0.80);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.7) !important;
+  border: 1px solid var(--surface-2) !important;
   box-shadow: var(--shadow-sm) !important;
   border-radius: 10px !important;
   overflow: hidden;
@@ -56,10 +56,10 @@
   top: 10px;
   left: 10px;
   padding: 3px 10px;
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--surface-elevated);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  border: 1px solid var(--surface-elevated);
   border-radius: 20px;
   font-size: 11.5px;
   font-weight: 650;
@@ -106,7 +106,7 @@
   background: rgba(255, 255, 255, 0.90);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.85);
+  border: 1px solid var(--surface-elevated);
   border-radius: var(--glass-radius-sm);
   box-shadow: var(--shadow-lg);
   padding: 12px 14px;
@@ -120,8 +120,8 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.06);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--surface-border);
+  border: 1px solid var(--surface-border);
   font-size: 10px;
   color: var(--text-tertiary);
   cursor: pointer;
@@ -135,7 +135,7 @@
 }
 
 .entity-map__detail-close:hover {
-  background: rgba(0, 0, 0, 0.10);
+  background: var(--surface-border);
   color: var(--text-primary);
   transform: scale(1.1);
 }
@@ -143,7 +143,7 @@
 /* MapLibre attribution */
 .entity-map .maplibregl-ctrl-attrib {
   font-size: 10px !important;
-  background: rgba(255, 255, 255, 0.6) !important;
+  background: var(--surface-2) !important;
   backdrop-filter: blur(8px) !important;
   border-radius: 4px 0 0 0 !important;
 }

@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { AppScreen } from "../../components/kit/AppScreen";
 import { GlassPanel } from "../../components/kit/GlassPanel";
+import { Icon } from "../../components/kit/Icon";
 import "./MorseTrainer.css";
 
 const MORSE: Record<string, string> = {
@@ -123,7 +124,7 @@ export function MorseTrainerApp() {
     setScore((s) => correct ? { ...s, right: s.right + 1 } : { ...s, wrong: s.wrong + 1 });
   }, [letter, answer]);
 
-  const statusText = `✓ ${score.right}  ✗ ${score.wrong}  ·  Level ${lesson + 1} · ${pool.length} chars`;
+  const statusText = `${score.right} right  ${score.wrong} wrong  ·  Level ${lesson + 1} · ${pool.length} chars`;
 
   return (
     <AppScreen
@@ -223,7 +224,8 @@ export function MorseTrainerApp() {
             {/* Feedback */}
             {feedback && letter && (
               <div className={`mtr-feedback mtr-feedback--${feedback}`}>
-                {feedback === "correct" ? `✓ Correct — ${letter}` : `✗ Wrong — it was ${letter} (${MORSE[letter]})`}
+                <Icon name={feedback === "correct" ? "checkCircle" : "error"} size={16} />
+                {feedback === "correct" ? `Correct — ${letter}` : `Wrong — it was ${letter} (${MORSE[letter]})`}
               </div>
             )}
           </div>

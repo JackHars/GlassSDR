@@ -67,7 +67,7 @@ export function DscRxApp() {
         columns={COLS}
         filterFn={(m, q) => String(m.mmsi).includes(q) || m.category.toLowerCase().includes(q)}
         emptyLabel="No DSC traffic — Ch 70 is the marine distress channel"
-        emptyIcon="⚓"
+        emptyIcon="anchor"
       />
     </AppScreen>
   );

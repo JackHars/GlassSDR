@@ -84,7 +84,7 @@ export function PagerAggApp() {
           columns={COLUMNS}
           filterFn={(p, q) => p.capcode.toString().includes(q) || p.message.toLowerCase().includes(q) || p.protocol.toLowerCase().includes(q)}
           emptyLabel="Aggregating POCSAG + FLEX pages…"
-          emptyIcon="📟"
+          emptyIcon="pager"
           renderInspector={(p) => (
             <FieldInspector
               title={`${p.protocol} · Capcode ${p.capcode.toString().padStart(7, "0")}`}

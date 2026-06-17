@@ -6,6 +6,7 @@ import { useStore } from "../../store";
 import type { AppId } from "../../ipc/types/AppId";
 import { RecordBar } from "../../components/RecordBar";
 import { AppScreen } from "../../components/kit/AppScreen";
+import { Icon } from "../../components/kit/Icon";
 import type { AppStatus } from "../../components/kit/AppScreen";
 
 interface TxStatus { kind: "idle" | "armed" | "transmitting" | "complete" | "error"; progress_pct?: number; message?: string; }
@@ -52,8 +53,8 @@ export function SpectrumPainterApp() {
     >
       {showLegal && <LegalBanner onAccept={() => setShowLegal(false)} />}
       <div style={{ flex: "1 1 auto", display: "flex", flexDirection: "column", gap: 10, minHeight: 0 }}>
-        <div style={{ padding: "8px 12px", background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.2)", borderRadius: 8, color: "#CC2010", fontSize: 12 }}>
-          ⚠ INDOOR / SHIELDED ONLY — wide-bandwidth transmission. Use a Faraday cage or dummy load.
+        <div style={{ padding: "8px 12px", display: "flex", alignItems: "center", gap: 8, background: "rgba(255,59,48,0.06)", border: "1px solid rgba(255,59,48,0.2)", borderRadius: 8, color: "#CC2010", fontSize: 12 }}>
+          <Icon name="warning" size={16} /> INDOOR / SHIELDED ONLY — wide-bandwidth transmission. Use a Faraday cage or dummy load.
         </div>
         <div style={{ flex: 1, padding: 16, background: "rgba(255,255,255,0.55)", backdropFilter: "blur(16px)", border: "1px solid rgba(255,255,255,0.7)", borderRadius: 12, display: "flex", flexDirection: "column", gap: 12 }}>
           <p style={{ fontSize: 13, lineHeight: 1.6 }}>

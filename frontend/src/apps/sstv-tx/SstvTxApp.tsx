@@ -2,6 +2,7 @@ import { useState } from "react";
 import { RecordBar } from "../../components/RecordBar";
 import { AppScreen } from "../../components/kit/AppScreen";
 import { ArmConsole } from "../../components/kit/ArmConsole";
+import { Icon } from "../../components/kit/Icon";
 
 export function SstvTxApp() {
   const [frequency, setFrequency] = useState("14230000");
@@ -26,8 +27,8 @@ export function SstvTxApp() {
           warning="amateur-only"
           transmitLabel="TRANSMIT"
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: 24, background: "rgba(0,0,0,0.04)", borderRadius: 8, border: "1px dashed rgba(0,0,0,0.12)", color: "var(--text-tertiary)", fontSize: 13 }}>
-            🖼 Image source: 320×240 test pattern
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, padding: 24, background: "rgba(0,0,0,0.04)", borderRadius: 8, border: "1px dashed rgba(0,0,0,0.12)", color: "var(--text-tertiary)", fontSize: 13 }}>
+            <Icon name="image" size={20} /> Image source: 320×240 test pattern
           </div>
         </ArmConsole>
       </div>

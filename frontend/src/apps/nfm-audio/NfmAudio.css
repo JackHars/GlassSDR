@@ -16,10 +16,10 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
-  background: rgba(255, 255, 255, 0.55);
+  background: var(--surface-1);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.65);
+  border: 1px solid var(--surface-2);
   border-radius: var(--glass-radius-sm);
   box-shadow: var(--shadow-xs), var(--shadow-inset-top);
   padding: 8px 6px;
@@ -43,7 +43,7 @@
   width: 18px;
   min-height: 0;
   position: relative;
-  background: rgba(0, 0, 0, 0.06);
+  background: var(--surface-border);
   border-radius: 9px;
   overflow: hidden;
 }
@@ -112,8 +112,8 @@
   font-size: 11px;
   font-weight: 600;
   font-family: var(--font-mono);
-  background: rgba(255, 255, 255, 0.65);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: var(--surface-2);
+  border: 1px solid var(--surface-border);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all var(--spring-snappy);
