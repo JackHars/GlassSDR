@@ -18,6 +18,7 @@ tokio.workspace = true
 tracing.workspace = true
 tracing-subscriber.workspace = true
 rusb = "0.9"
+libusb1-sys = { version = "0.7", features = ["vendored"] }
 
 [features]
 default = ["custom-protocol"]
