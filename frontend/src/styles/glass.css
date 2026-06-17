@@ -329,6 +329,44 @@ body {
   overflow: hidden;
 }
 
+.app-list-pin {
+  width: 26px;
+  height: 26px;
+  min-width: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-tertiary);
+  border: 1px solid var(--surface-border);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: all var(--spring-snappy);
+  box-shadow: var(--shadow-xs);
+  padding: 0;
+}
+
+.app-list-pin:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+  box-shadow: var(--shadow-glow);
+  transform: scale(1.1);
+}
+
+.app-list-pin.pinned {
+  color: var(--accent);
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+.app-list-pin.pinned:hover {
+  color: var(--danger);
+  border-color: var(--danger);
+  background: var(--danger-dim);
+  box-shadow: 0 0 12px rgba(255, 59, 48, 0.2);
+}
+
 .app-list-help {
   width: 26px;
   height: 26px;

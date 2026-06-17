@@ -7,6 +7,8 @@ import type { AppStatus } from "../../ipc/types/AppStatus";
 import type { AppMetadata } from "../../ipc/types/AppMetadata";
 import type { RecordingMeta } from "../../ipc/types/RecordingMeta";
 import { Icon } from "../../components/kit/Icon";
+import { useStore } from "../../store";
+import { ALL_APPS } from "../../components/shell/AppGrid";
 import "./Dashboard.css";
 
 /* ── GNU Radio waterfall colormap (shared with Waterfall.tsx) ── */
@@ -59,6 +61,7 @@ interface DashboardProps {
 }
 
 export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
+  const pinnedApps = useStore((s) => s.pinnedApps);
   const [apps, setApps] = useState<AppMetadata[]>([]);
   const [usbDevices, setUsbDevices] = useState<UsbDevice[]>([]);
   const [recordings, setRecordings] = useState<RecordingMeta[]>([]);
@@ -264,6 +267,32 @@ export function DashboardApp({ onSelectApp, onBrowseAll }: DashboardProps) {
           })}
         </div>
       </div>
+
+      {/* ── Pinned apps grid ── */}
+      {pinnedApps.length > 0 && (
+        <div className="dash-pinned">
+          <div className="dash-launch-head">
+            <span className="dash-cell-title"><Icon name="lock" size={14} /> Pinned</span>
+          </div>
+          <div className="dash-pinned-grid">
+            {pinnedApps.map((id) => {
+              const meta = ALL_APPS.find((a) => a.id === id);
+              if (!meta) return null;
+              return (
+                <button
+                  key={id}
+                  className="dash-pinned-tile"
+                  onClick={() => onSelectApp(id)}
+                  style={{ "--tile-color": meta.color } as React.CSSProperties}
+                >
+                  <span className="dash-tile-icon"><Icon name={meta.icon} size={22} /></span>
+                  <span className="dash-tile-name">{meta.name}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

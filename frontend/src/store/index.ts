@@ -8,6 +8,7 @@ import type { PocsagTxStatus } from "../ipc/events";
 export type ThemeMode = "light" | "dark";
 
 const THEME_KEY = "glasssdr-theme";
+const PIN_KEY = "glasssdr-pinned";
 
 function readStoredTheme(): ThemeMode {
   try {
@@ -21,6 +22,18 @@ function applyTheme(mode: ThemeMode) {
   const root = document.documentElement;
   root.setAttribute("data-theme", mode);
   try { localStorage.setItem(THEME_KEY, mode); } catch { /* ignore */ }
+}
+
+function readStoredPins(): string[] {
+  try {
+    const v = localStorage.getItem(PIN_KEY);
+    if (v) return JSON.parse(v);
+  } catch { /* ignore */ }
+  return [];
+}
+
+function writePins(ids: string[]) {
+  try { localStorage.setItem(PIN_KEY, JSON.stringify(ids)); } catch { /* ignore */ }
 }
 
 interface State {
@@ -46,6 +59,10 @@ interface State {
   setLegalAccepted: (v: boolean) => void;
   setArmed: (v: boolean) => void;
   setTxStatus: (s: PocsagTxStatus | null) => void;
+
+  pinnedApps: string[];
+  togglePin: (id: string) => void;
+  isPinned: (id: string) => boolean;
 }
 
 export const useStore = create<State>((set, get) => ({
@@ -79,4 +96,13 @@ export const useStore = create<State>((set, get) => ({
   setLegalAccepted: (v) => set({ legalAccepted: v }),
   setArmed: (v) => set({ armed: v }),
   setTxStatus: (s) => set({ txStatus: s }),
+  pinnedApps: typeof window !== "undefined" ? readStoredPins() : [],
+  togglePin: (id) =>
+    set((state) => {
+      const has = state.pinnedApps.includes(id);
+      const next = has ? state.pinnedApps.filter((p) => p !== id) : [...state.pinnedApps, id];
+      writePins(next);
+      return { pinnedApps: next };
+    }),
+  isPinned: (id) => get().pinnedApps.includes(id),
 }));

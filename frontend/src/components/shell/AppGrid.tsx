@@ -1,4 +1,6 @@
 import { useState, useMemo, useRef, useEffect } from "react";
+import { useStore } from "../../store";
+import { Icon } from "../kit/Icon";
 
 function SvgIcon({ path }: { path: string }) {
   return (
@@ -338,12 +340,31 @@ interface AppGridProps {
   onSelectApp: (id: string) => void;
 }
 
+export interface AppEntry {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+  description: string;
+  howToUse: string;
+}
+
+/** Flat list of all apps across categories. */
+export const ALL_APPS: AppEntry[] = APP_CATEGORIES.flatMap((c) => c.apps);
+
+/** Lookup a single app by ID. */
+export function getAppEntry(id: string): AppEntry | undefined {
+  return ALL_APPS.find((a) => a.id === id);
+}
+
 export function AppGrid({ onSelectApp }: AppGridProps) {
   const [activeCategory, setActiveCategory] = useState("receivers");
   const [search, setSearch] = useState("");
   const [searchOpen, setSearchOpen] = useState(false);
   const [tooltipId, setTooltipId] = useState<string | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const pinnedApps = useStore((s) => s.pinnedApps);
+  const togglePin = useStore((s) => s.togglePin);
 
   useEffect(() => {
     if (searchOpen && searchRef.current) {
@@ -421,7 +442,9 @@ export function AppGrid({ onSelectApp }: AppGridProps) {
             No apps match "{search}"
           </div>
         )}
-        {filteredApps.map((app) => (
+        {filteredApps.map((app) => {
+          const pinned = pinnedApps.includes(app.id);
+          return (
           <div key={app.id} className="app-list-item" onClick={() => onSelectApp(app.id)}>
             <div
               className="app-list-icon"
@@ -433,6 +456,14 @@ export function AppGrid({ onSelectApp }: AppGridProps) {
               <div className="app-list-name">{app.name}</div>
               <div className="app-list-desc">{app.description}</div>
             </div>
+            <button
+              className={`app-list-pin ${pinned ? "pinned" : ""}`}
+              onClick={(e) => { e.stopPropagation(); togglePin(app.id); }}
+              title={pinned ? "Unpin from dashboard" : "Pin to dashboard"}
+              aria-pressed={pinned}
+            >
+              <Icon name={pinned ? "lock" : "lockOpen"} size={13} />
+            </button>
             <div
               className={`app-list-help ${tooltipId === app.id ? "active" : ""}`}
               onClick={(e) => {
@@ -446,7 +477,8 @@ export function AppGrid({ onSelectApp }: AppGridProps) {
               )}
             </div>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
