@@ -11,3 +11,6 @@ frontend/dist/
 # Frontend: never commit compiled .js artifacts in src/
 frontend/src/**/*.js
 frontend/tsconfig.tsbuildinfo
+.claude/
+docs/ui/LOOP-PROMPT.md
+docs/ui/ui-loop-prompt.md
